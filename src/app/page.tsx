@@ -10,6 +10,7 @@ import SystemStatusCard from '@/components/SystemStatusCard'
 import LowStockAlertsTable, { LowStockAlertItem } from '@/components/LowStockAlertsTable'
 import ProductsModule from '@/components/ProductsModule'
 import InventoryModule from '@/components/InventoryModule'
+import ProductionLogsModule from '@/components/ProductionLogsModule'
 import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
@@ -157,6 +158,10 @@ export default function Home() {
             <InventoryModule
               onOpenStockOut={() => setIsStockOutOpen(true)}
               onOpenRecordProduction={handleOpenProduce}
+            />
+          ) : activeTab === 'production-logs' ? (
+            <ProductionLogsModule
+              onOpenRecordProduction={() => handleOpenProduce()}
             />
           ) : (
             <div className="glass-card rounded-2xl p-12 text-center my-12">
