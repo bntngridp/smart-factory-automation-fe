@@ -9,6 +9,7 @@ import QuickActions from '@/components/QuickActions'
 import SystemStatusCard from '@/components/SystemStatusCard'
 import LowStockAlertsTable, { LowStockAlertItem } from '@/components/LowStockAlertsTable'
 import ProductsModule from '@/components/ProductsModule'
+import InventoryModule from '@/components/InventoryModule'
 import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
@@ -150,6 +151,11 @@ export default function Home() {
           ) : activeTab === 'products' ? (
             <ProductsModule
               onOpenAddProduct={() => setIsAddProductOpen(true)}
+              onOpenRecordProduction={handleOpenProduce}
+            />
+          ) : activeTab === 'inventory' ? (
+            <InventoryModule
+              onOpenStockOut={() => setIsStockOutOpen(true)}
               onOpenRecordProduction={handleOpenProduce}
             />
           ) : (
