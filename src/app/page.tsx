@@ -8,6 +8,7 @@ import ProductionAnalyticsChart from '@/components/ProductionAnalyticsChart'
 import QuickActions from '@/components/QuickActions'
 import SystemStatusCard from '@/components/SystemStatusCard'
 import LowStockAlertsTable, { LowStockAlertItem } from '@/components/LowStockAlertsTable'
+import ProductsModule from '@/components/ProductsModule'
 import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
@@ -146,6 +147,11 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          ) : activeTab === 'products' ? (
+            <ProductsModule
+              onOpenAddProduct={() => setIsAddProductOpen(true)}
+              onOpenRecordProduction={handleOpenProduce}
+            />
           ) : (
             <div className="glass-card rounded-2xl p-12 text-center my-12">
               <h2 className="text-xl font-bold text-white mb-2 capitalize">
