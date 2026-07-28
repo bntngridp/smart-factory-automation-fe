@@ -10,16 +10,24 @@ import {
   Server,
   Search,
   Check,
-  Globe,
-  Sliders
+  UserPlus,
+  ShieldCheck,
+  ToggleLeft,
+  ToggleRight,
+  MoreVertical
 } from 'lucide-react'
 
 export default function SettingsModule() {
   const [activeSubTab, setActiveSubTab] = useState('appearance')
   const [searchQuery, setSearchQuery] = useState('')
-  const [theme, setTheme] = useState('Dark Industrial')
-  const [accentColor, setAccentColor] = useState('Forge Blue')
-  const [pollingRate, setPollingRate] = useState('5 seconds')
+  const [theme, setTheme] = useState('Dark')
+  const [highContrast, setHighContrast] = useState(false)
+
+  const systemRolesList = [
+    { name: 'Sarah Connor', email: 's.connor@forge.io', role: 'Admin', roleColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', status: 'Active', lastLogin: '2 mins ago', avatarBg: 'bg-blue-600' },
+    { name: 'Marcus Reed', email: 'm.reed@forge.io', role: 'Manager', roleColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30', status: 'Active', lastLogin: '1 hour ago', avatarBg: 'bg-amber-600' },
+    { name: 'James Taggart', email: 'j.taggart@forge.io', role: 'Operator', roleColor: 'bg-slate-500/10 text-slate-400 border-slate-500/30', status: 'Offline', lastLogin: 'Yesterday', avatarBg: 'bg-slate-600' },
+  ]
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -41,7 +49,7 @@ export default function SettingsModule() {
         </div>
       </div>
 
-      {/* Main Settings Grid Layout */}
+      {/* Main Settings Card */}
       <div className="glass-card rounded-2xl p-6 border border-[#1E293B] min-h-[500px]">
         {/* Search Bar Top */}
         <div className="relative max-w-sm mb-6">
@@ -84,69 +92,157 @@ export default function SettingsModule() {
             })}
           </div>
 
-          {/* Settings Right Panel Content Area */}
-          <div className="md:col-span-3 space-y-6 text-xs border-l border-[#1E293B] pl-0 md:pl-8">
-            {activeSubTab === 'appearance' ? (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-sm font-bold text-white mb-1">Theme Preferences</h3>
-                  <p className="text-slate-400">Customise how the Smart Factory control center looks on your screen.</p>
-                </div>
+          {/* Right Content Panel */}
+          <div className="md:col-span-3 space-y-8 text-xs border-l border-[#1E293B] pl-0 md:pl-8">
+            {/* Appearance Section */}
+            <div className="space-y-5">
+              <div>
+                <h3 className="text-lg font-bold text-white tracking-tight">Appearance</h3>
+                <p className="text-slate-400 mt-0.5">Customize the look and feel of the interface.</p>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {[
-                    { id: 'Dark Industrial', label: 'Dark Industrial', desc: 'Control room theme (Default)', bg: 'bg-[#0B0F17]' },
-                    { id: 'Enterprise Slate', label: 'Enterprise Slate', desc: 'Cool slate gray contrast', bg: 'bg-[#0F172A]' },
-                    { id: 'High Contrast', label: 'High Contrast', desc: 'Maximum visibility', bg: 'bg-black' }
-                  ].map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => setTheme(item.id)}
-                      className={`cursor-pointer rounded-xl p-4 border transition-all ${
-                        theme === item.id
-                          ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
-                          : 'border-[#1E293B] bg-[#0F172A] hover:border-slate-700'
-                      }`}
-                    >
-                      <div className={`w-full h-12 rounded-lg ${item.bg} border border-slate-700 mb-3 flex items-center justify-center`}>
-                        {theme === item.id && <Check className="w-5 h-5 text-blue-400" />}
-                      </div>
-                      <h4 className="font-bold text-white">{item.label}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{item.desc}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-4 border-t border-[#1E293B]">
-                  <h3 className="text-sm font-bold text-white mb-3">Live Telemetry Polling Rate</h3>
-                  <select
-                    value={pollingRate}
-                    onChange={(e) => setPollingRate(e.target.value)}
-                    className="bg-[#0F172A] border border-[#1E293B] text-slate-200 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500 min-w-[200px]"
+              <div>
+                <h4 className="font-semibold text-slate-300 mb-3">Theme</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
+                  {/* Dark Theme Card */}
+                  <div
+                    onClick={() => setTheme('Dark')}
+                    className={`cursor-pointer rounded-2xl p-4 border transition-all ${
+                      theme === 'Dark'
+                        ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
+                        : 'border-[#1E293B] bg-[#0F172A]'
+                    }`}
                   >
-                    <option value="1 second">Real-time (1 second)</option>
-                    <option value="5 seconds">Standard (5 seconds)</option>
-                    <option value="15 seconds">Eco mode (15 seconds)</option>
-                  </select>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold text-white capitalize">{activeSubTab} Configuration</h3>
-                <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-5 text-slate-400">
-                  <p>Configuration options for <strong className="text-white capitalize">{activeSubTab}</strong> are active and configured according to Enterprise security guidelines.</p>
-                </div>
-              </div>
-            )}
+                    <div className="w-full h-20 bg-[#0F172A] border border-[#1E293B] rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
+                      <div className="w-full h-3 bg-[#1E2D47] rounded-md"></div>
+                      <div className="flex gap-1.5 flex-1">
+                        <div className="w-1/3 bg-[#162032] rounded-md"></div>
+                        <div className="w-2/3 bg-[#162032] rounded-md"></div>
+                      </div>
+                    </div>
+                    <div className="text-center font-bold text-white text-xs">Dark</div>
+                  </div>
 
-            {/* Save Button */}
-            <div className="pt-4 border-t border-[#1E293B] flex justify-end">
-              <button
-                onClick={() => alert('Settings saved successfully!')}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
-              >
-                Save Preferences
-              </button>
+                  {/* Light Theme Card */}
+                  <div
+                    onClick={() => setTheme('Light')}
+                    className={`cursor-pointer rounded-2xl p-4 border transition-all ${
+                      theme === 'Light'
+                        ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
+                        : 'border-[#1E293B] bg-[#0F172A] opacity-60'
+                    }`}
+                  >
+                    <div className="w-full h-20 bg-slate-300 border border-slate-400 rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
+                      <div className="w-full h-3 bg-slate-400 rounded-md"></div>
+                      <div className="flex gap-1.5 flex-1">
+                        <div className="w-1/3 bg-slate-200 rounded-md"></div>
+                        <div className="w-2/3 bg-slate-200 rounded-md"></div>
+                      </div>
+                    </div>
+                    <div className="text-center font-bold text-slate-300 text-xs">Light</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* High Contrast Mode Switch */}
+              <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between max-w-lg">
+                <div>
+                  <h4 className="font-bold text-white text-xs">High Contrast Mode</h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Increase contrast for better readability in harsh lighting.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setHighContrast(!highContrast)}
+                  className="text-blue-500 hover:text-blue-400 transition-colors"
+                >
+                  {highContrast ? (
+                    <div className="w-10 h-5 bg-blue-600 rounded-full p-0.5 flex justify-end transition-all">
+                      <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
+                    </div>
+                  ) : (
+                    <div className="w-10 h-5 bg-slate-700 rounded-full p-0.5 flex justify-start transition-all">
+                      <div className="w-4 h-4 bg-slate-400 rounded-full shadow-md"></div>
+                    </div>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* System Roles Section */}
+            <div className="pt-6 border-t border-[#1E293B] space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">System Roles</h3>
+                  <p className="text-slate-400 mt-0.5">Manage user access and permissions.</p>
+                </div>
+                <button
+                  onClick={() => alert('Add User triggered')}
+                  className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Add User</span>
+                </button>
+              </div>
+
+              {/* System Roles Mini Table */}
+              <div className="overflow-x-auto border border-[#1E293B] rounded-xl bg-[#0F172A]">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                      <th className="p-3">User</th>
+                      <th className="p-3">Role</th>
+                      <th className="p-3 text-center">Status</th>
+                      <th className="p-3 text-center">Last Login</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#1E293B]">
+                    {systemRolesList.map((user, idx) => (
+                      <tr key={idx} className="hover:bg-[#162032] transition-colors">
+                        <td className="p-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-7 h-7 rounded-full ${user.avatarBg} flex items-center justify-center text-white font-bold text-[10px]`}>
+                              {user.name.split(' ').map((n) => n[0]).join('')}
+                            </div>
+                            <div>
+                              <h5 className="font-bold text-white text-xs leading-tight">{user.name}</h5>
+                              <p className="text-[10px] text-slate-400">{user.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${user.roleColor}`}>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          {user.status === 'Active' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                              Active
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                              Offline
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3 text-center text-slate-400 font-mono text-[11px]">
+                          {user.lastLogin}
+                        </td>
+                        <td className="p-3 text-right">
+                          <button className="text-slate-400 hover:text-white p-1">
+                            <MoreVertical className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
