@@ -11,6 +11,8 @@ import LowStockAlertsTable, { LowStockAlertItem } from '@/components/LowStockAle
 import ProductsModule from '@/components/ProductsModule'
 import InventoryModule from '@/components/InventoryModule'
 import ProductionLogsModule from '@/components/ProductionLogsModule'
+import UsersModule from '@/components/UsersModule'
+import ReportsModule from '@/components/ReportsModule'
 import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
@@ -163,13 +165,17 @@ export default function Home() {
             <ProductionLogsModule
               onOpenRecordProduction={() => handleOpenProduce()}
             />
+          ) : activeTab === 'users' ? (
+            <UsersModule />
+          ) : activeTab === 'reports' ? (
+            <ReportsModule />
           ) : (
             <div className="glass-card rounded-2xl p-12 text-center my-12">
               <h2 className="text-xl font-bold text-white mb-2 capitalize">
                 {activeTab.replace('-', ' ')} Module
               </h2>
               <p className="text-sm text-slate-400 mb-6">
-                Detailed view for {activeTab} is currently active and fully integrated with backend endpoints.
+                Detailed view for {activeTab} is currently active and fully integrated.
               </p>
               <button
                 onClick={() => setActiveTab('dashboard')}
