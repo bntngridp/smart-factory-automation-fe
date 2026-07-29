@@ -200,27 +200,27 @@ export default function NotificationsModal({
                 onClick={() => toggleRead(item.id)}
                 className={`cursor-pointer rounded-xl p-4 border transition-all relative ${
                   !item.read
-                    ? 'bg-[#0F172A] border-blue-500/30 hover:border-blue-500/60'
-                    : 'bg-[#111827]/60 border-[#1E293B] opacity-75 hover:opacity-100'
+                    ? 'bg-[#0F172A] border-blue-500/40 hover:border-blue-500/70 shadow-sm'
+                    : 'bg-[#0F172A] border-[#1E293B] opacity-80 hover:opacity-100'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {/* Icon Indicator */}
                   <div className="mt-0.5 shrink-0">
                     {item.type === 'critical' ? (
-                      <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+                      <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500">
                         <AlertTriangle className="w-4 h-4" />
                       </div>
                     ) : item.type === 'warning' ? (
-                      <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                      <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-500">
                         <AlertTriangle className="w-4 h-4" />
                       </div>
                     ) : item.type === 'success' ? (
-                      <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                      <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                     ) : (
-                      <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400">
+                      <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-500">
                         <Info className="w-4 h-4" />
                       </div>
                     )}
@@ -235,7 +235,7 @@ export default function NotificationsModal({
                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                         )}
                       </h4>
-                      <span className="text-[10px] text-slate-500 font-mono flex items-center gap-1">
+                      <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {item.time}
                       </span>
@@ -252,7 +252,7 @@ export default function NotificationsModal({
                             e.stopPropagation()
                             alert(`Action ${item.actionLabel} executed`)
                           }}
-                          className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 font-semibold text-[11px] px-3 py-1 rounded-lg flex items-center gap-1 transition-all"
+                          className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 border border-blue-500/30 font-semibold text-[11px] px-3 py-1 rounded-lg flex items-center gap-1 transition-all"
                         >
                           <span>{item.actionLabel}</span>
                           <ExternalLink className="w-3 h-3" />
