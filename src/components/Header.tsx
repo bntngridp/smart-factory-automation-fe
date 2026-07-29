@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { Search, Bell, Calendar, Download, Plus, ShieldCheck } from 'lucide-react'
-import LanguageSelector from '@/components/LanguageSelector'
 import { useLanguage } from '@/context/LanguageContext'
 
 interface HeaderProps {
@@ -41,9 +40,6 @@ export default function Header({
 
       {/* Header Actions & Profile */}
       <div className="flex items-center gap-3">
-        {/* Language Selector Dropdown */}
-        <LanguageSelector />
-
         {/* Calendar Badge */}
         <div className="hidden sm:flex items-center gap-2 bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl">
           <Calendar className="w-3.5 h-3.5 text-blue-400" />

@@ -10,6 +10,7 @@ import {
   TrendingUp,
   TrendingDown
 } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface SummaryData {
   total_products: number
@@ -23,48 +24,50 @@ interface SummaryCardsProps {
 }
 
 export default function SummaryCards({ data, loading }: SummaryCardsProps) {
+  const { t } = useLanguage()
+
   const cards = [
     {
       id: 'products',
-      label: 'Total Products',
+      label: t('total_products'),
       value: data?.total_products !== undefined ? data.total_products.toLocaleString() : '4,821',
-      subtext: '+12 vs last month',
+      subtext: t('active_catalog'),
       isPositive: true,
       icon: Package,
       badgeColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20'
     },
     {
       id: 'today_production',
-      label: "Today's Production",
+      label: t('today_production'),
       value: data?.total_production_today !== undefined ? `${data.total_production_today.toLocaleString()} units` : '1,240 units',
-      subtext: '+5.2% vs yesterday',
+      subtext: t('vs_daily_target'),
       isPositive: true,
       icon: Activity,
       badgeColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
     },
     {
       id: 'inventory',
-      label: 'Current Inventory',
+      label: t('current_inventory'),
       value: '82,450',
-      subtext: '-1.4% capacity',
+      subtext: t('total_items_in_stock'),
       isPositive: false,
       icon: Boxes,
       badgeColor: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20'
     },
     {
       id: 'low_stock',
-      label: 'Low Stock Alerts',
+      label: t('low_stock_alerts'),
       value: data?.low_stock_alerts_count !== undefined ? data.low_stock_alerts_count.toString() : '3',
-      subtext: 'Critical attention required',
+      subtext: t('require_attention'),
       isAlert: true,
       icon: AlertTriangle,
       badgeColor: 'text-rose-400 bg-rose-500/10 border-rose-500/30 shadow-rose-500/10 shadow-lg'
     },
     {
       id: 'efficiency',
-      label: 'Production Efficiency',
+      label: t('production_efficiency'),
       value: '94.2%',
-      subtext: '+0.8% OEE',
+      subtext: t('optimal_output'),
       isPositive: true,
       icon: Gauge,
       badgeColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20'

@@ -20,6 +20,7 @@ import StockOutModal from '@/components/Modals/StockOutModal'
 import NotificationsModal from '@/components/Modals/NotificationsModal'
 import LogoutModal from '@/components/Modals/LogoutModal'
 import { Sparkles, RefreshCw } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface DashboardSummaryData {
   total_products: number
@@ -28,6 +29,7 @@ interface DashboardSummaryData {
 }
 
 export default function Home() {
+  const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [summaryData, setSummaryData] = useState<DashboardSummaryData | null>(null)
   const [loadingSummary, setLoadingSummary] = useState(true)
@@ -95,15 +97,15 @@ export default function Home() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h1 className="text-2xl font-extrabold text-white tracking-tight">
-                      Executive Dashboard
+                      {t('executive_dashboard')}
                     </h1>
                     <span className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                       <Sparkles className="w-3 h-3" />
-                      Smart Control
+                      {t('smart_control')}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-1">
-                    Real-time overview of global manufacturing operations & inventory.
+                    {t('realtime_overview')}
                   </p>
                 </div>
 
@@ -113,7 +115,7 @@ export default function Home() {
                     className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${loadingSummary ? 'animate-spin' : ''}`} />
-                    <span>Sync Live Data</span>
+                    <span>{t('refresh')}</span>
                   </button>
                 </div>
               </div>

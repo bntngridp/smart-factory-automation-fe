@@ -18,7 +18,7 @@ import { useLanguage, Language } from '@/context/LanguageContext'
 
 export default function SettingsModule() {
   const { language, setLanguage, t } = useLanguage()
-  const [activeSubTab, setActiveSubTab] = useState('appearance')
+  const [activeSubTab, setActiveSubTab] = useState('language')
   const [searchQuery, setSearchQuery] = useState('')
   const [theme, setTheme] = useState('Dark')
   const [highContrast, setHighContrast] = useState(false)
@@ -30,10 +30,10 @@ export default function SettingsModule() {
   ]
 
   const languagesList: { code: Language; label: string; flag: string }[] = [
-    { code: 'en', label: 'English (US)', flag: '🇬🇧' },
-    { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
-    { code: 'ar', label: 'العربية (Arabic - RTL)', flag: '🇸🇦' },
-    { code: 'es', label: 'Español (Spanish)', flag: '🇪🇸' },
+    { code: 'id', label: '🇮🇩 Bahasa Indonesia', flag: '🇮🇩' },
+    { code: 'en', label: '🇬🇧 English (US)', flag: '🇬🇧' },
+    { code: 'ar', label: '🇸🇦 العربية (Arabic - RTL)', flag: '🇸🇦' },
+    { code: 'es', label: '🇪🇸 Español (Spanish)', flag: '🇪🇸' },
   ]
 
   return (
@@ -43,7 +43,7 @@ export default function SettingsModule() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('settings')}
+              {t('system_settings')}
             </h1>
             <span className="text-xs font-bold bg-slate-500/10 text-slate-400 border border-slate-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Settings className="w-3 h-3" />
@@ -74,10 +74,10 @@ export default function SettingsModule() {
           {/* Sub-menu Sidebar */}
           <div className="space-y-1">
             {[
+              { id: 'language', label: t('language'), icon: Globe },
+              { id: 'appearance', label: t('appearance'), icon: Palette },
               { id: 'profile', label: 'Profile', icon: User },
               { id: 'security', label: 'Security', icon: Shield },
-              { id: 'appearance', label: 'Appearance', icon: Palette },
-              { id: 'language', label: t('language'), icon: Globe },
               { id: 'notifications', label: 'Notifications', icon: Bell },
               { id: 'system', label: 'System', icon: Server },
             ].map((tab) => {
@@ -124,7 +124,7 @@ export default function SettingsModule() {
                         <span className="text-2xl">{lang.flag}</span>
                         <div>
                           <h4 className="font-bold text-white text-xs">{lang.label}</h4>
-                          <p className="text-[10px] text-slate-400">Code: {lang.code.toUpperCase()}</p>
+                          <p className="text-[10px] text-slate-400">ISO Code: {lang.code.toUpperCase()}</p>
                         </div>
                       </div>
                       {language === lang.code && <Check className="w-5 h-5 text-blue-400" />}
@@ -135,12 +135,12 @@ export default function SettingsModule() {
             ) : activeSubTab === 'appearance' ? (
               <div className="space-y-5">
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">Appearance</h3>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{t('appearance')}</h3>
                   <p className="text-slate-400 mt-0.5">Customize the look and feel of the interface.</p>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-slate-300 mb-3">Theme</h4>
+                  <h4 className="font-semibold text-slate-300 mb-3">{t('theme_preferences')}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
                     {/* Dark Theme Card */}
                     <div
@@ -185,7 +185,7 @@ export default function SettingsModule() {
                 {/* High Contrast Mode Switch */}
                 <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between max-w-lg">
                   <div>
-                    <h4 className="font-bold text-white text-xs">High Contrast Mode</h4>
+                    <h4 className="font-bold text-white text-xs">{t('high_contrast')}</h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
                       Increase contrast for better readability in harsh lighting.
                     </p>
@@ -220,15 +220,15 @@ export default function SettingsModule() {
             <div className="pt-6 border-t border-[#1E293B] space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">System Roles</h3>
-                  <p className="text-slate-400 mt-0.5">Manage user access and permissions.</p>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{t('role_permissions')}</h3>
+                  <p className="text-slate-400 mt-0.5">{t('manage_roles')}</p>
                 </div>
                 <button
                   onClick={() => alert('Add User triggered')}
                   className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
-                  <span>Add User</span>
+                  <span>{t('invite_user')}</span>
                 </button>
               </div>
 
@@ -239,9 +239,9 @@ export default function SettingsModule() {
                     <tr className="border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
                       <th className="p-3">User</th>
                       <th className="p-3">Role</th>
-                      <th className="p-3 text-center">Status</th>
-                      <th className="p-3 text-center">Last Login</th>
-                      <th className="p-3 text-right">Actions</th>
+                      <th className="p-3 text-center">{t('status')}</th>
+                      <th className="p-3 text-center">{t('last_activity')}</th>
+                      <th className="p-3 text-right">{t('actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1E293B]">
