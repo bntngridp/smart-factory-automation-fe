@@ -64,6 +64,18 @@ export interface DashboardSummary {
   low_stock_alerts: LowStockItem[]
 }
 
+export interface UserItem {
+  UserID: number
+  Username: string
+  Role: string
+}
+
+export interface CreateUserPayload {
+  username: string
+  password?: string
+  role?: string
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:6060/api'
 
 export async function getProductsApi(): Promise<Product[]> {
@@ -197,6 +209,40 @@ export async function getDashboardSummaryApi(): Promise<DashboardSummary> {
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
     throw new Error(errorData.error || 'Gagal mengambil ringkasan dashboard')
+  }
+
+  return res.json()
+}
+
+export async function getUsersApi(): Promise<UserItem[]> {
+  const res = await fetch(`${API_BASE_URL}/users`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mengambil daftar pengguna')
+  }
+
+  return res.json()
+}
+
+export async function createUserApi(payload: CreateUserPayload): Promise<UserItem> {
+  const res = await fetch(`${API_BASE_URL}/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal menambahkan pengguna baru')
   }
 
   return res.json()

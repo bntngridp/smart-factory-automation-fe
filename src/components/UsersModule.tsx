@@ -1,81 +1,80 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Users,
   UserPlus,
   Search,
-  Filter,
-  Shield,
   ShieldCheck,
-  UserCog,
   ChevronLeft,
   ChevronRight,
   MoreVertical,
   Mail,
-  CheckCircle2,
-  XCircle
+  RefreshCw,
+  X,
+  Check,
+  AlertCircle
 } from 'lucide-react'
-
-export interface UserAccount {
-  id: string
-  name: string
-  email: string
-  role: 'Admin' | 'Supervisor' | 'Operator'
-  status: 'Active' | 'Inactive'
-  lastActivity: string
-  avatarBg: string
-}
+import { getUsersApi, createUserApi, UserItem } from '@/services/api'
 
 export default function UsersModule() {
+  const [users, setUsers] = useState<UserItem[]>([])
+  const [loading, setLoading] = useState(true)
   const [roleFilter, setRoleFilter] = useState<string>('All Roles')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const usersList: UserAccount[] = [
-    {
-      id: '1',
-      name: 'Elena Rostova',
-      email: 'elena.r@forge.inc',
-      role: 'Admin',
-      status: 'Active',
-      lastActivity: 'Just now',
-      avatarBg: 'bg-gradient-to-br from-amber-500 to-orange-600'
-    },
-    {
-      id: '2',
-      name: 'Marcus Jin',
-      email: 'm.jin@forge.inc',
-      role: 'Supervisor',
-      status: 'Active',
-      lastActivity: '2 hrs ago',
-      avatarBg: 'bg-gradient-to-br from-blue-500 to-indigo-600'
-    },
-    {
-      id: '3',
-      name: 'Sarah Connor',
-      email: 's.connor@forge.inc',
-      role: 'Operator',
-      status: 'Inactive',
-      lastActivity: '4 days ago',
-      avatarBg: 'bg-gradient-to-br from-slate-600 to-slate-700'
-    },
-    {
-      id: '4',
-      name: 'Budi Santoso',
-      email: 'budi.s@forge.inc',
-      role: 'Operator',
-      status: 'Active',
-      lastActivity: '15 mins ago',
-      avatarBg: 'bg-gradient-to-br from-emerald-500 to-teal-600'
-    }
-  ]
+  // Invite Modal States
+  const [isInviteOpen, setIsInviteOpen] = useState(false)
+  const [newUsername, setNewUsername] = useState('')
+  const [newPassword, setNewPassword] = useState('password123')
+  const [newRole, setNewRole] = useState('operator')
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  const filteredUsers = usersList.filter((u) => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const fetchUsers = async () => {
+    setLoading(true)
+    try {
+      const data = await getUsersApi()
+      setUsers(data)
+    } catch (err) {
+      console.error('Failed to fetch users:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newUsername.trim()) return
+
+    setSubmitting(true)
+    setErrorMsg(null)
+
+    try {
+      await createUserApi({
+        username: newUsername.trim(),
+        password: newPassword,
+        role: newRole
+      })
+
+      fetchUsers()
+      setIsInviteOpen(false)
+      setNewUsername('')
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Gagal membuat akun user baru')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const filteredUsers = users.filter((u) => {
+    const matchesSearch = u.Username.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesRole =
-      roleFilter === 'All Roles' || u.role.toLowerCase() === roleFilter.toLowerCase()
+      roleFilter === 'All Roles' || u.Role.toLowerCase() === roleFilter.toLowerCase()
 
     return matchesSearch && matchesRole
   })
@@ -99,13 +98,23 @@ export default function UsersModule() {
           </p>
         </div>
 
-        <button
-          onClick={() => alert('Invite User Modal triggered')}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Invite User</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchUsers}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Sync</span>
+          </button>
+
+          <button
+            onClick={() => setIsInviteOpen(true)}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>Add User</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Two-Column Layout Grid */}
@@ -142,84 +151,93 @@ export default function UsersModule() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                  <th className="p-3.5">User</th>
+                  <th className="p-3.5">User ID</th>
+                  <th className="p-3.5">Username</th>
                   <th className="p-3.5">Role</th>
                   <th className="p-3.5 text-center">Status</th>
-                  <th className="p-3.5 text-center">Last Activity</th>
                   <th className="p-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]">
-                {filteredUsers.map((user) => {
-                  return (
-                    <tr key={user.id} className="hover:bg-[#1E2D47]/40 transition-colors">
-                      <td className="p-3.5">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full ${user.avatarBg} flex items-center justify-center text-white font-bold text-xs shadow-md`}>
-                            {user.name.split(' ').map((n) => n[0]).join('')}
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-white leading-tight">{user.name}</h4>
-                            <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                              <Mail className="w-3 h-3 text-slate-500" />
-                              {user.email}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-400">
+                      Loading registered users from MSSQL...
+                    </td>
+                  </tr>
+                ) : filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-400">
+                      No user accounts found.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((user) => {
+                    const isSystemAdmin = user.Role.toLowerCase() === 'admin'
+                    const isSupervisor = user.Role.toLowerCase() === 'supervisor'
 
-                      <td className="p-3.5">
-                        {user.role === 'Admin' ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                            Admin
-                          </span>
-                        ) : user.role === 'Supervisor' ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
-                            Supervisor
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">
-                            Operator
-                          </span>
-                        )}
-                      </td>
+                    return (
+                      <tr key={user.UserID} className="hover:bg-[#1E2D47]/40 transition-colors">
+                        <td className="p-3.5 font-mono text-slate-400 font-bold">
+                          USR-{user.UserID}
+                        </td>
+                        <td className="p-3.5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-xs shadow-md uppercase">
+                              {user.Username.substring(0, 2)}
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-white leading-tight">{user.Username}</h4>
+                              <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
+                                <Mail className="w-3 h-3 text-slate-500" />
+                                {user.Username}@forge.inc
+                              </p>
+                            </div>
+                          </div>
+                        </td>
 
-                      <td className="p-3.5 text-center">
-                        {user.status === 'Active' ? (
+                        <td className="p-3.5">
+                          {isSystemAdmin ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                              Admin
+                            </span>
+                          ) : isSupervisor ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                              Supervisor
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">
+                              Operator
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="p-3.5 text-center">
                           <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             Active
                           </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
-                            <span className="w-2 h-2 rounded-full bg-slate-600"></span>
-                            Inactive
-                          </span>
-                        )}
-                      </td>
+                        </td>
 
-                      <td className="p-3.5 text-center text-slate-400 font-mono">
-                        {user.lastActivity}
-                      </td>
-
-                      <td className="p-3.5 text-right">
-                        <button
-                          onClick={() => alert(`Manage user ${user.name}`)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })}
+                        <td className="p-3.5 text-right">
+                          <button
+                            onClick={() => alert(`Manage user ${user.Username}`)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
               </tbody>
             </table>
           </div>
 
           {/* Table Pagination */}
           <div className="flex items-center justify-between gap-4 mt-5 pt-4 border-t border-[#1E293B] text-xs text-slate-400">
-            <span>Showing {filteredUsers.length} of {usersList.length} users</span>
+            <span>Showing {filteredUsers.length} of {users.length} users</span>
             <div className="flex items-center gap-1">
               <button className="p-1.5 rounded-lg bg-[#0F172A] border border-[#1E293B] text-slate-400 hover:text-white disabled:opacity-40">
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -309,6 +327,93 @@ export default function UsersModule() {
           </div>
         </div>
       </div>
+
+      {/* Add User / Invite Modal */}
+      {isInviteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <button
+              onClick={() => setIsInviteOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <UserPlus className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white leading-tight">Add New Platform User</h3>
+                <p className="text-xs text-slate-400">Create user account credentials for MSSQL</p>
+              </div>
+            </div>
+
+            {errorMsg && (
+              <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleCreateUser} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1.5">Username *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. operator4"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1.5">Password *</label>
+                <input
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1.5">Role</label>
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="operator">Operator</option>
+                  <option value="supervisor">Supervisor</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1E293B]">
+                <button
+                  type="button"
+                  onClick={() => setIsInviteOpen(false)}
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-indigo-500/20 transition-all disabled:opacity-50"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{submitting ? 'Creating...' : 'Create Account'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
