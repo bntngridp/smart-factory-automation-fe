@@ -37,74 +37,148 @@ body {
   border-color: #334155;
 }
 
-/* Light Mode Overrides */
+/* ==========================================================================
+   Comprehensive Light Mode Overrides (Systemic Fix for All Components)
+   ========================================================================== */
 .light-mode {
-  --bg-main: #F1F5F9;
+  --bg-main: #F8FAFC;
   --bg-sidebar: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #F8FAFC;
+  --bg-card-hover: #F1F5F9;
   --border-card: #E2E8F0;
-  background-color: #F1F5F9 !important;
+  background-color: #F8FAFC !important;
   color: #0F172A !important;
 }
 
+/* Structural Layouts in Light Mode */
 .light-mode aside {
   background-color: #FFFFFF !important;
   border-color: #E2E8F0 !important;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04) !important;
 }
 
 .light-mode header {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
   border-color: #E2E8F0 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
 }
 
 .light-mode main {
+  background-color: #F8FAFC !important;
+}
+
+/* Hardcoded Dark Background Overrides for Light Mode */
+.light-mode .glass-card,
+.light-mode .bg-\[\#0F172A\],
+.light-mode .bg-\[\#162032\],
+.light-mode .bg-\[\#111827\],
+.light-mode .bg-\[\#090D16\],
+.light-mode .bg-\[\#0B0F17\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+
+.light-mode .bg-\[\#1E2D47\] {
+  background-color: #EFF6FF !important; /* Soft active blue tint */
+  border-color: #BFDBFE !important;
+}
+
+.light-mode .hover\:bg-\[\#162032\]:hover,
+.light-mode .hover\:bg-\[\#1E2D47\]:hover,
+.light-mode .hover\:bg-\[\#0F172A\]:hover {
   background-color: #F1F5F9 !important;
 }
 
-.light-mode .glass-card {
-  background-color: #FFFFFF !important;
+/* Hardcoded Dark Border Overrides */
+.light-mode .border-\[\#1E293B\],
+.light-mode .border-\[\#334155\],
+.light-mode .border-slate-700,
+.light-mode .border-slate-800 {
   border-color: #E2E8F0 !important;
-  box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
+.light-mode .divide-\[\#1E293B\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E2E8F0 !important;
+}
+
+/* Typography & Text Color Overrides for High Contrast Readability */
 .light-mode h1,
 .light-mode h2,
 .light-mode h3,
 .light-mode h4,
 .light-mode h5,
-.light-mode h6 {
+.light-mode h6,
+.light-mode .text-white {
   color: #0F172A !important;
 }
 
-.light-mode p,
-.light-mode span,
-.light-mode label {
-  color: #475569;
+.light-mode .text-slate-100,
+.light-mode .text-slate-200,
+.light-mode .text-slate-300 {
+  color: #1E293B !important;
 }
 
+.light-mode .text-slate-400,
+.light-mode .text-slate-500 {
+  color: #64748B !important;
+}
+
+.light-mode .text-slate-600 {
+  color: #475569 !important;
+}
+
+/* Tables & Data Grids in Light Mode */
+.light-mode table thead tr {
+  background-color: #F8FAFC !important;
+  border-bottom: 2px solid #E2E8F0 !important;
+}
+
+.light-mode table thead th {
+  color: #475569 !important;
+}
+
+.light-mode table tbody tr:hover {
+  background-color: #F1F5F9 !important;
+}
+
+/* Inputs & Form Controls in Light Mode */
 .light-mode input,
-.light-mode select {
+.light-mode select,
+.light-mode textarea {
   background-color: #F8FAFC !important;
   border-color: #CBD5E1 !important;
   color: #0F172A !important;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #94A3B8 !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #0F172A;
+.light-mode input:focus,
+.light-mode select:focus,
+.light-mode textarea:focus {
+  background-color: #FFFFFF !important;
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
+/* Modal Windows Overlay in Light Mode */
+.light-mode .fixed.inset-0.bg-black\/85,
+.light-mode .fixed.inset-0.bg-black\/80,
+.light-mode .fixed.inset-0.bg-black\/75 {
+  background-color: rgba(15, 23, 42, 0.6) !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+/* Custom Scrollbar in Light Mode */
+.light-mode ::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+.light-mode ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+}
+
+.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
