@@ -11,13 +11,13 @@ import {
   Search,
   Check,
   UserPlus,
-  ShieldCheck,
-  ToggleLeft,
-  ToggleRight,
+  Globe,
   MoreVertical
 } from 'lucide-react'
+import { useLanguage, Language } from '@/context/LanguageContext'
 
 export default function SettingsModule() {
+  const { language, setLanguage, t } = useLanguage()
   const [activeSubTab, setActiveSubTab] = useState('appearance')
   const [searchQuery, setSearchQuery] = useState('')
   const [theme, setTheme] = useState('Dark')
@@ -29,6 +29,13 @@ export default function SettingsModule() {
     { name: 'James Taggart', email: 'j.taggart@forge.io', role: 'Operator', roleColor: 'bg-slate-500/10 text-slate-400 border-slate-500/30', status: 'Offline', lastLogin: 'Yesterday', avatarBg: 'bg-slate-600' },
   ]
 
+  const languagesList: { code: Language; label: string; flag: string }[] = [
+    { code: 'en', label: 'English (US)', flag: '🇬🇧' },
+    { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
+    { code: 'ar', label: 'العربية (Arabic - RTL)', flag: '🇸🇦' },
+    { code: 'es', label: 'Español (Spanish)', flag: '🇪🇸' },
+  ]
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -36,7 +43,7 @@ export default function SettingsModule() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              Settings
+              {t('settings')}
             </h1>
             <span className="text-xs font-bold bg-slate-500/10 text-slate-400 border border-slate-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Settings className="w-3 h-3" />
@@ -44,7 +51,7 @@ export default function SettingsModule() {
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Manage your account settings and system preferences.
+            Manage your account settings, language, and system preferences.
           </p>
         </div>
       </div>
@@ -70,6 +77,7 @@ export default function SettingsModule() {
               { id: 'profile', label: 'Profile', icon: User },
               { id: 'security', label: 'Security', icon: Shield },
               { id: 'appearance', label: 'Appearance', icon: Palette },
+              { id: 'language', label: t('language'), icon: Globe },
               { id: 'notifications', label: 'Notifications', icon: Bell },
               { id: 'system', label: 'System', icon: Server },
             ].map((tab) => {
@@ -94,81 +102,119 @@ export default function SettingsModule() {
 
           {/* Right Content Panel */}
           <div className="md:col-span-3 space-y-8 text-xs border-l border-[#1E293B] pl-0 md:pl-8">
-            {/* Appearance Section */}
-            <div className="space-y-5">
-              <div>
-                <h3 className="text-lg font-bold text-white tracking-tight">Appearance</h3>
-                <p className="text-slate-400 mt-0.5">Customize the look and feel of the interface.</p>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-slate-300 mb-3">Theme</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
-                  {/* Dark Theme Card */}
-                  <div
-                    onClick={() => setTheme('Dark')}
-                    className={`cursor-pointer rounded-2xl p-4 border transition-all ${
-                      theme === 'Dark'
-                        ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
-                        : 'border-[#1E293B] bg-[#0F172A]'
-                    }`}
-                  >
-                    <div className="w-full h-20 bg-[#0F172A] border border-[#1E293B] rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
-                      <div className="w-full h-3 bg-[#1E2D47] rounded-md"></div>
-                      <div className="flex gap-1.5 flex-1">
-                        <div className="w-1/3 bg-[#162032] rounded-md"></div>
-                        <div className="w-2/3 bg-[#162032] rounded-md"></div>
-                      </div>
-                    </div>
-                    <div className="text-center font-bold text-white text-xs">Dark</div>
-                  </div>
-
-                  {/* Light Theme Card */}
-                  <div
-                    onClick={() => setTheme('Light')}
-                    className={`cursor-pointer rounded-2xl p-4 border transition-all ${
-                      theme === 'Light'
-                        ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
-                        : 'border-[#1E293B] bg-[#0F172A] opacity-60'
-                    }`}
-                  >
-                    <div className="w-full h-20 bg-slate-300 border border-slate-400 rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
-                      <div className="w-full h-3 bg-slate-400 rounded-md"></div>
-                      <div className="flex gap-1.5 flex-1">
-                        <div className="w-1/3 bg-slate-200 rounded-md"></div>
-                        <div className="w-2/3 bg-slate-200 rounded-md"></div>
-                      </div>
-                    </div>
-                    <div className="text-center font-bold text-slate-300 text-xs">Light</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* High Contrast Mode Switch */}
-              <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between max-w-lg">
+            {activeSubTab === 'language' ? (
+              <div className="space-y-5">
                 <div>
-                  <h4 className="font-bold text-white text-xs">High Contrast Mode</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    Increase contrast for better readability in harsh lighting.
-                  </p>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{t('select_language')}</h3>
+                  <p className="text-slate-400 mt-0.5">Choose your preferred control center language.</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setHighContrast(!highContrast)}
-                  className="text-blue-500 hover:text-blue-400 transition-colors"
-                >
-                  {highContrast ? (
-                    <div className="w-10 h-5 bg-blue-600 rounded-full p-0.5 flex justify-end transition-all">
-                      <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
+                  {languagesList.map((lang) => (
+                    <div
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-center justify-between ${
+                        language === lang.code
+                          ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
+                          : 'border-[#1E293B] bg-[#0F172A] hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{lang.flag}</span>
+                        <div>
+                          <h4 className="font-bold text-white text-xs">{lang.label}</h4>
+                          <p className="text-[10px] text-slate-400">Code: {lang.code.toUpperCase()}</p>
+                        </div>
+                      </div>
+                      {language === lang.code && <Check className="w-5 h-5 text-blue-400" />}
                     </div>
-                  ) : (
-                    <div className="w-10 h-5 bg-slate-700 rounded-full p-0.5 flex justify-start transition-all">
-                      <div className="w-4 h-4 bg-slate-400 rounded-full shadow-md"></div>
-                    </div>
-                  )}
-                </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : activeSubTab === 'appearance' ? (
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">Appearance</h3>
+                  <p className="text-slate-400 mt-0.5">Customize the look and feel of the interface.</p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-slate-300 mb-3">Theme</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
+                    {/* Dark Theme Card */}
+                    <div
+                      onClick={() => setTheme('Dark')}
+                      className={`cursor-pointer rounded-2xl p-4 border transition-all ${
+                        theme === 'Dark'
+                          ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
+                          : 'border-[#1E293B] bg-[#0F172A]'
+                      }`}
+                    >
+                      <div className="w-full h-20 bg-[#0F172A] border border-[#1E293B] rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
+                        <div className="w-full h-3 bg-[#1E2D47] rounded-md"></div>
+                        <div className="flex gap-1.5 flex-1">
+                          <div className="w-1/3 bg-[#162032] rounded-md"></div>
+                          <div className="w-2/3 bg-[#162032] rounded-md"></div>
+                        </div>
+                      </div>
+                      <div className="text-center font-bold text-white text-xs">Dark</div>
+                    </div>
+
+                    {/* Light Theme Card */}
+                    <div
+                      onClick={() => setTheme('Light')}
+                      className={`cursor-pointer rounded-2xl p-4 border transition-all ${
+                        theme === 'Light'
+                          ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
+                          : 'border-[#1E293B] bg-[#0F172A] opacity-60'
+                      }`}
+                    >
+                      <div className="w-full h-20 bg-slate-300 border border-slate-400 rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
+                        <div className="w-full h-3 bg-slate-400 rounded-md"></div>
+                        <div className="flex gap-1.5 flex-1">
+                          <div className="w-1/3 bg-slate-200 rounded-md"></div>
+                          <div className="w-2/3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </div>
+                      <div className="text-center font-bold text-slate-300 text-xs">Light</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* High Contrast Mode Switch */}
+                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between max-w-lg">
+                  <div>
+                    <h4 className="font-bold text-white text-xs">High Contrast Mode</h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Increase contrast for better readability in harsh lighting.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setHighContrast(!highContrast)}
+                    className="text-blue-500 hover:text-blue-400 transition-colors"
+                  >
+                    {highContrast ? (
+                      <div className="w-10 h-5 bg-blue-600 rounded-full p-0.5 flex justify-end transition-all">
+                        <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
+                      </div>
+                    ) : (
+                      <div className="w-10 h-5 bg-slate-700 rounded-full p-0.5 flex justify-start transition-all">
+                        <div className="w-4 h-4 bg-slate-400 rounded-full shadow-md"></div>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-white capitalize">{activeSubTab} Configuration</h3>
+                <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-5 text-slate-400">
+                  <p>Configuration options for <strong className="text-white capitalize">{activeSubTab}</strong> are active.</p>
+                </div>
+              </div>
+            )}
 
             {/* System Roles Section */}
             <div className="pt-6 border-t border-[#1E293B] space-y-4">

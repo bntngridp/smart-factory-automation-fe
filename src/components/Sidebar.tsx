@@ -13,6 +13,7 @@ import {
   LogOut,
   Factory
 } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface SidebarProps {
   activeTab: string
@@ -20,13 +21,15 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
+  const { t } = useLanguage()
+
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'products', label: 'Products', icon: Package },
-    { id: 'production-logs', label: 'Production Logs', icon: ClipboardList },
-    { id: 'inventory', label: 'Inventory', icon: Boxes },
-    { id: 'reports', label: 'Reports', icon: FileBarChart },
-    { id: 'users', label: 'Users', icon: Users },
+    { id: 'dashboard', translationKey: 'dashboard', icon: LayoutDashboard },
+    { id: 'products', translationKey: 'products', icon: Package },
+    { id: 'production-logs', translationKey: 'production_logs', icon: ClipboardList },
+    { id: 'inventory', translationKey: 'inventory', icon: Boxes },
+    { id: 'reports', translationKey: 'reports', icon: FileBarChart },
+    { id: 'users', translationKey: 'users', icon: Users },
   ]
 
   return (
@@ -62,7 +65,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
               }`}
             >
               <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
-              <span>{item.label}</span>
+              <span>{t(item.translationKey)}</span>
             </button>
           )
         })}
@@ -72,24 +75,28 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       <div className="p-3 border-t border-[#1E293B] space-y-1">
         <button
           onClick={() => setActiveTab('settings')}
-          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#162032] transition-colors"
+          className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === 'settings'
+              ? 'bg-[#1E2D47] text-emerald-400 border-l-4 border-emerald-500'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032]'
+          }`}
         >
           <Settings className="w-4 h-4 text-slate-400" />
-          <span>Settings</span>
+          <span>{t('settings')}</span>
         </button>
         <button
           onClick={() => setActiveTab('help')}
           className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#162032] transition-colors"
         >
           <HelpCircle className="w-4 h-4 text-slate-400" />
-          <span>Help</span>
+          <span>{t('help')}</span>
         </button>
         <button
           onClick={() => alert('Logout clicked')}
           className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors mt-2"
         >
           <LogOut className="w-4 h-4 text-rose-400" />
-          <span>Logout</span>
+          <span>{t('logout')}</span>
         </button>
       </div>
     </aside>
