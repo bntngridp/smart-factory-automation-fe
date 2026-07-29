@@ -70,6 +70,8 @@ body {
 /* Hardcoded Dark Background Overrides for Light Mode */
 .light-mode .glass-card,
 .light-mode .bg-\[\#0F172A\],
+.light-mode .bg-\[\#0F172A\]\/60,
+.light-mode .bg-\[\#0F172A\]\/80,
 .light-mode .bg-\[\#162032\],
 .light-mode .bg-\[\#111827\],
 .light-mode .bg-\[\#090D16\],

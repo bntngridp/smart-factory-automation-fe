@@ -34,7 +34,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       subtext: t('active_catalog'),
       isPositive: true,
       icon: Package,
-      badgeColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20'
+      badgeColor: 'text-blue-500 bg-blue-500/10 border-blue-500/20'
     },
     {
       id: 'today_production',
@@ -43,7 +43,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       subtext: t('vs_daily_target'),
       isPositive: true,
       icon: Activity,
-      badgeColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+      badgeColor: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20'
     },
     {
       id: 'inventory',
@@ -52,7 +52,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       subtext: t('total_items_in_stock'),
       isPositive: false,
       icon: Boxes,
-      badgeColor: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20'
+      badgeColor: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20'
     },
     {
       id: 'low_stock',
@@ -61,7 +61,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       subtext: t('require_attention'),
       isAlert: true,
       icon: AlertTriangle,
-      badgeColor: 'text-rose-400 bg-rose-500/10 border-rose-500/30 shadow-rose-500/10 shadow-lg'
+      badgeColor: 'text-rose-500 bg-rose-500/10 border-rose-500/30'
     },
     {
       id: 'efficiency',
@@ -70,7 +70,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       subtext: t('optimal_output'),
       isPositive: true,
       icon: Gauge,
-      badgeColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20'
+      badgeColor: 'text-purple-500 bg-purple-500/10 border-purple-500/20'
     }
   ]
 
@@ -85,8 +85,8 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
             key={card.id}
             className={`rounded-2xl p-4 transition-all duration-200 ${
               isAlertCard
-                ? 'bg-rose-950/20 border-2 border-rose-500/40 shadow-xl shadow-rose-500/10 relative overflow-hidden'
-                : 'glass-card hover:border-[#334155]'
+                ? 'bg-rose-500/10 border-2 border-rose-500/40 relative overflow-hidden shadow-sm'
+                : 'glass-card hover:border-slate-400'
             }`}
           >
             {isAlertCard && (
@@ -103,24 +103,24 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
             </div>
 
             <div className="flex items-baseline justify-between gap-2 mt-1">
-              <h3 className={`text-xl font-bold tracking-tight ${isAlertCard ? 'text-rose-400' : 'text-white'}`}>
+              <h3 className={`text-xl font-bold tracking-tight ${isAlertCard ? 'text-rose-500' : 'text-white'}`}>
                 {loading ? '...' : card.value}
               </h3>
             </div>
 
             <div className="flex items-center gap-1.5 mt-2.5">
               {card.isAlert ? (
-                <span className="text-[11px] font-medium text-rose-400 flex items-center gap-1">
+                <span className="text-[11px] font-semibold text-rose-500 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />
                   {card.subtext}
                 </span>
               ) : card.isPositive ? (
-                <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
+                <span className="text-[11px] font-semibold text-emerald-500 flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
                   {card.subtext}
                 </span>
               ) : (
-                <span className="text-[11px] font-medium text-amber-400 flex items-center gap-1">
+                <span className="text-[11px] font-semibold text-amber-500 flex items-center gap-1">
                   <TrendingDown className="w-3 h-3" />
                   {card.subtext}
                 </span>

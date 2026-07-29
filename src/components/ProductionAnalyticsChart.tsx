@@ -10,7 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
-import { TrendingUp, Calendar } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
+import { useTheme } from '@/context/ThemeContext'
 
 const sampleChartData = [
   { name: 'Mon', production: 1100, inventory: 80000 },
@@ -23,7 +24,10 @@ const sampleChartData = [
 ]
 
 export default function ProductionAnalyticsChart() {
+  const { theme } = useTheme()
   const [timeframe, setTimeframe] = useState<'7D' | '30D' | 'YTD'>('30D')
+
+  const isLight = theme === 'light'
 
   return (
     <div className="glass-card rounded-2xl p-5 mb-6">
@@ -34,7 +38,7 @@ export default function ProductionAnalyticsChart() {
             <h2 className="text-base font-bold text-white tracking-wide">
               Production Analytics
             </h2>
-            <span className="text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <span className="text-[11px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
               Live Output
             </span>
@@ -75,18 +79,18 @@ export default function ProductionAnalyticsChart() {
                 <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
-            <XAxis dataKey="name" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
-            <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#E2E8F0' : '#1E293B'} vertical={false} />
+            <XAxis dataKey="name" stroke={isLight ? '#64748B' : '#64748B'} fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis stroke={isLight ? '#64748B' : '#64748B'} fontSize={11} tickLine={false} axisLine={false} />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#162032',
-                borderColor: '#1E293B',
+                backgroundColor: isLight ? '#FFFFFF' : '#162032',
+                borderColor: isLight ? '#E2E8F0' : '#1E293B',
                 borderRadius: '12px',
-                color: '#F8FAFC',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)'
+                color: isLight ? '#0F172A' : '#F8FAFC',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)'
               }}
-              itemStyle={{ color: '#60A5FA', fontSize: '12px' }}
+              itemStyle={{ color: '#2563EB', fontSize: '12px' }}
               formatter={(val: any) => [`${val} units`, 'Production']}
             />
             <Area
