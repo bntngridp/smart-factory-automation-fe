@@ -16,12 +16,13 @@ import {
   ChevronDown
 } from 'lucide-react'
 import { useLanguage, Language } from '@/context/LanguageContext'
+import { useTheme } from '@/context/ThemeContext'
 
 export default function SettingsModule() {
   const { language, setLanguage, t, isRTL } = useLanguage()
+  const { theme, setTheme } = useTheme()
   const [activeSubTab, setActiveSubTab] = useState('language')
   const [searchQuery, setSearchQuery] = useState('')
-  const [theme, setTheme] = useState('Dark')
   const [highContrast, setHighContrast] = useState(false)
 
   const systemRolesList = [
@@ -153,9 +154,9 @@ export default function SettingsModule() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
                     {/* Dark Theme Card */}
                     <div
-                      onClick={() => setTheme('Dark')}
+                      onClick={() => setTheme('dark')}
                       className={`cursor-pointer rounded-2xl p-4 border transition-all ${
-                        theme === 'Dark'
+                        theme === 'dark'
                           ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
                           : 'border-[#1E293B] bg-[#0F172A]'
                       }`}
@@ -172,15 +173,15 @@ export default function SettingsModule() {
 
                     {/* Light Theme Card */}
                     <div
-                      onClick={() => setTheme('Light')}
+                      onClick={() => setTheme('light')}
                       className={`cursor-pointer rounded-2xl p-4 border transition-all ${
-                        theme === 'Light'
+                        theme === 'light'
                           ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
-                          : 'border-[#1E293B] bg-[#0F172A] opacity-60'
+                          : 'border-[#1E293B] bg-[#0F172A]'
                       }`}
                     >
-                      <div className="w-full h-20 bg-slate-300 border border-slate-400 rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
-                        <div className="w-full h-3 bg-slate-400 rounded-md"></div>
+                      <div className="w-full h-20 bg-slate-100 border border-slate-300 rounded-xl p-2 mb-3 flex flex-col gap-1.5 overflow-hidden">
+                        <div className="w-full h-3 bg-blue-500 rounded-md"></div>
                         <div className="flex gap-1.5 flex-1">
                           <div className="w-1/3 bg-slate-200 rounded-md"></div>
                           <div className="w-2/3 bg-slate-200 rounded-md"></div>
