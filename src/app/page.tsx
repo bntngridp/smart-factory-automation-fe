@@ -7,7 +7,7 @@ import SummaryCards from '@/components/SummaryCards'
 import ProductionAnalyticsChart from '@/components/ProductionAnalyticsChart'
 import QuickActions from '@/components/QuickActions'
 import SystemStatusCard from '@/components/SystemStatusCard'
-import LowStockAlertsTable, { LowStockAlertItem } from '@/components/LowStockAlertsTable'
+import LowStockAlertsTable from '@/components/LowStockAlertsTable'
 import ProductsModule from '@/components/ProductsModule'
 import InventoryModule from '@/components/InventoryModule'
 import ProductionLogsModule from '@/components/ProductionLogsModule'
@@ -21,17 +21,12 @@ import NotificationsModal from '@/components/Modals/NotificationsModal'
 import LogoutModal from '@/components/Modals/LogoutModal'
 import { Sparkles, RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
-
-interface DashboardSummaryData {
-  total_products: number
-  total_production_today: number
-  low_stock_alerts: LowStockAlertItem[]
-}
+import { getDashboardSummaryApi, DashboardSummary } from '@/services/api'
 
 export default function Home() {
   const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [summaryData, setSummaryData] = useState<DashboardSummaryData | null>(null)
+  const [summaryData, setSummaryData] = useState<DashboardSummary | null>(null)
   const [loadingSummary, setLoadingSummary] = useState(true)
 
   // Modals state
@@ -45,14 +40,8 @@ export default function Home() {
   const fetchDashboardSummary = async () => {
     setLoadingSummary(true)
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/dashboard/summary`, {
-        cache: 'no-store'
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setSummaryData(data)
-      }
+      const data = await getDashboardSummaryApi()
+      setSummaryData(data)
     } catch (err) {
       console.error('Failed to fetch dashboard summary from backend:', err)
     } finally {

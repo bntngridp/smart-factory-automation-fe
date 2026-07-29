@@ -50,6 +50,20 @@ export interface CreateStockOutPayload {
   movement_type: 'OUT'
 }
 
+export interface LowStockItem {
+  ProductID: number
+  ProductName: string
+  Unit: string | null
+  MinStock: number
+  CurrentStock: number
+}
+
+export interface DashboardSummary {
+  total_products: number
+  total_production_today: number
+  low_stock_alerts: LowStockItem[]
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:6060/api'
 
 export async function getProductsApi(): Promise<Product[]> {
@@ -166,6 +180,23 @@ export async function createStockOutApi(payload: CreateStockOutPayload): Promise
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
     throw new Error(errorData.error || 'Gagal mencatat stok keluar')
+  }
+
+  return res.json()
+}
+
+export async function getDashboardSummaryApi(): Promise<DashboardSummary> {
+  const res = await fetch(`${API_BASE_URL}/dashboard/summary`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mengambil ringkasan dashboard')
   }
 
   return res.json()
