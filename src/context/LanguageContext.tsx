@@ -36,8 +36,8 @@ const translations: Record<Language, Record<string, string>> = {
     export: 'Export',
     new_action: 'New Action',
     add_new_product: '+ Add New Product',
-    record_production: '📝 Record Production',
-    record_stock_out: '📦 Record Stock Out',
+    record_production: 'Record Production',
+    record_stock_out: 'Record Stock Out',
 
     // KPI Summary Cards
     total_products: 'Total Products',
@@ -163,8 +163,8 @@ const translations: Record<Language, Record<string, string>> = {
     export: 'Ekspor',
     new_action: 'Tindakan Baru',
     add_new_product: '+ Tambah Produk Baru',
-    record_production: '📝 Catat Produksi',
-    record_stock_out: '📦 Catat Stok Keluar',
+    record_production: 'Catat Produksi',
+    record_stock_out: 'Catat Stok Keluar',
 
     // KPI Summary Cards
     total_products: 'Total Produk',
@@ -290,8 +290,8 @@ const translations: Record<Language, Record<string, string>> = {
     export: 'تصدير',
     new_action: 'إجراء جديد',
     add_new_product: '+ إضافة منتج',
-    record_production: '📝 تسجيل إنتاج',
-    record_stock_out: '📦 تسجيل صادر',
+    record_production: 'تسجيل إنتاج',
+    record_stock_out: 'تسجيل صادر',
 
     // KPI Summary Cards
     total_products: 'إجمالي المنتجات',
@@ -417,8 +417,8 @@ const translations: Record<Language, Record<string, string>> = {
     export: 'Exportar',
     new_action: 'Nueva Acción',
     add_new_product: '+ Añadir Producto',
-    record_production: '📝 Registrar Producción',
-    record_stock_out: '📦 Registrar Salida',
+    record_production: 'Registrar Producción',
+    record_stock_out: 'Registrar Salida',
 
     // KPI Summary Cards
     total_products: 'Total de Productos',
@@ -509,7 +509,7 @@ const translations: Record<Language, Record<string, string>> = {
     machine_id: 'ID de Máquina',
     quantity: 'Cantidad',
     status: 'Estado',
-    last_activity: 'Última Actividad',
+    last_activity: 'Actividad Terakhir',
     actions: 'Acciones',
     role: 'Rol',
     user: 'Usuario',
