@@ -73,10 +73,11 @@ export default function Sidebar({
           ${isCollapsed ? 'w-20' : 'w-64'}
         `}
       >
-        {/* Brand Header & Toggle */}
-        <div className={`p-4 flex items-center justify-between border-b border-[#1E293B] ${isCollapsed ? 'justify-center' : ''}`}>
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 min-w-[40px] rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+        {/* Brand Header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[#1E293B]">
+          {/* Logo & Brand Text */}
+          <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'w-full justify-center' : ''}`}>
+            <div className="w-10 h-10 min-w-[40px] rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
               <Factory className="w-5 h-5 text-white" />
             </div>
             {!isCollapsed && (
@@ -87,23 +88,40 @@ export default function Sidebar({
             )}
           </div>
 
-          {/* Desktop Collapse Toggle Button */}
-          <button
-            onClick={() => setIsCollapsed((prev) => !prev)}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] border border-transparent hover:border-[#1E293B] transition-colors"
-            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-          >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
+          {/* Desktop Collapse Toggle — only visible when expanded */}
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsCollapsed((prev) => !prev)}
+              className="hidden md:flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] border border-transparent hover:border-[#1E293B] transition-colors"
+              title="Collapse Sidebar"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          )}
 
           {/* Mobile Close Button */}
-          <button
-            onClick={() => setIsMobileOpen(false)}
-            className="flex md:hidden items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsMobileOpen(false)}
+              className="flex md:hidden items-center justify-center w-8 h-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
+
+        {/* Collapsed Expand Button — dedicated row below logo when collapsed */}
+        {isCollapsed && (
+          <div className="px-3 pt-3 hidden md:block">
+            <button
+              onClick={() => setIsCollapsed((prev) => !prev)}
+              className="w-full flex items-center justify-center p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#162032] border border-[#1E293B] transition-colors"
+              title="Expand Sidebar"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Main Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
