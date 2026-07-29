@@ -17,6 +17,7 @@ import SettingsModule from '@/components/SettingsModule'
 import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
+import NotificationsModal from '@/components/Modals/NotificationsModal'
 import { Sparkles, RefreshCw } from 'lucide-react'
 
 interface DashboardSummaryData {
@@ -34,6 +35,7 @@ export default function Home() {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [isRecordProductionOpen, setIsRecordProductionOpen] = useState(false)
   const [isStockOutOpen, setIsStockOutOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined)
 
   const fetchDashboardSummary = async () => {
@@ -75,6 +77,7 @@ export default function Home() {
           onOpenAddProduct={() => setIsAddProductOpen(true)}
           onOpenRecordProduction={() => handleOpenProduce()}
           onOpenStockOut={() => setIsStockOutOpen(true)}
+          onOpenNotifications={() => setIsNotificationsOpen(true)}
         />
 
         {/* Dashboard Body Content */}
@@ -182,7 +185,7 @@ export default function Home() {
               </p>
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all"
+                className="bg-[#3B82F6] hover:bg-[#2563EB] text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all"
               >
                 Back to Executive Dashboard
               </button>
@@ -209,6 +212,11 @@ export default function Home() {
         isOpen={isStockOutOpen}
         onClose={() => setIsStockOutOpen(false)}
         onSuccess={fetchDashboardSummary}
+      />
+
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
       />
     </div>
   )

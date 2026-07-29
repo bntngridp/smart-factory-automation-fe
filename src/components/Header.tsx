@@ -7,12 +7,14 @@ interface HeaderProps {
   onOpenAddProduct: () => void
   onOpenRecordProduction: () => void
   onOpenStockOut: () => void
+  onOpenNotifications?: () => void
 }
 
 export default function Header({
   onOpenAddProduct,
   onOpenRecordProduction,
   onOpenStockOut,
+  onOpenNotifications
 }: HeaderProps) {
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'short',
@@ -42,7 +44,11 @@ export default function Header({
         </div>
 
         {/* Notifications Button */}
-        <button className="relative bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] p-2 rounded-xl text-slate-300 transition-colors">
+        <button
+          onClick={onOpenNotifications}
+          className="relative bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] p-2 rounded-xl text-slate-300 transition-colors"
+          title="Open Notification Center"
+        >
           <Bell className="w-4 h-4" />
           <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
         </button>
