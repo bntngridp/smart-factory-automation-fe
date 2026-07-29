@@ -12,7 +12,8 @@ import {
   Check,
   UserPlus,
   Globe,
-  MoreVertical
+  MoreVertical,
+  ChevronDown
 } from 'lucide-react'
 import { useLanguage, Language } from '@/context/LanguageContext'
 
@@ -29,11 +30,11 @@ export default function SettingsModule() {
     { name: 'James Taggart', email: 'j.taggart@forge.io', role: 'Operator', roleColor: 'bg-slate-500/10 text-slate-400 border-slate-500/30', status: 'Offline', lastLogin: 'Yesterday', avatarBg: 'bg-slate-600' },
   ]
 
-  const languagesList: { code: Language; label: string; flag: string }[] = [
-    { code: 'id', label: '🇮🇩 Bahasa Indonesia', flag: '🇮🇩' },
-    { code: 'en', label: '🇬🇧 English (US)', flag: '🇬🇧' },
-    { code: 'ar', label: '🇸🇦 العربية (Arabic - RTL)', flag: '🇸🇦' },
-    { code: 'es', label: '🇪🇸 Español (Spanish)', flag: '🇪🇸' },
+  const languagesList: { code: Language; label: string; nativeName: string }[] = [
+    { code: 'id', label: 'Bahasa Indonesia', nativeName: 'Indonesian' },
+    { code: 'en', label: 'English (US)', nativeName: 'American English' },
+    { code: 'ar', label: 'العربية', nativeName: 'Arabic' },
+    { code: 'es', label: 'Español', nativeName: 'Spanish' },
   ]
 
   return (
@@ -109,27 +110,35 @@ export default function SettingsModule() {
                   <p className="text-slate-400 mt-0.5">{t('language_subtitle')}</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
-                  {languagesList.map((lang) => (
-                    <div
-                      key={lang.code}
-                      onClick={() => setLanguage(lang.code)}
-                      className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-center justify-between ${
-                        language === lang.code
-                          ? 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20'
-                          : 'border-[#1E293B] bg-[#0F172A] hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{lang.flag}</span>
-                        <div>
-                          <h4 className="font-bold text-white text-xs">{lang.label}</h4>
-                          <p className="text-[10px] text-slate-400">ISO Code: {lang.code.toUpperCase()}</p>
-                        </div>
-                      </div>
-                      {language === lang.code && <Check className="w-5 h-5 text-blue-400" />}
+                {/* Clean Dropdown Selection Form */}
+                <div className="max-w-md bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
+                      {t('language')}
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value as Language)}
+                        className="w-full bg-[#162032] border border-[#1E293B] text-white font-semibold text-xs rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-blue-500 transition-all cursor-pointer"
+                      >
+                        {languagesList.map((lang) => (
+                          <option key={lang.code} value={lang.code} className="bg-[#162032] text-white py-2">
+                            {lang.label} ({lang.nativeName})
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 pointer-events-none ${isRTL ? 'left-3.5' : 'right-3.5'}`} />
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Active Language Badge */}
+                  <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-between text-blue-400">
+                    <span className="font-semibold text-xs">
+                      Active: {languagesList.find((l) => l.code === language)?.label}
+                    </span>
+                    <Check className="w-4 h-4" />
+                  </div>
                 </div>
               </div>
             ) : activeSubTab === 'appearance' ? (

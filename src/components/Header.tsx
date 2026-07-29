@@ -3,7 +3,6 @@
 import React from 'react'
 import { Search, Bell, Calendar, Download, Plus, ShieldCheck } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
-import LanguageDropdown from '@/components/LanguageDropdown'
 
 interface HeaderProps {
   onOpenAddProduct: () => void
@@ -46,9 +45,6 @@ export default function Header({
           <Calendar className="w-3.5 h-3.5 text-blue-400" />
           <span>{currentDate}</span>
         </div>
-
-        {/* Language Dropdown */}
-        <LanguageDropdown />
 
         {/* Notifications Button */}
         <button
