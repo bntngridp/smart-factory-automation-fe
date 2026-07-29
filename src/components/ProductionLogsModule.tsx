@@ -5,35 +5,19 @@ import {
   ClipboardList,
   Plus,
   RefreshCw,
-  Search,
   CheckCircle2,
   AlertCircle,
-  Clock,
   Download,
   Filter,
-  Check,
-  Zap
+  Check
 } from 'lucide-react'
-
-export interface ProductOption {
-  ProductID: number
-  ProductName: string
-  Unit: string | null
-}
-
-export interface ProductionLogRecord {
-  LogID: number
-  ProductID: number
-  Quantity: number
-  ProductionDate: string | null
-  OperatorName: string | null
-  MachineID?: string
-  Status?: 'Completed' | 'In Progress' | 'Flagged'
-  Products?: {
-    ProductName: string
-    Unit: string | null
-  }
-}
+import {
+  getProductsApi,
+  getProductionLogsApi,
+  createProductionLogApi,
+  Product,
+  ProductionLogItem
+} from '@/services/api'
 
 interface ProductionLogsModuleProps {
   onOpenRecordProduction?: () => void
@@ -42,8 +26,8 @@ interface ProductionLogsModuleProps {
 export default function ProductionLogsModule({
   onOpenRecordProduction
 }: ProductionLogsModuleProps) {
-  const [products, setProducts] = useState<ProductOption[]>([])
-  const [logs, setLogs] = useState<ProductionLogRecord[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [logs, setLogs] = useState<ProductionLogItem[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -51,7 +35,7 @@ export default function ProductionLogsModule({
 
   // Inline Form States
   const [selectedProductId, setSelectedProductId] = useState<number | ''>('')
-  const [operator, setOperator] = useState('J. Miller')
+  const [operator, setOperator] = useState('Budi Santoso')
   const [machine, setMachine] = useState('CNC-01 (Milling)')
   const [quantity, setQuantity] = useState<number>(45)
   const [shift, setShift] = useState('Morning (06:00 - 14:00)')
@@ -64,31 +48,23 @@ export default function ProductionLogsModule({
 
   const fetchProducts = async () => {
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/products`)
-      if (res.ok) {
-        const data = await res.json()
-        setProducts(data)
-        if (data.length > 0 && !selectedProductId) {
-          setSelectedProductId(data[0].ProductID)
-        }
+      const data = await getProductsApi()
+      setProducts(data)
+      if (data.length > 0 && !selectedProductId) {
+        setSelectedProductId(data[0].ProductID)
       }
     } catch (err) {
-      console.error('Failed to fetch products for logs', err)
+      console.error('Failed to fetch products for logs:', err)
     }
   }
 
   const fetchLogs = async () => {
     setLoading(true)
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/inventory/movements?type=IN`, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        setLogs(data)
-      }
+      const data = await getProductionLogsApi()
+      setLogs(data)
     } catch (err) {
-      console.error('Failed to fetch production logs', err)
+      console.error('Failed to fetch production logs:', err)
     } finally {
       setLoading(false)
     }
@@ -106,28 +82,17 @@ export default function ProductionLogsModule({
     setSuccessMsg(null)
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/production-logs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: Number(selectedProductId),
-          quantity: Number(quantity),
-          operator_name: operator
-        })
+      await createProductionLogApi({
+        product_id: Number(selectedProductId),
+        quantity: Number(quantity),
+        operator_name: operator
       })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to submit log entry')
-      }
 
       setSuccessMsg('Log submitted & inventory mutated successfully!')
       fetchLogs()
-      setQuantity(0)
+      setQuantity(10)
     } catch (err: any) {
-      setError(err.message || 'Error connecting to API server')
+      setError(err.message || 'Gagal mencatat log produksi')
     } finally {
       setSubmitting(false)
     }
@@ -201,7 +166,7 @@ export default function ProductionLogsModule({
                 ) : (
                   products.map((p) => (
                     <option key={p.ProductID} value={p.ProductID}>
-                      {p.ProductName}
+                      [{p.ProductID}] {p.ProductName}
                     </option>
                   ))
                 )}
@@ -215,10 +180,10 @@ export default function ProductionLogsModule({
                 onChange={(e) => setOperator(e.target.value)}
                 className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
               >
+                <option value="Budi Santoso">Budi Santoso</option>
                 <option value="J. Miller">J. Miller</option>
                 <option value="S. Chen">S. Chen</option>
                 <option value="R. Davis">R. Davis</option>
-                <option value="Budi Santoso">Budi Santoso</option>
               </select>
             </div>
 
@@ -321,7 +286,7 @@ export default function ProductionLogsModule({
               {loading ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-slate-400">
-                    Loading recent production logs...
+                    Loading recent production logs from MSSQL...
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
@@ -336,40 +301,27 @@ export default function ProductionLogsModule({
                     ? new Date(log.ProductionDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : '14:32'
 
-                  // Sample status simulation matching design
-                  const status = index % 3 === 0 ? 'Completed' : index % 3 === 1 ? 'In Progress' : 'Completed'
-
                   return (
                     <tr key={log.LogID || index} className="hover:bg-[#1E2D47]/40 transition-colors">
                       <td className="p-3.5 font-mono text-slate-400">
                         {timeStr}
                       </td>
                       <td className="p-3.5 font-bold text-white">
-                        {log.OperatorName || 'J. Miller'}
+                        {log.OperatorName || 'Budi Santoso'}
                       </td>
                       <td className="p-3.5 font-mono text-blue-400">
-                        {log.MachineID || (index % 2 === 0 ? 'CNC-01' : 'Assy-Line-B')}
+                        CNC-01
                       </td>
                       <td className="p-3.5 font-medium text-slate-200">
-                        {log.Products?.ProductName || 'Titanium Casing Alpha'}
+                        {log.Products?.ProductName || `PRD-${log.ProductID}`}
                       </td>
                       <td className="p-3.5 text-center font-mono font-bold text-white">
-                        {log.Quantity}
+                        +{log.Quantity}
                       </td>
                       <td className="p-3.5 text-right">
-                        {status === 'Completed' ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                            Completed
-                          </span>
-                        ) : status === 'In Progress' ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                            In Progress
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                            Flagged
-                          </span>
-                        )}
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                          Completed
+                        </span>
                       </td>
                     </tr>
                   )

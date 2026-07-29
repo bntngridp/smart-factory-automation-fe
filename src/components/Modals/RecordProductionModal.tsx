@@ -2,12 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { X, ClipboardCheck, Check, AlertCircle } from 'lucide-react'
-
-interface ProductOption {
-  ProductID: number
-  ProductName: string
-  Unit: string | null
-}
+import { getProductsApi, createProductionLogApi, Product } from '@/services/api'
 
 interface RecordProductionModalProps {
   isOpen: boolean
@@ -22,7 +17,7 @@ export default function RecordProductionModal({
   onClose,
   onSuccess
 }: RecordProductionModalProps) {
-  const [products, setProducts] = useState<ProductOption[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [selectedProductId, setSelectedProductId] = useState<number | ''>('')
   const [quantity, setQuantity] = useState<number>(100)
   const [operatorName, setOperatorName] = useState('Budi Santoso')
@@ -40,17 +35,13 @@ export default function RecordProductionModal({
 
   const fetchProducts = async () => {
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/products`)
-      if (res.ok) {
-        const data = await res.json()
-        setProducts(data)
-        if (data.length > 0 && !selectedProductId && !preselectedProductId) {
-          setSelectedProductId(data[0].ProductID)
-        }
+      const data = await getProductsApi()
+      setProducts(data)
+      if (data.length > 0 && !selectedProductId && !preselectedProductId) {
+        setSelectedProductId(data[0].ProductID)
       }
     } catch (err) {
-      console.error('Failed to fetch products', err)
+      console.error('Failed to fetch products for production log modal:', err)
     }
   }
 
@@ -67,27 +58,16 @@ export default function RecordProductionModal({
     setError(null)
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/production-logs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: Number(selectedProductId),
-          quantity: Number(quantity),
-          operator_name: operatorName
-        })
+      await createProductionLogApi({
+        product_id: Number(selectedProductId),
+        quantity: Number(quantity),
+        operator_name: operatorName
       })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to record production log')
-      }
 
       onSuccess()
       onClose()
     } catch (err: any) {
-      setError(err.message || 'Error connecting to API server')
+      setError(err.message || 'Gagal mencatat log produksi ke server')
     } finally {
       setLoading(false)
     }
