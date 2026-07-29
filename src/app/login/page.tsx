@@ -2,20 +2,22 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Lock, Mail, ArrowRight, AlertCircle, ShieldAlert } from 'lucide-react'
+import { Lock, Mail, ArrowRight, AlertCircle, CheckCircle2, UserCheck } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('operator@forge.app')
-  const [password, setPassword] = useState('admin123')
+  const [email, setEmail] = useState('adminsatu@forge.inc')
+  const [password, setPassword] = useState('password123')
   const [maintainSession, setMaintainSession] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setSuccessMsg(null)
 
     try {
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
@@ -28,19 +30,29 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Invalid work email or security key')
+        throw new Error(data.error || 'Invalid work email/username or security key')
       }
+
+      setSuccessMsg(`Authenticated successfully as ${data.user?.Username || email}! Redirecting...`)
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('forge_token', data.token || 'authenticated')
+        localStorage.setItem('forge_user', JSON.stringify(data.user || { Username: email }))
       }
 
-      router.push('/')
+      setTimeout(() => {
+        router.push('/')
+      }, 800)
     } catch (err: any) {
       setError(err.message || 'Authentication server unreachable')
     } finally {
       setLoading(false)
     }
+  }
+
+  const fillQuickAccount = (accUsername: string) => {
+    setEmail(`${accUsername}@forge.inc`)
+    setPassword('password123')
   }
 
   const handleSSOLogin = () => {
@@ -54,7 +66,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md bg-[#111827] border border-[#1E293B] rounded-2xl p-8 shadow-2xl relative z-10 animate-fade-in">
         {/* Brand Header */}
-        <div className="flex flex-col items-center text-center mb-8">
+        <div className="flex flex-col items-center text-center mb-6">
           <div className="w-10 h-10 rounded-xl bg-[#1E293B] border border-slate-700 p-2 flex items-center justify-center mb-3">
             <span className="font-extrabold text-lg text-white tracking-tight">F</span>
           </div>
@@ -67,6 +79,30 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* Quick Demo Accounts Selection */}
+        <div className="mb-6 p-3 bg-[#0F172A] border border-[#1E293B] rounded-xl">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <UserCheck className="w-3.5 h-3.5 text-blue-400" />
+            <span>Select Dummy Account (Seeder)</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {['adminsatu', 'admindua', 'admintiga'].map((acc) => (
+              <button
+                key={acc}
+                type="button"
+                onClick={() => fillQuickAccount(acc)}
+                className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition-all ${
+                  email.includes(acc)
+                    ? 'bg-blue-600/20 text-blue-400 border-blue-500/40'
+                    : 'bg-[#162032] text-slate-300 border-[#1E293B] hover:bg-[#1E2D47]'
+                }`}
+              >
+                {acc}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {error && (
           <div className="mb-5 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -74,18 +110,25 @@ export default function LoginPage() {
           </div>
         )}
 
+        {successMsg && (
+          <div className="mb-5 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-5 text-xs">
-          {/* WORK EMAIL */}
+          {/* WORK EMAIL / USERNAME */}
           <div>
             <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
-              WORK EMAIL
+              WORK EMAIL / USERNAME
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
-                type="email"
+                type="text"
                 required
-                placeholder="operator@forge.app"
+                placeholder="adminsatu@forge.inc"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
@@ -93,11 +136,11 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* SECURITY KEY */}
+          {/* SECURITY KEY / PASSWORD */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">
-                SECURITY KEY
+                SECURITY KEY / PASSWORD
               </label>
               <a
                 href="#"
@@ -112,7 +155,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
-                placeholder="••••••••"
+                placeholder="password123"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
@@ -137,7 +180,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-blue-400/90 hover:bg-blue-400 text-slate-950 font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md"
+            className="w-full flex items-center justify-center gap-2 bg-blue-400 hover:bg-blue-300 text-slate-950 font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md"
           >
             <span>{loading ? 'Authenticating...' : 'Authenticate'}</span>
             <ArrowRight className="w-4 h-4" />
