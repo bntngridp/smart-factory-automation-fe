@@ -3,6 +3,7 @@
 import React from 'react'
 import { Search, Bell, Calendar, Download, Plus, ShieldCheck } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
+import LanguageDropdown from '@/components/LanguageDropdown'
 
 interface HeaderProps {
   onOpenAddProduct: () => void
@@ -27,7 +28,7 @@ export default function Header({
   })
 
   return (
-    <header className="bg-[#0B0F17]/80 backdrop-blur-md sticky top-0 z-20 border-b border-[#1E293B] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+    <header className="bg-[#0B0F17]/80 backdrop-blur-md sticky top-0 z-20 border-b border-[#1E293B] px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       {/* Search Input */}
       <div className="relative flex-1 max-w-md">
         <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -38,13 +39,16 @@ export default function Header({
         />
       </div>
 
-      {/* Header Actions & Profile */}
-      <div className="flex items-center gap-3">
+      {/* Header Right Actions */}
+      <div className="flex items-center gap-2">
         {/* Calendar Badge */}
-        <div className="hidden sm:flex items-center gap-2 bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl">
+        <div className="hidden md:flex items-center gap-2 bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl">
           <Calendar className="w-3.5 h-3.5 text-blue-400" />
           <span>{currentDate}</span>
         </div>
+
+        {/* Language Dropdown */}
+        <LanguageDropdown />
 
         {/* Notifications Button */}
         <button
@@ -61,7 +65,7 @@ export default function Header({
         {/* Export Button */}
         <button
           onClick={() => alert('Exporting summary report...')}
-          className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all"
+          className="hidden sm:flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all"
         >
           <Download className="w-3.5 h-3.5 text-slate-400" />
           <span>{t('export')}</span>
@@ -74,23 +78,23 @@ export default function Header({
             <span>{t('new_action')}</span>
           </button>
 
-          {/* Quick Dropdown on Hover/Click */}
-          <div className="absolute right-0 mt-2 w-48 bg-[#162032] border border-[#1E293B] rounded-xl shadow-2xl p-1.5 hidden group-hover:block transition-all z-50">
+          {/* Quick Dropdown on Hover */}
+          <div className="absolute right-0 mt-2 w-52 bg-[#162032] border border-[#1E293B] rounded-xl shadow-2xl p-1.5 hidden group-hover:block transition-all z-50">
             <button
               onClick={onOpenAddProduct}
-              className="w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors"
+              className="w-full text-left px-3 py-2.5 text-xs text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors"
             >
               {t('add_new_product')}
             </button>
             <button
               onClick={onOpenRecordProduction}
-              className="w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors"
+              className="w-full text-left px-3 py-2.5 text-xs text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors"
             >
               {t('record_production')}
             </button>
             <button
               onClick={onOpenStockOut}
-              className="w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors"
+              className="w-full text-left px-3 py-2.5 text-xs text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors"
             >
               {t('record_stock_out')}
             </button>
@@ -98,7 +102,7 @@ export default function Header({
         </div>
 
         {/* User Profile Avatar */}
-        <div className="flex items-center gap-2.5 ml-2 pl-2 border-l border-[#1E293B]">
+        <div className="flex items-center gap-2.5 ml-1 pl-2 border-l border-[#1E293B]">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
             BR
           </div>

@@ -17,7 +17,7 @@ import {
 import { useLanguage, Language } from '@/context/LanguageContext'
 
 export default function SettingsModule() {
-  const { language, setLanguage, t } = useLanguage()
+  const { language, setLanguage, t, isRTL } = useLanguage()
   const [activeSubTab, setActiveSubTab] = useState('language')
   const [searchQuery, setSearchQuery] = useState('')
   const [theme, setTheme] = useState('Dark')
@@ -51,7 +51,7 @@ export default function SettingsModule() {
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Manage your account settings, language, and system preferences.
+            {t('settings_description')}
           </p>
         </div>
       </div>
@@ -60,13 +60,13 @@ export default function SettingsModule() {
       <div className="glass-card rounded-2xl p-6 border border-[#1E293B] min-h-[500px]">
         {/* Search Bar Top */}
         <div className="relative max-w-sm mb-6">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className={`w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 ${isRTL ? 'right-3.5' : 'left-3.5'}`} />
           <input
             type="text"
-            placeholder="Search settings..."
+            placeholder={t('search_settings')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#0F172A] text-xs text-slate-200 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 border border-[#1E293B] focus:outline-none focus:border-blue-500 transition-all"
+            className={`w-full bg-[#0F172A] text-xs text-slate-200 placeholder-slate-500 rounded-xl ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2.5 border border-[#1E293B] focus:outline-none focus:border-blue-500 transition-all`}
           />
         </div>
 
@@ -76,10 +76,10 @@ export default function SettingsModule() {
             {[
               { id: 'language', label: t('language'), icon: Globe },
               { id: 'appearance', label: t('appearance'), icon: Palette },
-              { id: 'profile', label: 'Profile', icon: User },
-              { id: 'security', label: 'Security', icon: Shield },
-              { id: 'notifications', label: 'Notifications', icon: Bell },
-              { id: 'system', label: 'System', icon: Server },
+              { id: 'profile', label: t('profile'), icon: User },
+              { id: 'security', label: t('security'), icon: Shield },
+              { id: 'notifications', label: t('notifications'), icon: Bell },
+              { id: 'system', label: t('system'), icon: Server },
             ].map((tab) => {
               const Icon = tab.icon
               const isActive = activeSubTab === tab.id
@@ -106,7 +106,7 @@ export default function SettingsModule() {
               <div className="space-y-5">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">{t('select_language')}</h3>
-                  <p className="text-slate-400 mt-0.5">Choose your preferred control center language.</p>
+                  <p className="text-slate-400 mt-0.5">{t('language_subtitle')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
@@ -136,11 +136,11 @@ export default function SettingsModule() {
               <div className="space-y-5">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">{t('appearance')}</h3>
-                  <p className="text-slate-400 mt-0.5">Customize the look and feel of the interface.</p>
+                  <p className="text-slate-400 mt-0.5">{t('appearance_subtitle')}</p>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-slate-300 mb-3">{t('theme_preferences')}</h4>
+                  <h4 className="font-semibold text-slate-300 mb-3">{t('theme')}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
                     {/* Dark Theme Card */}
                     <div
@@ -158,7 +158,7 @@ export default function SettingsModule() {
                           <div className="w-2/3 bg-[#162032] rounded-md"></div>
                         </div>
                       </div>
-                      <div className="text-center font-bold text-white text-xs">Dark</div>
+                      <div className="text-center font-bold text-white text-xs">{t('theme_dark')}</div>
                     </div>
 
                     {/* Light Theme Card */}
@@ -177,7 +177,7 @@ export default function SettingsModule() {
                           <div className="w-2/3 bg-slate-200 rounded-md"></div>
                         </div>
                       </div>
-                      <div className="text-center font-bold text-slate-300 text-xs">Light</div>
+                      <div className="text-center font-bold text-slate-300 text-xs">{t('theme_light')}</div>
                     </div>
                   </div>
                 </div>
@@ -187,7 +187,7 @@ export default function SettingsModule() {
                   <div>
                     <h4 className="font-bold text-white text-xs">{t('high_contrast')}</h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
-                      Increase contrast for better readability in harsh lighting.
+                      {t('high_contrast_desc')}
                     </p>
                   </div>
                   <button
@@ -209,9 +209,9 @@ export default function SettingsModule() {
               </div>
             ) : (
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-white capitalize">{activeSubTab} Configuration</h3>
+                <h3 className="text-sm font-bold text-white capitalize">{t(activeSubTab)} {t('configuration')}</h3>
                 <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-5 text-slate-400">
-                  <p>Configuration options for <strong className="text-white capitalize">{activeSubTab}</strong> are active.</p>
+                  <p>{t('config_active')} <strong className="text-white capitalize">{t(activeSubTab)}</strong> {t('config_active_suffix')}</p>
                 </div>
               </div>
             )}
@@ -220,15 +220,15 @@ export default function SettingsModule() {
             <div className="pt-6 border-t border-[#1E293B] space-y-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">{t('role_permissions')}</h3>
-                  <p className="text-slate-400 mt-0.5">{t('manage_roles')}</p>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{t('system_roles')}</h3>
+                  <p className="text-slate-400 mt-0.5">{t('manage_user_access')}</p>
                 </div>
                 <button
                   onClick={() => alert('Add User triggered')}
                   className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
-                  <span>{t('invite_user')}</span>
+                  <span>{t('add_user')}</span>
                 </button>
               </div>
 
@@ -237,10 +237,10 @@ export default function SettingsModule() {
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                      <th className="p-3">User</th>
-                      <th className="p-3">Role</th>
+                      <th className="p-3">{t('user')}</th>
+                      <th className="p-3">{t('role')}</th>
                       <th className="p-3 text-center">{t('status')}</th>
-                      <th className="p-3 text-center">{t('last_activity')}</th>
+                      <th className="p-3 text-center">{t('last_login')}</th>
                       <th className="p-3 text-right">{t('actions')}</th>
                     </tr>
                   </thead>
