@@ -76,6 +76,33 @@ export interface CreateUserPayload {
   role?: string
 }
 
+export interface MonthlyYieldItem {
+  month: string
+  output: number
+  target: number
+}
+
+export interface TopProductVolume {
+  name: string
+  volume: number
+}
+
+export interface ProductStockSummary {
+  ProductID: number
+  ProductName: string
+  Unit: string | null
+  CurrentStock: number
+  MinStock: number
+}
+
+export interface ReportsAnalyticsData {
+  monthly_yield: MonthlyYieldItem[]
+  top_products: TopProductVolume[]
+  product_stocks: ProductStockSummary[]
+  total_logs_count: number
+  total_movements_count: number
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:6060/api'
 
 export async function getProductsApi(): Promise<Product[]> {
@@ -243,6 +270,23 @@ export async function createUserApi(payload: CreateUserPayload): Promise<UserIte
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
     throw new Error(errorData.error || 'Gagal menambahkan pengguna baru')
+  }
+
+  return res.json()
+}
+
+export async function getReportsApi(): Promise<ReportsAnalyticsData> {
+  const res = await fetch(`${API_BASE_URL}/reports`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mengambil data laporan analitik')
   }
 
   return res.json()

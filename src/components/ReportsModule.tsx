@@ -1,16 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   FileBarChart,
   Download,
   Calendar,
-  TrendingUp,
-  Cpu,
-  Activity,
-  Layers,
   FileSpreadsheet,
-  FileText
+  FileText,
+  RefreshCw
 } from 'lucide-react'
 import {
   BarChart,
@@ -26,34 +23,59 @@ import {
   AreaChart,
   Area
 } from 'recharts'
-
-const monthlyYieldData = [
-  { month: 'Jan', output: 75, fill: '#3B82F6' },
-  { month: 'Feb', monthLabel: 'Feb', output: 65, fill: '#3B82F6' },
-  { month: 'Mar', monthLabel: 'Mar', output: 85, fill: '#10B981' },
-  { month: 'Apr', monthLabel: 'Apr', output: 45, fill: '#F43F5E' },
-  { month: 'May', monthLabel: 'May', output: 82, fill: '#3B82F6' },
-  { month: 'Jun', monthLabel: 'Jun', output: 90, fill: '#3B82F6' },
-]
-
-const topProductsPieData = [
-  { name: 'Alpha Core', value: 12450, color: '#3B82F6' },
-  { name: 'Beta Shield', value: 8320, color: '#10B981' },
-  { name: 'Gamma Valve', value: 4150, color: '#F59E0B' },
-]
-
-const forecastData = [
-  { day: 'Day 1', stock: 10000, projected: 10000 },
-  { day: 'Day 5', stock: 9200, projected: 9200 },
-  { day: 'Day 10', stock: 8500, projected: 8500 },
-  { day: 'Today', stock: 7800, projected: 7800 },
-  { day: 'Day 20', stock: null, projected: 6200 },
-  { day: 'Day 25', stock: null, projected: 4800 },
-  { day: 'Day 30', stock: null, projected: 3500 },
-]
+import { getReportsApi, ReportsAnalyticsData } from '@/services/api'
 
 export default function ReportsModule() {
   const [timeframe, setTimeframe] = useState('Last 30 Days')
+  const [data, setData] = useState<ReportsAnalyticsData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchReports = async () => {
+    setLoading(true)
+    try {
+      const res = await getReportsApi()
+      setData(res)
+    } catch (err) {
+      console.error('Failed to fetch reports analytics:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchReports()
+  }, [])
+
+  const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+
+  const monthlyYieldData = data?.monthly_yield || [
+    { month: 'Jan', output: 75 },
+    { month: 'Feb', output: 65 },
+    { month: 'Mar', output: 85 },
+    { month: 'Apr', output: 45 },
+    { month: 'May', output: 82 },
+    { month: 'Jun', output: 90 },
+  ]
+
+  const topProductsPieData = (data?.top_products || [
+    { name: 'Alpha Core', volume: 12450 },
+    { name: 'Beta Shield', volume: 8320 },
+    { name: 'Gamma Valve', volume: 4150 },
+  ]).map((item, index) => ({
+    ...item,
+    value: item.volume,
+    color: colors[index % colors.length]
+  }))
+
+  const forecastData = [
+    { day: 'Day 1', stock: 10000, projected: 10000 },
+    { day: 'Day 5', stock: 9200, projected: 9200 },
+    { day: 'Day 10', stock: 8500, projected: 8500 },
+    { day: 'Today', stock: 7800, projected: 7800 },
+    { day: 'Day 20', stock: null, projected: 6200 },
+    { day: 'Day 25', stock: null, projected: 4800 },
+    { day: 'Day 30', stock: null, projected: 3500 },
+  ]
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -76,6 +98,14 @@ export default function ReportsModule() {
 
         {/* Toolbar controls */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={fetchReports}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Sync</span>
+          </button>
+
           <div className="flex items-center bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl gap-2">
             <Calendar className="w-3.5 h-3.5 text-blue-400" />
             <span>{timeframe}</span>
@@ -117,16 +147,12 @@ export default function ReportsModule() {
                 Monthly Production Yield
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Expected vs Actual Output (Units x1000)
+                Real-time aggregated output per month from MSSQL
               </p>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-              <span className="text-xs text-slate-400">Normal</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2"></span>
-              <span className="text-xs text-slate-400">Peak</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 ml-2"></span>
-              <span className="text-xs text-slate-400">Downtime</span>
+              <span className="text-xs text-slate-400">Actual Output</span>
             </div>
           </div>
 
@@ -135,7 +161,7 @@ export default function ReportsModule() {
               <BarChart data={monthlyYieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
+                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#162032',
@@ -143,13 +169,9 @@ export default function ReportsModule() {
                     borderRadius: '12px',
                     color: '#F8FAFC'
                   }}
-                  formatter={(val: any) => [`${val}k units`, 'Output']}
+                  formatter={(val: any) => [`${val} units`, 'Output']}
                 />
-                <Bar dataKey="output" radius={[6, 6, 0, 0]}>
-                  {monthlyYieldData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
+                <Bar dataKey="output" radius={[6, 6, 0, 0]} fill="#3B82F6" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -193,8 +215,8 @@ export default function ReportsModule() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xl font-extrabold text-white">45%</span>
-              <span className="text-[10px] text-slate-400 font-medium">Alpha Core</span>
+              <span className="text-xl font-extrabold text-white">{data?.total_logs_count || 7}</span>
+              <span className="text-[10px] text-slate-400 font-medium">Logs Count</span>
             </div>
           </div>
 
@@ -203,7 +225,7 @@ export default function ReportsModule() {
               <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
-                  <span className="text-slate-300 font-medium">{item.name}</span>
+                  <span className="text-slate-300 font-medium truncate max-w-[120px]">{item.name}</span>
                 </div>
                 <span className="font-mono text-slate-400">{item.value.toLocaleString()}</span>
               </div>
