@@ -18,6 +18,7 @@ import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
 import NotificationsModal from '@/components/Modals/NotificationsModal'
+import LogoutModal from '@/components/Modals/LogoutModal'
 import { Sparkles, RefreshCw } from 'lucide-react'
 
 interface DashboardSummaryData {
@@ -36,6 +37,7 @@ export default function Home() {
   const [isRecordProductionOpen, setIsRecordProductionOpen] = useState(false)
   const [isStockOutOpen, setIsStockOutOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined)
 
   const fetchDashboardSummary = async () => {
@@ -68,7 +70,11 @@ export default function Home() {
   return (
     <div className="flex min-h-screen bg-[#0B0F17] text-slate-100 font-sans">
       {/* Sidebar Navigation */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenLogout={() => setIsLogoutOpen(true)}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -217,6 +223,11 @@ export default function Home() {
       <NotificationsModal
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
+      />
+
+      <LogoutModal
+        isOpen={isLogoutOpen}
+        onClose={() => setIsLogoutOpen(false)}
       />
     </div>
   )
