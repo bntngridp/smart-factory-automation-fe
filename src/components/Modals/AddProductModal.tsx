@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { X, Package, Check, AlertCircle, ToggleLeft, ToggleRight } from 'lucide-react'
+import { X, Check, AlertCircle } from 'lucide-react'
+import { createProductApi } from '@/services/api'
 
 interface AddProductModalProps {
   isOpen: boolean
@@ -33,22 +34,12 @@ export default function AddProductModal({
     setError(null)
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ProductName: productName,
-          Unit: unit.includes('(') ? unit.split('(')[1].replace(')', '') : unit,
-          MinStock: Number(minStock)
-        })
+      const cleanUnit = unit.includes('(') ? unit.split('(')[1].replace(')', '') : unit
+      await createProductApi({
+        ProductName: productName,
+        Unit: cleanUnit,
+        MinStock: Number(minStock)
       })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to create product')
-      }
 
       onSuccess()
       onClose()
@@ -57,7 +48,7 @@ export default function AddProductModal({
       setSupplier('')
       setDescription('')
     } catch (err: any) {
-      setError(err.message || 'Error connecting to API server')
+      setError(err.message || 'Gagal menambahkan produk baru ke server')
     } finally {
       setLoading(false)
     }

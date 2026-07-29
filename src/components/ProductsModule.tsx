@@ -8,20 +8,11 @@ import {
   Edit2,
   Trash2,
   Package,
-  AlertTriangle,
-  CheckCircle2,
   RefreshCw,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react'
-
-export interface ProductItem {
-  ProductID: number
-  ProductName: string
-  Unit: string | null
-  MinStock: number
-  CurrentStock?: number
-}
+import { getProductsApi, deleteProductApi, Product } from '@/services/api'
 
 interface ProductsModuleProps {
   onOpenAddProduct: () => void
@@ -32,7 +23,7 @@ export default function ProductsModule({
   onOpenAddProduct,
   onOpenRecordProduction
 }: ProductsModuleProps) {
-  const [products, setProducts] = useState<ProductItem[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIds, setSelectedIds] = useState<number[]>([])
@@ -40,12 +31,8 @@ export default function ProductsModule({
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/products`, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        setProducts(data)
-      }
+      const data = await getProductsApi()
+      setProducts(data)
     } catch (err) {
       console.error('Failed to fetch products:', err)
     } finally {
@@ -56,6 +43,16 @@ export default function ProductsModule({
   useEffect(() => {
     fetchProducts()
   }, [])
+
+  const handleDeleteProduct = async (id: number) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus produk PRD-${id}?`)) return
+    try {
+      await deleteProductApi(id)
+      setProducts((prev) => prev.filter((p) => p.ProductID !== id))
+    } catch (err: any) {
+      alert(err.message || 'Gagal menghapus produk')
+    }
+  }
 
   const filteredProducts = products.filter((p) =>
     p.ProductName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -166,7 +163,7 @@ export default function ProductsModule({
               {loading ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-400">
-                    Loading master catalog products...
+                    Loading master catalog products from MSSQL...
                   </td>
                 </tr>
               ) : filteredProducts.length === 0 ? (
@@ -178,8 +175,8 @@ export default function ProductsModule({
               ) : (
                 filteredProducts.map((item) => {
                   const isSelected = selectedIds.includes(item.ProductID)
-                  const currentStock = item.CurrentStock ?? 125
-                  const minStock = item.MinStock ?? 50
+                  const currentStock = item.CurrentStock ?? 0
+                  const minStock = item.MinStock ?? 0
                   const isOut = currentStock === 0
                   const isLow = currentStock < minStock && !isOut
 
@@ -253,7 +250,7 @@ export default function ProductsModule({
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => alert(`Delete PRD-${item.ProductID}`)}
+                            onClick={() => handleDeleteProduct(item.ProductID)}
                             className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
                             title="Delete"
                           >
