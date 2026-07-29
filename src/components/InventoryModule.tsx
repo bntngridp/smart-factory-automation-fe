@@ -22,18 +22,7 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts'
-
-export interface InventoryMovementItem {
-  MovementID: number
-  ProductID: number
-  MovementType: string | null
-  Quantity: number
-  MovementDate: string | null
-  Products?: {
-    ProductName: string
-    Unit: string | null
-  }
-}
+import { getInventoryMovementsApi, InventoryMovementItem } from '@/services/api'
 
 interface InventoryModuleProps {
   onOpenStockOut: () => void
@@ -58,13 +47,9 @@ export default function InventoryModule({
   const fetchMovements = async () => {
     setLoading(true)
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const query = filterType !== 'All' ? `?type=${filterType}` : ''
-      const res = await fetch(`${apiBase}/api/inventory/movements${query}`, { cache: 'no-store' })
-      if (res.ok) {
-        const data = await res.json()
-        setMovements(data)
-      }
+      const typeFilter = filterType !== 'All' ? filterType : undefined
+      const data = await getInventoryMovementsApi(typeFilter)
+      setMovements(data)
     } catch (err) {
       console.error('Failed to fetch inventory movements:', err)
     } finally {
@@ -114,10 +99,10 @@ export default function InventoryModule({
 
           <button
             onClick={onOpenStockOut}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
+            className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>New Entry</span>
+            <span>Stock Out</span>
           </button>
         </div>
       </div>
@@ -214,14 +199,14 @@ export default function InventoryModule({
                   <th className="p-3.5">Item / Product</th>
                   <th className="p-3.5 text-center">Type</th>
                   <th className="p-3.5 text-center">Qty</th>
-                  <th className="p-3.5 text-right">Operator</th>
+                  <th className="p-3.5 text-right">Operator / Source</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]">
                 {loading ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-400">
-                      Loading inventory movements...
+                      Loading inventory movements from MSSQL...
                     </td>
                   </tr>
                 ) : movements.length === 0 ? (
@@ -243,7 +228,7 @@ export default function InventoryModule({
                           {dateStr}
                         </td>
                         <td className="p-3.5 font-bold text-white">
-                          {m.Products?.ProductName || `PRT-${m.ProductID}`}
+                          {m.Products?.ProductName || `PRD-${m.ProductID}`}
                         </td>
                         <td className="p-3.5 text-center">
                           {isIN ? (
@@ -262,7 +247,7 @@ export default function InventoryModule({
                           {isIN ? `+${m.Quantity}` : `-${m.Quantity}`}
                         </td>
                         <td className="p-3.5 text-right text-slate-300 font-medium">
-                          {isIN ? 'Operator Production' : 'Warehouse Output'}
+                          {isIN ? 'Production Output' : 'Warehouse Dispatch'}
                         </td>
                       </tr>
                     )

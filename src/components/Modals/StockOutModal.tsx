@@ -2,12 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { X, ArrowUpRight, Check, AlertCircle } from 'lucide-react'
-
-interface ProductOption {
-  ProductID: number
-  ProductName: string
-  Unit: string | null
-}
+import { getProductsApi, createStockOutApi, Product } from '@/services/api'
 
 interface StockOutModalProps {
   isOpen: boolean
@@ -20,7 +15,7 @@ export default function StockOutModal({
   onClose,
   onSuccess
 }: StockOutModalProps) {
-  const [products, setProducts] = useState<ProductOption[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [selectedProductId, setSelectedProductId] = useState<number | ''>('')
   const [quantity, setQuantity] = useState<number>(10)
   const [loading, setLoading] = useState(false)
@@ -34,17 +29,13 @@ export default function StockOutModal({
 
   const fetchProducts = async () => {
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/products`)
-      if (res.ok) {
-        const data = await res.json()
-        setProducts(data)
-        if (data.length > 0 && !selectedProductId) {
-          setSelectedProductId(data[0].ProductID)
-        }
+      const data = await getProductsApi()
+      setProducts(data)
+      if (data.length > 0 && !selectedProductId) {
+        setSelectedProductId(data[0].ProductID)
       }
     } catch (err) {
-      console.error('Failed to fetch products', err)
+      console.error('Failed to fetch products for stock out modal:', err)
     }
   }
 
@@ -61,28 +52,16 @@ export default function StockOutModal({
     setError(null)
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
-      const res = await fetch(`${apiBase}/api/inventory/movements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: Number(selectedProductId),
-          quantity: Number(quantity),
-          movement_type: 'OUT'
-        })
+      await createStockOutApi({
+        product_id: Number(selectedProductId),
+        quantity: Number(quantity),
+        movement_type: 'OUT'
       })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        // Status 422 triggers when stock is insufficient
-        throw new Error(data.error || 'Failed to record stock output')
-      }
 
       onSuccess()
       onClose()
     } catch (err: any) {
-      setError(err.message || 'Error connecting to API server')
+      setError(err.message || 'Gagal mencatat pengurangan stok ke server')
     } finally {
       setLoading(false)
     }

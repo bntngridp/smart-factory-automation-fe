@@ -32,6 +32,24 @@ export interface CreateProductionLogPayload {
   operator_name: string
 }
 
+export interface InventoryMovementItem {
+  MovementID: number
+  ProductID: number
+  MovementType: 'IN' | 'OUT'
+  Quantity: number
+  MovementDate: string
+  Products?: {
+    ProductName: string
+    Unit: string
+  }
+}
+
+export interface CreateStockOutPayload {
+  product_id: number
+  quantity: number
+  movement_type: 'OUT'
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:6060/api'
 
 export async function getProductsApi(): Promise<Product[]> {
@@ -113,6 +131,41 @@ export async function createProductionLogApi(payload: CreateProductionLogPayload
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
     throw new Error(errorData.error || 'Gagal mencatat log produksi baru')
+  }
+
+  return res.json()
+}
+
+export async function getInventoryMovementsApi(type?: 'IN' | 'OUT'): Promise<InventoryMovementItem[]> {
+  const url = type ? `${API_BASE_URL}/inventory/movements?type=${type}` : `${API_BASE_URL}/inventory/movements`
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mengambil data pergerakan stok')
+  }
+
+  return res.json()
+}
+
+export async function createStockOutApi(payload: CreateStockOutPayload): Promise<InventoryMovementItem> {
+  const res = await fetch(`${API_BASE_URL}/inventory/movements`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mencatat stok keluar')
   }
 
   return res.json()
