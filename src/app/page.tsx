@@ -29,6 +29,10 @@ export default function Home() {
   const [summaryData, setSummaryData] = useState<DashboardSummary | null>(null)
   const [loadingSummary, setLoadingSummary] = useState(true)
 
+  // Sidebar responsive & collapse state
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+
   // Modals state
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [isRecordProductionOpen, setIsRecordProductionOpen] = useState(false)
@@ -60,21 +64,28 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen bg-[#0B0F17] text-slate-100 font-sans">
-      {/* Sidebar Navigation */}
+      {/* Responsive Collapsible Sidebar Navigation */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenLogout={() => setIsLogoutOpen(true)}
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
         {/* Top Header */}
         <Header
           onOpenAddProduct={() => setIsAddProductOpen(true)}
           onOpenRecordProduction={() => handleOpenProduce()}
           onOpenStockOut={() => setIsStockOutOpen(true)}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          setIsMobileOpen={setIsMobileOpen}
         />
 
         {/* Dashboard Body Content */}
