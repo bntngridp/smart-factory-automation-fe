@@ -18,6 +18,7 @@ import {
   Product,
   ProductionLogItem
 } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface ProductionLogsModuleProps {
   onOpenRecordProduction?: () => void
@@ -27,6 +28,7 @@ export default function ProductionLogsModule({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onOpenRecordProduction
 }: ProductionLogsModuleProps) {
+  const { t } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [logs, setLogs] = useState<ProductionLogItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -117,15 +119,15 @@ export default function ProductionLogsModule({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              Production Logs
+              {t('production_logs_title')}
             </h1>
             <span className="text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <ClipboardList className="w-3 h-3" />
-              Live Manufacturing Data
+              {t('live_manufacturing_data')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Record and monitor real-time manufacturing data and yield.
+            {t('production_logs_subtitle')}
           </p>
         </div>
 
@@ -134,7 +136,7 @@ export default function ProductionLogsModule({
           className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Logs</span>
+          <span>{t('sync_data')}</span>
         </button>
       </div>
 
@@ -145,7 +147,7 @@ export default function ProductionLogsModule({
             <Plus className="w-4 h-4" />
           </div>
           <h2 className="text-base font-bold text-white tracking-wide">
-            New Entry
+            {t('new_log_entry')}
           </h2>
         </div>
 
@@ -167,7 +169,7 @@ export default function ProductionLogsModule({
           {/* Row 1: Product, Operator, Machine */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Product</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('select_product')}</label>
               <select
                 value={selectedProductId}
                 onChange={(e) => setSelectedProductId(Number(e.target.value))}
@@ -186,7 +188,7 @@ export default function ProductionLogsModule({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Operator</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('operator_name')}</label>
               <select
                 value={operator}
                 onChange={(e) => setOperator(e.target.value)}
@@ -200,7 +202,7 @@ export default function ProductionLogsModule({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Machine</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('select_machine')}</label>
               <select
                 value={machine}
                 onChange={(e) => setMachine(e.target.value)}
@@ -217,7 +219,7 @@ export default function ProductionLogsModule({
           {/* Row 2: Quantity, Shift, Date */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Quantity</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('quantity_produced')}</label>
               <input
                 type="number"
                 min="1"
@@ -229,7 +231,7 @@ export default function ProductionLogsModule({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Shift</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('shift')}</label>
               <select
                 value={shift}
                 onChange={(e) => setShift(e.target.value)}
@@ -242,7 +244,7 @@ export default function ProductionLogsModule({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Date</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('mutation_date')}</label>
               <input
                 type="date"
                 value={date}
@@ -260,7 +262,7 @@ export default function ProductionLogsModule({
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold text-xs px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
-              <span>{submitting ? 'Submitting...' : 'Submit Log'}</span>
+              <span>{submitting ? 'Submitting...' : t('submit_log')}</span>
             </button>
           </div>
         </form>
@@ -270,7 +272,7 @@ export default function ProductionLogsModule({
       <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
         <div className="flex items-center justify-between gap-4 mb-4">
           <h2 className="text-base font-bold text-white tracking-wide">
-            Recent Logs
+            {t('recent_logs')}
           </h2>
           <div className="flex items-center gap-2">
             <button className="p-2 rounded-xl bg-[#0F172A] border border-[#1E293B] text-slate-400 hover:text-white transition-colors">
@@ -286,19 +288,19 @@ export default function ProductionLogsModule({
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                <th className="p-3.5">Time</th>
-                <th className="p-3.5">Operator</th>
-                <th className="p-3.5">Machine ID</th>
-                <th className="p-3.5">Product</th>
-                <th className="p-3.5 text-center">Qty</th>
-                <th className="p-3.5 text-right">Status</th>
+                <th className="p-3.5">{t('time')}</th>
+                <th className="p-3.5">{t('operator')}</th>
+                <th className="p-3.5">{t('machine_id')}</th>
+                <th className="p-3.5">{t('products')}</th>
+                <th className="p-3.5 text-center">{t('quantity')}</th>
+                <th className="p-3.5 text-right">{t('status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1E293B]">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-slate-400">
-                    Loading recent production logs from MSSQL...
+                    Loading...
                   </td>
                 </tr>
               ) : logs.length === 0 ? (

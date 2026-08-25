@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { TrendingUp } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
+import { useLanguage } from '@/context/LanguageContext'
 
 const sampleChartData = [
   { name: 'Mon', production: 1100, inventory: 80000 },
@@ -25,6 +26,7 @@ const sampleChartData = [
 
 export default function ProductionAnalyticsChart() {
   const { theme } = useTheme()
+  const { t } = useLanguage()
   const [timeframe, setTimeframe] = useState<'7D' | '30D' | 'YTD'>('30D')
 
   const isLight = theme === 'light'
@@ -36,15 +38,15 @@ export default function ProductionAnalyticsChart() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-base font-bold text-white tracking-wide">
-              Production Analytics
+              {t('production_analytics')}
             </h2>
             <span className="text-[11px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
-              Live Output
+              {t('live_output')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time daily manufacturing & yield efficiency trend
+            {t('production_analytics_subtitle')}
           </p>
         </div>
 

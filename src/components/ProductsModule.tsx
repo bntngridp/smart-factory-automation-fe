@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react'
 import { getProductsApi, deleteProductApi, Product } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface ProductsModuleProps {
   onOpenAddProduct: () => void
@@ -23,6 +24,7 @@ export default function ProductsModule({
   onOpenAddProduct,
   onOpenRecordProduction
 }: ProductsModuleProps) {
+  const { t } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -98,15 +100,15 @@ export default function ProductsModule({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              Products Management
+              {t('products_management')}
             </h1>
             <span className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Package className="w-3 h-3" />
-              Master Catalog
+              {t('master_catalog')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Manage and track manufacturing inventory and safety thresholds.
+            {t('products_subtitle')}
           </p>
         </div>
 
@@ -116,7 +118,7 @@ export default function ProductsModule({
             className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
+            <span>{t('sync_data')}</span>
           </button>
 
           <button
@@ -124,7 +126,7 @@ export default function ProductsModule({
             className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Product</span>
+            <span>{t('add_product')}</span>
           </button>
         </div>
       </div>
@@ -135,7 +137,7 @@ export default function ProductsModule({
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search products by name or ID..."
+            placeholder={t('search_products')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-[#0F172A] text-xs text-slate-200 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 border border-[#1E293B] focus:outline-none focus:border-blue-500 transition-all"
@@ -145,7 +147,7 @@ export default function ProductsModule({
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-2 bg-[#0F172A] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-300 text-xs px-3.5 py-2.5 rounded-xl transition-colors">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span>Filter Status</span>
+            <span>{t('all_statuses')}</span>
           </button>
         </div>
       </div>
@@ -167,20 +169,20 @@ export default function ProductsModule({
                     className="rounded border-[#1E293B] bg-[#162032] text-blue-600 focus:ring-0"
                   />
                 </th>
-                <th className="p-4">Product ID</th>
-                <th className="p-4">Product Name</th>
-                <th className="p-4 text-center">Unit</th>
-                <th className="p-4 text-center">Current Stock</th>
-                <th className="p-4 text-center">Min Stock</th>
-                <th className="p-4 text-center">Status</th>
-                <th className="p-4 text-right">Actions</th>
+                <th className="p-4">{t('product_id')}</th>
+                <th className="p-4">{t('product_name')}</th>
+                <th className="p-4 text-center">{t('unit')}</th>
+                <th className="p-4 text-center">{t('current_stock')}</th>
+                <th className="p-4 text-center">{t('min_stock')}</th>
+                <th className="p-4 text-center">{t('status')}</th>
+                <th className="p-4 text-right">{t('actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1E293B]">
               {loading ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-400">
-                    Loading master catalog products from MSSQL...
+                    Loading...
                   </td>
                 </tr>
               ) : filteredProducts.length === 0 ? (
@@ -238,15 +240,15 @@ export default function ProductsModule({
                       <td className="p-4 text-center">
                         {isOut ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                            OUT OF STOCK
+                            {t('out_of_stock_status')}
                           </span>
                         ) : isLow ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                            LOW STOCK
+                            {t('low_stock_status')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                            IN STOCK
+                            {t('in_stock_status')}
                           </span>
                         )}
                       </td>

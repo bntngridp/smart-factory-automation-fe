@@ -23,6 +23,7 @@ import {
   Cell
 } from 'recharts'
 import { getInventoryMovementsApi, InventoryMovementItem } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface InventoryModuleProps {
   onOpenStockOut: () => void
@@ -39,6 +40,7 @@ const zoneChartData = [
 export default function InventoryModule({
   onOpenStockOut,
 }: InventoryModuleProps) {
+  const { t } = useLanguage()
   const [filterType, setFilterType] = useState<'All' | 'IN' | 'OUT'>('All')
   const [movements, setMovements] = useState<InventoryMovementItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -84,15 +86,15 @@ export default function InventoryModule({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              Inventory Management
+              {t('inventory_title')}
             </h1>
             <span className="text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Boxes className="w-3 h-3" />
-              Stock Operations
+              {t('stock_operations')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time stock monitoring and movement logs.
+            {t('inventory_subtitle')}
           </p>
         </div>
 
@@ -102,7 +104,7 @@ export default function InventoryModule({
             className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Sync</span>
+            <span>{t('sync_data')}</span>
           </button>
 
           <button
@@ -110,7 +112,7 @@ export default function InventoryModule({
             className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition-all"
           >
             <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>Export Report</span>
+            <span>{t('export_report')}</span>
           </button>
 
           <button
@@ -118,7 +120,7 @@ export default function InventoryModule({
             className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>Stock Out</span>
+            <span>{t('stock_out_btn')}</span>
           </button>
         </div>
       </div>
@@ -128,7 +130,7 @@ export default function InventoryModule({
         {/* Card 1: Total Warehouse Value */}
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
-            <span className="text-xs font-semibold text-slate-400">Total Warehouse Value</span>
+            <span className="text-xs font-semibold text-slate-400">{t('total_warehouse_value')}</span>
             <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
               <Building2 className="w-4 h-4" />
             </div>
@@ -142,7 +144,7 @@ export default function InventoryModule({
         {/* Card 2: Storage Capacity */}
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-semibold text-slate-400">Storage Capacity</span>
+            <span className="text-xs font-semibold text-slate-400">{t('storage_capacity')}</span>
             <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
               <Warehouse className="w-4 h-4" />
             </div>
@@ -159,7 +161,7 @@ export default function InventoryModule({
         {/* Card 3: Last Stock Audit */}
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
-            <span className="text-xs font-semibold text-slate-400">Last Stock Audit</span>
+            <span className="text-xs font-semibold text-slate-400">{t('last_audit')}</span>
             <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
               <ClipboardCheck className="w-4 h-4" />
             </div>
@@ -181,10 +183,10 @@ export default function InventoryModule({
           <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
             <div>
               <h2 className="text-base font-bold text-white tracking-wide">
-                Stock Movement
+                {t('stock_movements')}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Audit trail of incoming and outgoing inventory mutations
+                {t('stock_movements_subtitle')}
               </p>
             </div>
 
@@ -211,18 +213,18 @@ export default function InventoryModule({
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                  <th className="p-3.5">Timestamp</th>
-                  <th className="p-3.5">Item / Product</th>
-                  <th className="p-3.5 text-center">Type</th>
-                  <th className="p-3.5 text-center">Qty</th>
-                  <th className="p-3.5 text-right">Operator / Source</th>
+                  <th className="p-3.5">{t('mutation_date')}</th>
+                  <th className="p-3.5">{t('products')}</th>
+                  <th className="p-3.5 text-center">{t('mutation_type')}</th>
+                  <th className="p-3.5 text-center">{t('quantity')}</th>
+                  <th className="p-3.5 text-right">{t('operator')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]">
                 {loading ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-400">
-                      Loading inventory movements from MSSQL...
+                      Loading...
                     </td>
                   </tr>
                 ) : movements.length === 0 ? (
@@ -277,7 +279,7 @@ export default function InventoryModule({
         {/* Right Column: Zone Utilization Chart */}
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <h2 className="text-base font-bold text-white tracking-wide mb-1">
-            Zone Utilization
+            {t('zone_utilization')}
           </h2>
           <p className="text-xs text-slate-400 mb-6">
             Warehouse capacity per storage sector (%)

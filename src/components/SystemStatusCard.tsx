@@ -2,15 +2,18 @@
 
 import React from 'react'
 import { CheckCircle2, Cpu, Database, Server } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 export default function SystemStatusCard() {
+  const { t } = useLanguage()
+
   return (
     <div className="glass-card rounded-2xl p-5 mb-6 text-center">
       <h2 className="text-base font-bold text-white tracking-wide mb-1 text-left">
-        System Status
+        {t('system_status')}
       </h2>
       <p className="text-xs text-slate-400 mb-6 text-left">
-        Live infrastructure & database health check
+        {t('system_status_subtitle')}
       </p>
 
       {/* Circular Gauge Status Indicator */}

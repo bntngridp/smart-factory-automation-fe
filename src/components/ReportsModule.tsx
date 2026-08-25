@@ -24,8 +24,10 @@ import {
   Area
 } from 'recharts'
 import { getReportsApi, ReportsAnalyticsData } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 export default function ReportsModule() {
+  const { t } = useLanguage()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [timeframe, setTimeframe] = useState('Last 30 Days')
   const [data, setData] = useState<ReportsAnalyticsData | null>(null)
@@ -101,15 +103,15 @@ export default function ReportsModule() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              Analytics & Reports
+              {t('reports_title')}
             </h1>
             <span className="text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <FileBarChart className="w-3 h-3" />
-              Intelligence Center
+              {t('intelligence_center')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Comprehensive overview of production metrics and system health.
+            {t('reports_subtitle')}
           </p>
         </div>
 
@@ -120,7 +122,7 @@ export default function ReportsModule() {
             className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Sync</span>
+            <span>{t('sync_data')}</span>
           </button>
 
           <div className="flex items-center bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl gap-2">
@@ -161,7 +163,7 @@ export default function ReportsModule() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-bold text-white tracking-wide">
-                Monthly Production Yield
+                {t('monthly_yield')}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
                 Real-time aggregated output per month from MSSQL
@@ -198,7 +200,7 @@ export default function ReportsModule() {
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B] flex flex-col justify-between">
           <div>
             <h2 className="text-base font-bold text-white tracking-wide">
-              Top Products
+              {t('top_products_distribution')}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Distribution by volume
@@ -256,7 +258,7 @@ export default function ReportsModule() {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
             <h2 className="text-base font-bold text-white tracking-wide">
-              Machine Performance Heatmap
+              {t('machine_performance_heatmap')}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Uptime and efficiency across active units (Last 24h)
@@ -307,7 +309,7 @@ export default function ReportsModule() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-base font-bold text-white tracking-wide">
-              Inventory Forecast
+              {t('inventory_forecast')}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Predicted stock levels based on current run rate

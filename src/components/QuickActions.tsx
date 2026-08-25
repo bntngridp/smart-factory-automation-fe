@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { PlusCircle, ClipboardCheck, ArrowUpRight } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface QuickActionsProps {
   onOpenAddProduct: () => void
@@ -14,24 +15,26 @@ export default function QuickActions({
   onOpenRecordProduction,
   onOpenStockOut,
 }: QuickActionsProps) {
+  const { t } = useLanguage()
+
   const actions = [
     {
-      title: 'Add Product',
-      description: 'Create new master item or component',
+      title: t('add_product'),
+      description: t('add_new_product'),
       icon: PlusCircle,
       color: 'text-blue-500 bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20',
       onClick: onOpenAddProduct
     },
     {
-      title: 'Record Production',
-      description: 'Log daily output & auto-mutate stock IN',
+      title: t('record_production'),
+      description: t('live_manufacturing_data'),
       icon: ClipboardCheck,
       color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20',
       onClick: onOpenRecordProduction
     },
     {
-      title: 'Stock Out',
-      description: 'Record inventory output with stock validation',
+      title: t('stock_out_btn'),
+      description: t('record_stock_out'),
       icon: ArrowUpRight,
       color: 'text-amber-500 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20',
       onClick: onOpenStockOut
@@ -41,10 +44,10 @@ export default function QuickActions({
   return (
     <div className="glass-card rounded-2xl p-5 mb-6">
       <h2 className="text-base font-bold text-white tracking-wide mb-1">
-        Quick Actions
+        {t('quick_actions')}
       </h2>
       <p className="text-xs text-slate-400 mb-4">
-        Direct operational inputs & factory logs
+        {t('quick_actions_subtitle')}
       </p>
 
       <div className="space-y-3">

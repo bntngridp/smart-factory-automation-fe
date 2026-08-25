@@ -16,8 +16,10 @@ import {
   AlertCircle
 } from 'lucide-react'
 import { getUsersApi, createUserApi, UserItem } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 export default function UsersModule() {
+  const { t } = useLanguage()
   const [users, setUsers] = useState<UserItem[]>([])
   const [loading, setLoading] = useState(true)
   const [roleFilter, setRoleFilter] = useState<string>('All Roles')
@@ -103,15 +105,15 @@ export default function UsersModule() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              User Management
+              {t('users_title')}
             </h1>
             <span className="text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Users className="w-3 h-3" />
-              Access Control
+              {t('access_control')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Manage platform access, roles, and security permissions.
+            {t('users_subtitle')}
           </p>
         </div>
 
@@ -121,7 +123,7 @@ export default function UsersModule() {
             className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Sync</span>
+            <span>{t('sync_data')}</span>
           </button>
 
           <button
@@ -129,7 +131,7 @@ export default function UsersModule() {
             className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
           >
             <UserPlus className="w-4 h-4" />
-            <span>Add User</span>
+            <span>{t('invite_user')}</span>
           </button>
         </div>
       </div>
@@ -144,7 +146,7 @@ export default function UsersModule() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Filter users..."
+                placeholder={t('search_settings')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#0F172A] text-xs text-slate-200 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 border border-[#1E293B] focus:outline-none focus:border-blue-500 transition-all"
@@ -156,10 +158,10 @@ export default function UsersModule() {
               onChange={(e) => setRoleFilter(e.target.value)}
               className="bg-[#0F172A] border border-[#1E293B] text-slate-300 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none"
             >
-              <option value="All Roles">All Roles</option>
-              <option value="Admin">Admin</option>
-              <option value="Supervisor">Supervisor</option>
-              <option value="Operator">Operator</option>
+              <option value="All Roles">{t('all_roles')}</option>
+              <option value="Admin">{t('admin_role')}</option>
+              <option value="Supervisor">{t('supervisor_role')}</option>
+              <option value="Operator">{t('operator_role')}</option>
             </select>
           </div>
 
@@ -168,18 +170,18 @@ export default function UsersModule() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                  <th className="p-3.5">User ID</th>
-                  <th className="p-3.5">Username</th>
-                  <th className="p-3.5">Role</th>
-                  <th className="p-3.5 text-center">Status</th>
-                  <th className="p-3.5 text-right">Actions</th>
+                  <th className="p-3.5">{t('product_id').replace('Product', 'User').replace('Produk', 'Pengguna')}</th>
+                  <th className="p-3.5">{t('user')}</th>
+                  <th className="p-3.5">{t('role')}</th>
+                  <th className="p-3.5 text-center">{t('status')}</th>
+                  <th className="p-3.5 text-right">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]">
                 {loading ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-400">
-                      Loading registered users from MSSQL...
+                      Loading...
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
@@ -216,15 +218,15 @@ export default function UsersModule() {
                         <td className="p-3.5">
                           {isSystemAdmin ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                              Admin
+                              {t('admin_role')}
                             </span>
                           ) : isSupervisor ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
-                              Supervisor
+                              {t('supervisor_role')}
                             </span>
                           ) : (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">
-                              Operator
+                              {t('operator_role')}
                             </span>
                           )}
                         </td>
@@ -271,7 +273,7 @@ export default function UsersModule() {
           <div className="flex items-center gap-2 mb-4">
             <ShieldCheck className="w-5 h-5 text-amber-400" />
             <h2 className="text-base font-bold text-white tracking-wide">
-              Role Permissions
+              {t('role_permissions')}
             </h2>
           </div>
 
@@ -281,19 +283,19 @@ export default function UsersModule() {
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-amber-400 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-                  Admin
+                  {t('admin_role')}
                 </h4>
-                <span className="text-[10px] text-slate-500 font-mono">Role #1</span>
+                <span className="text-[10px] text-slate-500 font-mono">Tier #1</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Full system access. Can manage billing, global settings, and all user accounts.
+                {t('admin_role_desc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded text-[10px]">
                   All Access
                 </span>
                 <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded text-[10px]">
-                  Billing
+                  Configuration
                 </span>
               </div>
             </div>
@@ -303,16 +305,16 @@ export default function UsersModule() {
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-blue-400 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-                  Supervisor
+                  {t('supervisor_role')}
                 </h4>
-                <span className="text-[10px] text-slate-500 font-mono">Role #2</span>
+                <span className="text-[10px] text-slate-500 font-mono">Tier #2</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Can view all production data, generate reports, and manage operator schedules.
+                {t('supervisor_role_desc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <span className="bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded text-[10px]">
-                  Reports
+                  Analytics
                 </span>
                 <span className="bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded text-[10px]">
                   Schedules
@@ -325,19 +327,19 @@ export default function UsersModule() {
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-slate-300 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-                  Operator
+                  {t('operator_role')}
                 </h4>
-                <span className="text-[10px] text-slate-500 font-mono">Role #3</span>
+                <span className="text-[10px] text-slate-500 font-mono">Tier #3</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Limited access to specific production lines. Can log data and view personal metrics.
+                {t('operator_role_desc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <span className="bg-slate-500/10 text-slate-300 border border-slate-500/20 px-2 py-0.5 rounded text-[10px]">
                   Data Entry
                 </span>
                 <span className="bg-slate-500/10 text-slate-300 border border-slate-500/20 px-2 py-0.5 rounded text-[10px]">
-                  View Only
+                  Line Output
                 </span>
               </div>
             </div>
