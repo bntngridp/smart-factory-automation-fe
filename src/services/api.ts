@@ -103,6 +103,31 @@ export interface ReportsAnalyticsData {
   total_movements_count: number
 }
 
+export interface SystemStatusData {
+  status: string
+  database: string
+  databaseCatalog: string
+  backendRuntime: string
+  latencyMs: number
+  counts: {
+    products: number
+    productionLogs: number
+    inventoryMovements: number
+    users: number
+  }
+  timestamp: string
+}
+
+export interface BackupResponseData {
+  success: boolean
+  backupId: string
+  operator: string
+  database: string
+  snapshotSize: string
+  createdAt: string
+  message: string
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:6060/api'
 
 export async function getProductsApi(): Promise<Product[]> {
@@ -166,7 +191,7 @@ export async function getProductionLogsApi(): Promise<ProductionLogItem[]> {
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.error || 'Gagal mengambil log produksi')
+    throw new Error(errorData.error || 'Gagal mengambil riwayat produksi')
   }
 
   return res.json()
@@ -183,13 +208,13 @@ export async function createProductionLogApi(payload: CreateProductionLogPayload
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.error || 'Gagal mencatat log produksi baru')
+    throw new Error(errorData.error || 'Gagal mencatat log produksi')
   }
 
   return res.json()
 }
 
-export async function getInventoryMovementsApi(type?: 'IN' | 'OUT'): Promise<InventoryMovementItem[]> {
+export async function getInventoryMovementsApi(type?: string): Promise<InventoryMovementItem[]> {
   const url = type ? `${API_BASE_URL}/inventory/movements?type=${type}` : `${API_BASE_URL}/inventory/movements`
   const res = await fetch(url, {
     method: 'GET',
@@ -201,7 +226,7 @@ export async function getInventoryMovementsApi(type?: 'IN' | 'OUT'): Promise<Inv
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.error || 'Gagal mengambil data pergerakan stok')
+    throw new Error(errorData.error || 'Gagal mengambil riwayat mutasi stok')
   }
 
   return res.json()
@@ -218,7 +243,7 @@ export async function createStockOutApi(payload: CreateStockOutPayload): Promise
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.error || 'Gagal mencatat stok keluar')
+    throw new Error(errorData.error || 'Gagal mencatat pengeluaran stok')
   }
 
   return res.json()
@@ -287,6 +312,73 @@ export async function getReportsApi(): Promise<ReportsAnalyticsData> {
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
     throw new Error(errorData.error || 'Gagal mengambil data laporan analitik')
+  }
+
+  return res.json()
+}
+
+export async function getAuthMeApi(): Promise<{ user: UserItem }> {
+  const res = await fetch(`${API_BASE_URL}/auth/me`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Sesi belum login atau tidak valid')
+  }
+
+  return res.json()
+}
+
+export async function changePasswordApi(currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal memperbarui kata sandi')
+  }
+
+  return res.json()
+}
+
+export async function getSystemStatusApi(): Promise<SystemStatusData> {
+  const res = await fetch(`${API_BASE_URL}/system/status`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal memuat status sistem')
+  }
+
+  return res.json()
+}
+
+export async function triggerDatabaseBackupApi(): Promise<BackupResponseData> {
+  const res = await fetch(`${API_BASE_URL}/system/backup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal memicu backup database')
   }
 
   return res.json()

@@ -31,6 +31,7 @@ body {
   background: #162032;
   border: 1px solid #1E293B;
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease-in-out;
 }
 
 .glass-card:hover {
@@ -99,51 +100,57 @@ body {
   border-color: #E2E8F0 !important;
 }
 
-.light-mode .divide-\[\#1E293B\] > :not([hidden]) ~ :not([hidden]) {
-  border-color: #E2E8F0 !important;
-}
-
-/* Typography & Text Color Overrides for High Contrast Readability */
+/* Hardcoded Text Colors in Light Mode */
+.light-mode .text-white,
 .light-mode h1,
 .light-mode h2,
 .light-mode h3,
 .light-mode h4,
 .light-mode h5,
-.light-mode h6,
-.light-mode .text-white {
+.light-mode h6 {
   color: #0F172A !important;
 }
 
-.light-mode .text-slate-100,
 .light-mode .text-slate-200,
 .light-mode .text-slate-300 {
-  color: #1E293B !important;
+  color: #334155 !important;
 }
 
-.light-mode .text-slate-400,
-.light-mode .text-slate-500 {
+.light-mode .text-slate-400 {
   color: #64748B !important;
 }
 
-.light-mode .text-slate-600 {
-  color: #475569 !important;
+.light-mode .text-slate-500 {
+  color: #94A3B8 !important;
 }
 
-/* Tables & Data Grids in Light Mode */
-.light-mode table thead tr {
-  background-color: #F8FAFC !important;
-  border-bottom: 2px solid #E2E8F0 !important;
+/* Light Mode Badges & Metric Pills */
+.light-mode .bg-blue-500\/10 {
+  background-color: #EFF6FF !important;
+  border-color: #BFDBFE !important;
+  color: #2563EB !important;
 }
 
-.light-mode table thead th {
-  color: #475569 !important;
+.light-mode .bg-emerald-500\/10 {
+  background-color: #ECFDF5 !important;
+  border-color: #A7F3D0 !important;
+  color: #059669 !important;
 }
 
-.light-mode table tbody tr:hover {
-  background-color: #F1F5F9 !important;
+.light-mode .bg-amber-500\/10 {
+  background-color: #FFFBEB !important;
+  border-color: #FDE68A !important;
+  color: #D97706 !important;
 }
 
-/* Inputs & Form Controls in Light Mode */
+.light-mode .bg-rose-500\/10,
+.light-mode .bg-red-500\/10 {
+  background-color: #FEF2F2 !important;
+  border-color: #FECACA !important;
+  color: #DC2626 !important;
+}
+
+/* Form Inputs & Selects in Light Mode */
 .light-mode input,
 .light-mode select,
 .light-mode textarea {
@@ -183,4 +190,32 @@ body {
 
 .light-mode ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
+}
+
+/* ==========================================================================
+   High Contrast & Density Customizations
+   ========================================================================== */
+.high-contrast {
+  filter: contrast(1.18);
+}
+
+.high-contrast .glass-card,
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  border-color: #64748B !important;
+  border-width: 1.5px !important;
+}
+
+.density-compact .glass-card {
+  padding: 1rem !important;
+}
+
+.density-compact table td,
+.density-compact table th {
+  padding: 0.5rem 0.75rem !important;
+}
+
+.density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem !important;
 }

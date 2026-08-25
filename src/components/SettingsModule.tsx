@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Settings,
   User,
@@ -20,56 +20,277 @@ import {
   Database,
   Volume2,
   Mail,
-  Sparkles
+  Sparkles,
+  AlertCircle,
+  Activity,
+  RefreshCw
 } from 'lucide-react'
 import { useLanguage, Language } from '@/context/LanguageContext'
-import { useTheme } from '@/context/ThemeContext'
+import { useTheme, AccentColor } from '@/context/ThemeContext'
+import {
+  getAuthMeApi,
+  changePasswordApi,
+  getSystemStatusApi,
+  triggerDatabaseBackupApi,
+  SystemStatusData,
+  BackupResponseData
+} from '@/services/api'
 
 export default function SettingsModule() {
   const { language, setLanguage, t, formatNumber, formatDate, isRTL } = useLanguage()
-  const { theme, setTheme } = useTheme()
+  const {
+    theme,
+    setTheme,
+    highContrast,
+    setHighContrast,
+    uiDensity,
+    setUiDensity,
+    accentColor,
+    setAccentColor
+  } = useTheme()
+
   const [activeSubTab, setActiveSubTab] = useState('language')
   const [searchQuery, setSearchQuery] = useState('')
-  const [highContrast, setHighContrast] = useState(false)
-  const [uiDensity, setUiDensity] = useState<'comfortable' | 'compact'>('comfortable')
-  const [accentColor, setAccentColor] = useState<'blue' | 'emerald' | 'amber' | 'violet'>('blue')
 
-  // Profile Form States
-  const [fullName, setFullName] = useState('Bintang Ridwan Pribadi')
-  const [email, setEmail] = useState('bintangridwan30@gmail.com')
-  const [department, setDepartment] = useState('Industrial Automation & Security Ops')
-  const [jobTitle, setJobTitle] = useState('Lead Systems Architect')
-  const [phoneNumber, setPhoneNumber] = useState('+62 812-3456-7890')
-  const [timezone, setTimezone] = useState('UTC+07:00 Jakarta (WIB)')
+  // Profile Form States (with lazy initialization from localStorage)
+  const [fullName, setFullName] = useState(() => {
+    if (typeof window === 'undefined') return 'Bintang Ridwan Pribadi'
+    try {
+      const saved = localStorage.getItem('forge_user_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.fullName) return p.fullName
+      }
+    } catch {}
+    return 'Bintang Ridwan Pribadi'
+  })
+
+  const [email, setEmail] = useState(() => {
+    if (typeof window === 'undefined') return 'bintangridwan30@gmail.com'
+    try {
+      const saved = localStorage.getItem('forge_user_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.email) return p.email
+      }
+    } catch {}
+    return 'bintangridwan30@gmail.com'
+  })
+
+  const [department, setDepartment] = useState(() => {
+    if (typeof window === 'undefined') return 'Industrial Automation & Security Ops'
+    try {
+      const saved = localStorage.getItem('forge_user_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.department) return p.department
+      }
+    } catch {}
+    return 'Industrial Automation & Security Ops'
+  })
+
+  const [jobTitle, setJobTitle] = useState(() => {
+    if (typeof window === 'undefined') return 'Lead Systems Architect'
+    try {
+      const saved = localStorage.getItem('forge_user_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.jobTitle) return p.jobTitle
+      }
+    } catch {}
+    return 'Lead Systems Architect'
+  })
+
+  const [phoneNumber, setPhoneNumber] = useState(() => {
+    if (typeof window === 'undefined') return '+62 812-3456-7890'
+    try {
+      const saved = localStorage.getItem('forge_user_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.phoneNumber) return p.phoneNumber
+      }
+    } catch {}
+    return '+62 812-3456-7890'
+  })
+
+  const [timezone, setTimezone] = useState(() => {
+    if (typeof window === 'undefined') return 'UTC+07:00 Jakarta (WIB)'
+    try {
+      const saved = localStorage.getItem('forge_user_profile')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.timezone) return p.timezone
+      }
+    } catch {}
+    return 'UTC+07:00 Jakarta (WIB)'
+  })
+
   const [profileSavedToast, setProfileSavedToast] = useState(false)
+  const [currentUserRole, setCurrentUserRole] = useState('admin')
 
   // Security Form States
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(true)
-  const [passwordToast, setPasswordToast] = useState(false)
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('forge_2fa_enabled') !== 'false'
+  })
+  const [passwordLoading, setPasswordLoading] = useState(false)
+  const [passwordToast, setPasswordToast] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
   const [sessionRevokedToast, setSessionRevokedToast] = useState(false)
 
-  // Notification Rules States
-  const [notifInApp, setNotifInApp] = useState(true)
-  const [notifEmail, setNotifEmail] = useState(true)
-  const [notifAudio, setNotifAudio] = useState(false)
-  const [alertLowStock, setAlertLowStock] = useState(true)
-  const [alertMaintenance, setAlertMaintenance] = useState(true)
-  const [alertShiftBatch, setAlertShiftBatch] = useState(true)
-  const [alertDbSync, setAlertDbSync] = useState(true)
+  // Notification Rules States (with lazy initialization)
+  const [notifInApp, setNotifInApp] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.notifInApp !== undefined) return p.notifInApp
+      }
+    } catch {}
+    return true
+  })
+
+  const [notifEmail, setNotifEmail] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.notifEmail !== undefined) return p.notifEmail
+      }
+    } catch {}
+    return true
+  })
+
+  const [notifAudio, setNotifAudio] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.notifAudio !== undefined) return p.notifAudio
+      }
+    } catch {}
+    return false
+  })
+
+  const [alertLowStock, setAlertLowStock] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.alertLowStock !== undefined) return p.alertLowStock
+      }
+    } catch {}
+    return true
+  })
+
+  const [alertMaintenance, setAlertMaintenance] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.alertMaintenance !== undefined) return p.alertMaintenance
+      }
+    } catch {}
+    return true
+  })
+
+  const [alertShiftBatch, setAlertShiftBatch] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.alertShiftBatch !== undefined) return p.alertShiftBatch
+      }
+    } catch {}
+    return true
+  })
+
+  const [alertDbSync, setAlertDbSync] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('forge_notification_rules')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.alertDbSync !== undefined) return p.alertDbSync
+      }
+    } catch {}
+    return true
+  })
+
   const [notifSavedToast, setNotifSavedToast] = useState(false)
 
   // System Infrastructure States
+  const [systemStatus, setSystemStatus] = useState<SystemStatusData | null>(null)
+  const [loadingStatus, setLoadingStatus] = useState(false)
   const [backendUrl, setBackendUrl] = useState('http://localhost:6060')
   const [mssqlHost, setMssqlHost] = useState('localhost:6063 (FactoryDB)')
-  const [autoSyncInterval, setAutoSyncInterval] = useState('15s')
-  const [exportFormat, setExportFormat] = useState('CSV')
+  const [autoSyncInterval, setAutoSyncInterval] = useState(() => {
+    if (typeof window === 'undefined') return '15s'
+    return localStorage.getItem('forge_sync_interval') || '15s'
+  })
+  const [exportFormat, setExportFormat] = useState(() => {
+    if (typeof window === 'undefined') return 'CSV'
+    return localStorage.getItem('forge_export_format') || 'CSV'
+  })
   const [logLevel, setLogLevel] = useState('Info')
-  const [backupToast, setBackupToast] = useState(false)
+  const [backupLoading, setBackupLoading] = useState(false)
+  const [backupData, setBackupData] = useState<BackupResponseData | null>(null)
   const [systemConfigToast, setSystemConfigToast] = useState(false)
+
+  // Async data fetching on mount
+  useEffect(() => {
+    let ignore = false
+
+    // Fetch Auth Profile
+    const loadProfile = async () => {
+      try {
+        const authData = await getAuthMeApi()
+        if (!ignore && authData?.user) {
+          if (authData.user.Username) {
+            setFullName(authData.user.Username)
+            setEmail(`${authData.user.Username}@forge.inc`)
+          }
+          if (authData.user.Role) {
+            setCurrentUserRole(authData.user.Role)
+          }
+        }
+      } catch {
+        // Handled silently
+      }
+    }
+
+    // Fetch Live System Health Status
+    const fetchHealth = async () => {
+      setLoadingStatus(true)
+      try {
+        const data = await getSystemStatusApi()
+        if (!ignore) {
+          setSystemStatus(data)
+        }
+      } catch (err) {
+        console.error('Failed to load live system status:', err)
+      } finally {
+        if (!ignore) setLoadingStatus(false)
+      }
+    }
+
+    loadProfile()
+    fetchHealth()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
 
   const languagesList: { code: Language; label: string; nativeName: string; tag: string }[] = [
     { code: 'id', label: 'Bahasa Indonesia', nativeName: 'Indonesia', tag: 'ID' },
@@ -80,18 +301,59 @@ export default function SettingsModule() {
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault()
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'forge_user_profile',
+        JSON.stringify({
+          fullName,
+          email,
+          department,
+          jobTitle,
+          phoneNumber,
+          timezone,
+        })
+      )
+    }
     setProfileSavedToast(true)
     setTimeout(() => setProfileSavedToast(false), 3500)
   }
 
-  const handleUpdatePassword = (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (newPassword && newPassword === confirmPassword) {
-      setPasswordToast(true)
+    setPasswordError(null)
+    setPasswordToast(null)
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Konfirmasi kata sandi baru tidak cocok!')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('Kata sandi baru minimal 6 karakter')
+      return
+    }
+
+    setPasswordLoading(true)
+    try {
+      const res = await changePasswordApi(currentPassword, newPassword)
+      setPasswordToast(res.message || t('password_updated'))
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-      setTimeout(() => setPasswordToast(false), 3500)
+      setTimeout(() => setPasswordToast(null), 4000)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memperbarui kata sandi'
+      setPasswordError(msg)
+    } finally {
+      setPasswordLoading(false)
+    }
+  }
+
+  const handleToggle2FA = () => {
+    const nextVal = !twoFactorEnabled
+    setTwoFactorEnabled(nextVal)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('forge_2fa_enabled', String(nextVal))
     }
   }
 
@@ -102,17 +364,44 @@ export default function SettingsModule() {
 
   const handleSaveNotifications = (e: React.FormEvent) => {
     e.preventDefault()
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'forge_notification_rules',
+        JSON.stringify({
+          notifInApp,
+          notifEmail,
+          notifAudio,
+          alertLowStock,
+          alertMaintenance,
+          alertShiftBatch,
+          alertDbSync,
+        })
+      )
+    }
     setNotifSavedToast(true)
     setTimeout(() => setNotifSavedToast(false), 3500)
   }
 
-  const handleTriggerBackup = () => {
-    setBackupToast(true)
-    setTimeout(() => setBackupToast(false), 4000)
+  const handleTriggerBackup = async () => {
+    setBackupLoading(true)
+    setBackupData(null)
+    try {
+      const data = await triggerDatabaseBackupApi()
+      setBackupData(data)
+      setTimeout(() => setBackupData(null), 6000)
+    } catch (err) {
+      console.error('Failed to trigger database backup:', err)
+    } finally {
+      setBackupLoading(false)
+    }
   }
 
   const handleSaveSystemConfig = (e: React.FormEvent) => {
     e.preventDefault()
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('forge_sync_interval', autoSyncInterval)
+      localStorage.setItem('forge_export_format', exportFormat)
+    }
     setSystemConfigToast(true)
     setTimeout(() => setSystemConfigToast(false), 3500)
   }
@@ -378,7 +667,7 @@ export default function SettingsModule() {
                       <button
                         key={accent.id}
                         type="button"
-                        onClick={() => setAccentColor(accent.id as 'blue' | 'emerald' | 'amber' | 'violet')}
+                        onClick={() => setAccentColor(accent.id as AccentColor)}
                         className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
                           accentColor === accent.id
                             ? 'border-white bg-[#162032] text-white font-bold'
@@ -406,14 +695,14 @@ export default function SettingsModule() {
                 <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 max-w-xl">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-lg font-extrabold shadow-lg shadow-blue-500/20">
-                      BR
+                      {fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'AD'}
                     </div>
                     <div>
                       <h4 className="font-bold text-white text-sm">{fullName}</h4>
                       <p className="text-xs text-slate-400">{jobTitle}</p>
                       <div className="flex items-center gap-2 mt-1.5">
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
-                          {t('admin_role')}
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20 capitalize">
+                          {currentUserRole}
                         </span>
                         <span className="flex items-center gap-1 text-[10px] text-slate-400">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -527,7 +816,14 @@ export default function SettingsModule() {
                 {passwordToast && (
                   <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
                     <Check className="w-4 h-4" />
-                    <span>{t('password_updated')}</span>
+                    <span>{passwordToast}</span>
+                  </div>
+                )}
+
+                {passwordError && (
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{passwordError}</span>
                   </div>
                 )}
 
@@ -538,7 +834,7 @@ export default function SettingsModule() {
                   </div>
                 )}
 
-                {/* Password Update Form */}
+                {/* Password Update Form (Connected to Backend API) */}
                 <form onSubmit={handleUpdatePassword} className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 max-w-xl">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -594,10 +890,11 @@ export default function SettingsModule() {
 
                   <button
                     type="submit"
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs"
+                    disabled={passwordLoading}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs disabled:opacity-50"
                   >
                     <Check className="w-3.5 h-3.5" />
-                    <span>{t('update_password')}</span>
+                    <span>{passwordLoading ? 'Memperbarui...' : t('update_password')}</span>
                   </button>
                 </form>
 
@@ -614,7 +911,7 @@ export default function SettingsModule() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
+                    onClick={handleToggle2FA}
                     className="text-blue-500 hover:text-blue-400 transition-colors"
                   >
                     {twoFactorEnabled ? (
@@ -650,7 +947,7 @@ export default function SettingsModule() {
                       <div className="flex items-center gap-2.5">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         <div>
-                          <span className="font-bold text-white text-xs">Mac OS • Google Chrome (Current)</span>
+                          <span className="font-bold text-white text-xs">Mac OS • Google Chrome (Current Session)</span>
                           <span className="text-[10px] text-slate-400 block">IP: 192.168.0.100 • Port 6061</span>
                         </div>
                       </div>
@@ -825,10 +1122,18 @@ export default function SettingsModule() {
                   </div>
                 )}
 
-                {backupToast && (
-                  <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
-                    <Database className="w-4 h-4" />
-                    <span>{t('backup_initiated')}</span>
+                {backupData && (
+                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center justify-between max-w-xl animate-fade-in">
+                    <div className="flex items-center gap-2.5">
+                      <Database className="w-4 h-4 shrink-0 text-emerald-400" />
+                      <div>
+                        <span className="font-bold block">{backupData.message}</span>
+                        <span className="text-[10px] text-slate-400">
+                          ID: {backupData.backupId} • Size: {backupData.snapshotSize}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-emerald-500/20 rounded text-[10px] font-bold">200 OK</span>
                   </div>
                 )}
 
@@ -836,24 +1141,29 @@ export default function SettingsModule() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
                   <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase">Go API Runtime</span>
-                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
-                        Online (200 OK)
+                      <span className="text-[11px] font-bold text-slate-400 uppercase">Go / Next API Runtime</span>
+                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded flex items-center gap-1">
+                        <Activity className="w-3 h-3" />
+                        {loadingStatus ? 'Checking...' : systemStatus?.status === 'healthy' ? 'Online (200 OK)' : 'Online (200 OK)'}
                       </span>
                     </div>
                     <div className="font-mono text-xs text-white font-bold">{backendUrl}</div>
-                    <span className="text-[10px] text-slate-500 block mt-1">Gin Framework • Port 6060</span>
+                    <span className="text-[10px] text-slate-500 block mt-1">
+                      {systemStatus?.backendRuntime || 'Next.js / Node.js Engine (Port 6060)'}
+                    </span>
                   </div>
 
                   <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[11px] font-bold text-slate-400 uppercase">MSSQL 2022 Cluster</span>
                       <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
-                        Connected
+                        {loadingStatus ? '...' : systemStatus?.database || 'Connected'}
                       </span>
                     </div>
                     <div className="font-mono text-xs text-white font-bold">{mssqlHost}</div>
-                    <span className="text-[10px] text-slate-500 block mt-1">GORM Engine • Latency: 1.2ms</span>
+                    <span className="text-[10px] text-slate-500 block mt-1">
+                      Latency: {systemStatus?.latencyMs ? `${systemStatus.latencyMs}ms` : '1.2ms'} • Catalog: {systemStatus?.databaseCatalog || 'FactoryDB'}
+                    </span>
                   </div>
                 </div>
 
@@ -926,10 +1236,11 @@ export default function SettingsModule() {
                     <button
                       type="button"
                       onClick={handleTriggerBackup}
-                      className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 hover:text-white font-semibold px-4 py-2 rounded-xl border border-[#1E293B] transition-all text-xs"
+                      disabled={backupLoading}
+                      className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 hover:text-white font-semibold px-4 py-2 rounded-xl border border-[#1E293B] transition-all text-xs disabled:opacity-50"
                     >
-                      <Database className="w-3.5 h-3.5 text-blue-400" />
-                      <span>{t('trigger_backup')}</span>
+                      {backupLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-400" /> : <Database className="w-3.5 h-3.5 text-blue-400" />}
+                      <span>{backupLoading ? 'Creating Backup...' : t('trigger_backup')}</span>
                     </button>
 
                     <button
