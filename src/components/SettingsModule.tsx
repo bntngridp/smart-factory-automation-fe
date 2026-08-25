@@ -26,9 +26,9 @@ export default function SettingsModule() {
   const [highContrast, setHighContrast] = useState(false)
 
   const systemRolesList = [
-    { name: 'Sarah Connor', email: 's.connor@forge.io', role: 'Admin', roleColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', status: 'Active', lastLogin: '2 mins ago', avatarBg: 'bg-blue-600' },
-    { name: 'Marcus Reed', email: 'm.reed@forge.io', role: 'Manager', roleColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30', status: 'Active', lastLogin: '1 hour ago', avatarBg: 'bg-amber-600' },
-    { name: 'James Taggart', email: 'j.taggart@forge.io', role: 'Operator', roleColor: 'bg-slate-500/10 text-slate-400 border-slate-500/30', status: 'Offline', lastLogin: 'Yesterday', avatarBg: 'bg-slate-600' },
+    { name: 'Sarah Connor', email: 's.connor@forge.io', roleKey: 'admin_role', roleColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', statusKey: 'active_status_label', lastLoginKey: '2_mins_ago', avatarBg: 'bg-blue-600' },
+    { name: 'Marcus Reed', email: 'm.reed@forge.io', roleKey: 'manager_role', roleColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30', statusKey: 'active_status_label', lastLoginKey: '1_hour_ago', avatarBg: 'bg-amber-600' },
+    { name: 'James Taggart', email: 'j.taggart@forge.io', roleKey: 'operator_role', roleColor: 'bg-slate-500/10 text-slate-400 border-slate-500/30', statusKey: 'offline_status_label', lastLoginKey: 'yesterday', avatarBg: 'bg-slate-600' },
   ]
 
   const languagesList: { code: Language; label: string; nativeName: string }[] = [
@@ -49,7 +49,7 @@ export default function SettingsModule() {
             </h1>
             <span className="text-xs font-bold bg-slate-500/10 text-slate-400 border border-slate-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Settings className="w-3 h-3" />
-              System Config
+              {t('system_config')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -270,24 +270,24 @@ export default function SettingsModule() {
                         </td>
                         <td className="p-3">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${user.roleColor}`}>
-                            {user.role}
+                            {t(user.roleKey)}
                           </span>
                         </td>
                         <td className="p-3 text-center">
-                          {user.status === 'Active' ? (
+                          {user.statusKey === 'active_status_label' ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                              Active
+                              {t('active_status_label')}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500">
                               <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                              Offline
+                              {t('offline_status_label')}
                             </span>
                           )}
                         </td>
                         <td className="p-3 text-center text-slate-400 font-mono text-[11px]">
-                          {user.lastLogin}
+                          {t(user.lastLoginKey)}
                         </td>
                         <td className="p-3 text-right">
                           <button className="text-slate-400 hover:text-white p-1">

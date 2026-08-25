@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { X, Check, AlertCircle } from 'lucide-react'
 import { createProductApi } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface AddProductModalProps {
   isOpen: boolean
@@ -15,6 +16,7 @@ export default function AddProductModal({
   onClose,
   onSuccess
 }: AddProductModalProps) {
+  const { t } = useLanguage()
   const [productName, setProductName] = useState('')
   const [category, setCategory] = useState('Electronics & Automation')
   const [unit, setUnit] = useState('Pieces (pcs)')
@@ -68,8 +70,8 @@ export default function AddProductModal({
 
         {/* Modal Header */}
         <div className="mb-6">
-          <h3 className="text-xl font-extrabold text-white tracking-tight">Add New Product</h3>
-          <p className="text-xs text-slate-400 mt-1">Enter product details for inventory tracking.</p>
+          <h3 className="text-xl font-extrabold text-white tracking-tight">{t('add_product_title')}</h3>
+          <p className="text-xs text-slate-400 mt-1">{t('add_product_desc')}</p>
         </div>
 
         {error && (
@@ -82,7 +84,7 @@ export default function AddProductModal({
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           {/* Product Name */}
           <div>
-            <label className="block text-slate-300 font-semibold mb-1.5">Product Name *</label>
+            <label className="block text-slate-300 font-semibold mb-1.5">{t('product_name')} *</label>
             <input
               type="text"
               required
@@ -96,32 +98,32 @@ export default function AddProductModal({
           {/* Category & Unit of Measure */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Category</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('category')}</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500"
               >
-                <option value="Electronics & Automation">Electronics & Automation</option>
-                <option value="Mechanical Parts">Mechanical Parts</option>
-                <option value="Sensors & Transducers">Sensors & Transducers</option>
-                <option value="PLCs & Controllers">PLCs & Controllers</option>
-                <option value="Raw Materials">Raw Materials</option>
+                <option value="Electronics & Automation">{t('category_electronics')}</option>
+                <option value="Mechanical Parts">{t('category_mechanical')}</option>
+                <option value="Sensors & Transducers">{t('category_sensors')}</option>
+                <option value="PLCs & Controllers">{t('category_plcs')}</option>
+                <option value="Raw Materials">{t('category_raw')}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Unit of Measure</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('unit_of_measure')}</label>
               <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
                 className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500"
               >
-                <option value="Pieces (pcs)">Pieces (pcs)</option>
-                <option value="Units (unit)">Units (unit)</option>
-                <option value="Boxes (box)">Boxes (box)</option>
-                <option value="Meters (m)">Meters (m)</option>
-                <option value="Kilograms (kg)">Kilograms (kg)</option>
+                <option value="Pieces (pcs)">{t('unit_pcs')}</option>
+                <option value="Units (unit)">{t('units')}</option>
+                <option value="Boxes (box)">{t('unit_box')}</option>
+                <option value="Meters (m)">{t('unit_meter')}</option>
+                <option value="Kilograms (kg)">{t('unit_kg')}</option>
               </select>
             </div>
           </div>
@@ -129,7 +131,7 @@ export default function AddProductModal({
           {/* Initial Stock, Min Stock Level, Primary Supplier */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Initial Stock</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('initial_stock_label')}</label>
               <input
                 type="number"
                 min="0"
@@ -140,7 +142,7 @@ export default function AddProductModal({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Min. Stock Level</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('min_stock_label')}</label>
               <input
                 type="number"
                 min="0"
@@ -151,7 +153,7 @@ export default function AddProductModal({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1.5">Primary Supplier</label>
+              <label className="block text-slate-300 font-semibold mb-1.5">{t('primary_supplier_label')}</label>
               <input
                 type="text"
                 placeholder="Supplier Name"
@@ -164,7 +166,7 @@ export default function AddProductModal({
 
           {/* Description */}
           <div>
-            <label className="block text-slate-300 font-semibold mb-1.5">Description</label>
+            <label className="block text-slate-300 font-semibold mb-1.5">{t('description')}</label>
             <textarea
               rows={3}
               placeholder="Technical specifications or notes..."
@@ -177,7 +179,7 @@ export default function AddProductModal({
           {/* Active Status Switch Card */}
           <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 flex items-center justify-between">
             <div>
-              <h4 className="font-bold text-white text-xs">Active Status</h4>
+              <h4 className="font-bold text-white text-xs">{t('active_status')}</h4>
               <p className="text-[11px] text-slate-400">Product available for production orders.</p>
             </div>
             <button
@@ -204,7 +206,7 @@ export default function AddProductModal({
               onClick={onClose}
               className="px-5 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold bg-[#0F172A] border border-[#1E293B] hover:bg-[#1E2D47] transition-all"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -212,7 +214,7 @@ export default function AddProductModal({
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
-              <span>{loading ? 'Saving...' : 'Save Product'}</span>
+              <span>{loading ? '...' : t('save_product')}</span>
             </button>
           </div>
         </form>

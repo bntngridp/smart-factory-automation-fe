@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut, X, ShieldCheck } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface LogoutModalProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ interface LogoutModalProps {
 }
 
 export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
+  const { t, formatNumber } = useLanguage()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -67,10 +69,10 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
           </div>
 
           <h3 className="text-xl font-extrabold text-white tracking-tight">
-            Confirm Sign Out
+            {t('confirm_sign_out')}
           </h3>
           <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
-            Are you sure you want to end your session? You will need to sign in again to access the control center.
+            {t('sign_out_desc')}
           </p>
         </div>
 
@@ -84,11 +86,11 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
               <h4 className="font-bold text-white text-xs leading-tight">{username}</h4>
               <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-medium mt-0.5">
                 <ShieldCheck className="w-3 h-3" />
-                Active Session
+                {t('active_session')}
               </span>
             </div>
           </div>
-          <span className="text-[10px] text-slate-500 font-mono">Port 6061</span>
+          <span className="text-[10px] text-slate-500 font-mono">Port {formatNumber(6061)}</span>
         </div>
 
         {/* Action Buttons */}
@@ -99,7 +101,7 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
             disabled={loading}
             className="flex-1 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold bg-[#0F172A] border border-[#1E293B] hover:bg-[#1E2D47] transition-all text-xs"
           >
-            Cancel
+            {t('cancel')}
           </button>
           <button
             type="button"
@@ -108,7 +110,7 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
             className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-rose-500/20 transition-all text-xs disabled:opacity-50"
           >
             <LogOut className="w-4 h-4" />
-            <span>{loading ? 'Signing Out...' : 'Yes, Sign Out'}</span>
+            <span>{loading ? t('signing_out') : t('yes_sign_out')}</span>
           </button>
         </div>
       </div>

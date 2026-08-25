@@ -12,15 +12,16 @@ import {
   Trash2,
   ExternalLink
 } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
 
 export interface NotificationItem {
   id: string
-  title: string
-  message: string
-  time: string
+  titleKey: string
+  messageKey: string
+  timeKey: string
   type: 'critical' | 'warning' | 'info' | 'success'
   read: boolean
-  actionLabel?: string
+  actionKey?: string
 }
 
 interface NotificationsModalProps {
@@ -32,39 +33,40 @@ export default function NotificationsModal({
   isOpen,
   onClose
 }: NotificationsModalProps) {
+  const { t, formatNumber } = useLanguage()
   const [filter, setFilter] = useState<'all' | 'unread' | 'critical'>('all')
   const [notifications, setNotifications] = useState<NotificationItem[]>([
     {
       id: '1',
-      title: 'Low Stock Alert Breached',
-      message: 'Servo Motor A-12 is currently at 2 units (Minimum threshold: 10 units). Immediate restocking recommended.',
-      time: '5 mins ago',
+      titleKey: 'notif_1_title',
+      messageKey: 'notif_1_msg',
+      timeKey: '5_mins_ago',
       type: 'critical',
       read: false,
-      actionLabel: 'Produce Stock'
+      actionKey: 'produce_stock_btn'
     },
     {
       id: '2',
-      title: 'Scheduled Maintenance Warning',
-      message: 'Machine CNC-01 (Milling) has reached 500 operating hours. Maintenance check due in 4 hours.',
-      time: '25 mins ago',
+      titleKey: 'notif_2_title',
+      messageKey: 'notif_2_msg',
+      timeKey: '25_mins_ago',
       type: 'warning',
       read: false,
-      actionLabel: 'Schedule'
+      actionKey: 'schedule_btn'
     },
     {
       id: '3',
-      title: 'Production Shift Batch Completed',
-      message: 'Shift A completed 45 units of Titanium Casing Alpha by operator J. Miller. Inventory mutated +45 pcs.',
-      time: '1 hour ago',
+      titleKey: 'notif_3_title',
+      messageKey: 'notif_3_msg',
+      timeKey: '1_hour_ago',
       type: 'success',
       read: true
     },
     {
       id: '4',
-      title: 'MSSQL Database Sync Successful',
-      message: 'Automated backup & telemetry index synchronization completed successfully on port 6063.',
-      time: '3 hours ago',
+      titleKey: 'notif_4_title',
+      messageKey: 'notif_4_msg',
+      timeKey: '3_hours_ago',
       type: 'info',
       read: true
     }
@@ -117,16 +119,16 @@ export default function NotificationsModal({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-extrabold text-white tracking-tight">
-                  Notification Center
+                  {t('notification_center')}
                 </h3>
                 {unreadCount > 0 && (
                   <span className="text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded-full">
-                    {unreadCount} new
+                    {formatNumber(unreadCount)} {t('new_badge')}
                   </span>
                 )}
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Real-time operational alerts, inventory warnings, and system logs.
+                {t('notifications_desc')}
               </p>
             </div>
           </div>
@@ -143,7 +145,7 @@ export default function NotificationsModal({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              All ({notifications.length})
+              {t('all_filter')} ({formatNumber(notifications.length)})
             </button>
             <button
               onClick={() => setFilter('unread')}
@@ -153,7 +155,7 @@ export default function NotificationsModal({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Unread ({unreadCount})
+              {t('unread_filter')} ({formatNumber(unreadCount)})
             </button>
             <button
               onClick={() => setFilter('critical')}
@@ -163,7 +165,7 @@ export default function NotificationsModal({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Critical
+              {t('critical_filter')}
             </button>
           </div>
 
@@ -173,14 +175,14 @@ export default function NotificationsModal({
               className="flex items-center gap-1.5 text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors"
             >
               <CheckCheck className="w-3.5 h-3.5 text-blue-400" />
-              <span>Mark read</span>
+              <span>{t('mark_all_read')}</span>
             </button>
             <button
               onClick={clearAll}
               className="flex items-center gap-1.5 text-slate-400 hover:text-rose-400 px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear</span>
+              <span>{t('clear_all')}</span>
             </button>
           </div>
         </div>
@@ -190,8 +192,7 @@ export default function NotificationsModal({
           {filteredNotifications.length === 0 ? (
             <div className="py-12 text-center text-slate-400 text-xs">
               <Bell className="w-8 h-8 text-slate-600 mx-auto mb-2 opacity-50" />
-              <p className="font-semibold text-slate-300">No notifications found</p>
-              <p className="text-[11px] text-slate-500 mt-1">All clear! No alerts matching the selected filter.</p>
+              <p className="font-semibold text-slate-300">{t('no_notifications')}</p>
             </div>
           ) : (
             filteredNotifications.map((item) => (
@@ -230,31 +231,31 @@ export default function NotificationsModal({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h4 className="font-bold text-white text-xs tracking-wide flex items-center gap-2">
-                        {item.title}
+                        {t(item.titleKey)}
                         {!item.read && (
                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                         )}
                       </h4>
                       <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {item.time}
+                        {t(item.timeKey)}
                       </span>
                     </div>
 
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      {item.message}
+                      {t(item.messageKey)}
                     </p>
 
-                    {item.actionLabel && (
+                    {item.actionKey && (
                       <div className="mt-3 flex items-center gap-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            alert(`Action ${item.actionLabel} executed`)
+                            alert(`Action ${t(item.actionKey!)} executed`)
                           }}
                           className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 border border-blue-500/30 font-semibold text-[11px] px-3 py-1 rounded-lg flex items-center gap-1 transition-all"
                         >
-                          <span>{item.actionLabel}</span>
+                          <span>{t(item.actionKey)}</span>
                           <ExternalLink className="w-3 h-3" />
                         </button>
                       </div>
@@ -273,7 +274,7 @@ export default function NotificationsModal({
             onClick={onClose}
             className="bg-[#0F172A] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 font-semibold px-4 py-2 rounded-xl transition-all"
           >
-            Close
+            {t('cancel')}
           </button>
         </div>
       </div>

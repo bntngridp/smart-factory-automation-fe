@@ -14,6 +14,7 @@ import ProductionLogsModule from '@/components/ProductionLogsModule'
 import UsersModule from '@/components/UsersModule'
 import ReportsModule from '@/components/ReportsModule'
 import SettingsModule from '@/components/SettingsModule'
+import HelpModule from '@/components/HelpModule'
 import AddProductModal from '@/components/Modals/AddProductModal'
 import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
@@ -199,19 +200,21 @@ export default function Home() {
             <ReportsModule />
           ) : activeTab === 'settings' ? (
             <SettingsModule />
+          ) : activeTab === 'help' ? (
+            <HelpModule onBackToDashboard={() => setActiveTab('dashboard')} />
           ) : (
             <div className="glass-card rounded-2xl p-12 text-center my-12">
               <h2 className="text-xl font-bold text-white mb-2 capitalize">
-                {activeTab.replace('-', ' ')} Module
+                {activeTab.replace('-', ' ')}
               </h2>
               <p className="text-sm text-slate-400 mb-6">
-                Detailed view for {activeTab} is currently active.
+                {t('realtime_overview')}
               </p>
               <button
                 onClick={() => setActiveTab('dashboard')}
                 className="bg-[#3B82F6] hover:bg-[#2563EB] text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all"
               >
-                Back to Executive Dashboard
+                {t('back_to_dashboard')}
               </button>
             </div>
           )}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { X, ArrowUpRight, Check, AlertCircle } from 'lucide-react'
 import { getProductsApi, createStockOutApi, Product } from '@/services/api'
+import { useLanguage } from '@/context/LanguageContext'
 
 interface StockOutModalProps {
   isOpen: boolean
@@ -15,6 +16,7 @@ export default function StockOutModal({
   onClose,
   onSuccess
 }: StockOutModalProps) {
+  const { t, formatNumber } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [selectedProductId, setSelectedProductId] = useState<number | ''>('')
   const [quantity, setQuantity] = useState<number>(10)
@@ -87,8 +89,8 @@ export default function StockOutModal({
             <ArrowUpRight className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white leading-tight">Record Inventory Stock Out</h3>
-            <p className="text-xs text-slate-400">Deduct stock for distribution or maintenance</p>
+            <h3 className="text-lg font-bold text-white leading-tight">{t('record_stock_out_title')}</h3>
+            <p className="text-xs text-slate-400">{t('record_stock_out_desc')}</p>
           </div>
         </div>
 
@@ -101,7 +103,7 @@ export default function StockOutModal({
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-300 font-semibold mb-1.5">Select Product *</label>
+            <label className="block text-slate-300 font-semibold mb-1.5">{t('select_product_prompt')}</label>
             <select
               required
               value={selectedProductId}
@@ -109,11 +111,11 @@ export default function StockOutModal({
               className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-500"
             >
               {products.length === 0 ? (
-                <option value="">No products found</option>
+                <option value="">{t('no_products') || 'No products found'}</option>
               ) : (
                 products.map((p) => (
                   <option key={p.ProductID} value={p.ProductID}>
-                    [{p.ProductID}] {p.ProductName} ({p.Unit || 'pcs'})
+                    [PRD-{formatNumber(p.ProductID)}] {p.ProductName} ({p.Unit === 'pcs' || p.Unit === 'pzas' ? t('pcs') : p.Unit || t('units')})
                   </option>
                 ))
               )}
@@ -121,7 +123,7 @@ export default function StockOutModal({
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1.5">Stock Out Quantity *</label>
+            <label className="block text-slate-300 font-semibold mb-1.5">{t('quantity_deducted')} *</label>
             <input
               type="number"
               min="1"
@@ -141,7 +143,7 @@ export default function StockOutModal({
               onClick={onClose}
               className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -149,7 +151,7 @@ export default function StockOutModal({
               className="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
-              <span>{loading ? 'Processing...' : 'Deduct Stock'}</span>
+              <span>{loading ? '...' : t('confirm_stock_out')}</span>
             </button>
           </div>
         </form>
