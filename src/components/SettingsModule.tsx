@@ -10,9 +10,7 @@ import {
   Server,
   Search,
   Check,
-  UserPlus,
   Globe,
-  MoreVertical,
   ChevronDown,
   Eye,
   EyeOff,
@@ -72,12 +70,6 @@ export default function SettingsModule() {
   const [logLevel, setLogLevel] = useState('Info')
   const [backupToast, setBackupToast] = useState(false)
   const [systemConfigToast, setSystemConfigToast] = useState(false)
-
-  const systemRolesList = [
-    { name: 'Sarah Connor', email: 's.connor@forge.io', roleKey: 'admin_role', roleColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', statusKey: 'active_status_label', lastLoginKey: '2_mins_ago', avatarBg: 'bg-blue-600' },
-    { name: 'Marcus Reed', email: 'm.reed@forge.io', roleKey: 'manager_role', roleColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30', statusKey: 'active_status_label', lastLoginKey: '1_hour_ago', avatarBg: 'bg-amber-600' },
-    { name: 'James Taggart', email: 'j.taggart@forge.io', roleKey: 'operator_role', roleColor: 'bg-slate-500/10 text-slate-400 border-slate-500/30', statusKey: 'offline_status_label', lastLoginKey: 'yesterday', avatarBg: 'bg-slate-600' },
-  ]
 
   const languagesList: { code: Language; label: string; nativeName: string; tag: string }[] = [
     { code: 'id', label: 'Bahasa Indonesia', nativeName: 'Indonesia', tag: 'ID' },
@@ -951,81 +943,6 @@ export default function SettingsModule() {
                 </form>
               </div>
             )}
-
-            {/* System Roles Table Section */}
-            <div className="pt-6 border-t border-[#1E293B] space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">{t('system_roles')}</h3>
-                  <p className="text-slate-400 mt-0.5">{t('manage_user_access')}</p>
-                </div>
-                <button
-                  onClick={() => alert('User management modal')}
-                  className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>{t('add_user')}</span>
-                </button>
-              </div>
-
-              {/* System Roles Mini Table */}
-              <div className="overflow-x-auto border border-[#1E293B] rounded-xl bg-[#0F172A]">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                      <th className="p-3">{t('user')}</th>
-                      <th className="p-3">{t('role')}</th>
-                      <th className="p-3 text-center">{t('status')}</th>
-                      <th className="p-3 text-center">{t('last_login')}</th>
-                      <th className="p-3 text-right">{t('actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1E293B]">
-                    {systemRolesList.map((user, idx) => (
-                      <tr key={idx} className="hover:bg-[#162032] transition-colors">
-                        <td className="p-3">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-7 h-7 rounded-full ${user.avatarBg} flex items-center justify-center text-white font-bold text-[10px]`}>
-                              {user.name.split(' ').map((n) => n[0]).join('')}
-                            </div>
-                            <div>
-                              <h5 className="font-bold text-white text-xs leading-tight">{user.name}</h5>
-                              <p className="text-[10px] text-slate-400">{user.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-3">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${user.roleColor}`}>
-                            {t(user.roleKey)}
-                          </span>
-                        </td>
-                        <td className="p-3 text-center">
-                          {user.statusKey === 'active_status_label' ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                              {t('active_status_label')}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500">
-                              <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                              {t('offline_status_label')}
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-3 text-center text-slate-400 font-mono text-[11px]">
-                          {t(user.lastLoginKey)}
-                        </td>
-                        <td className="p-3 text-right">
-                          <button className="text-slate-400 hover:text-white p-1">
-                            <MoreVertical className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
         </div>
       </div>
