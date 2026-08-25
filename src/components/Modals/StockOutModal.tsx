@@ -22,22 +22,26 @@ export default function StockOutModal({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (isOpen) {
-      fetchProducts()
-    }
-  }, [isOpen])
-
-  const fetchProducts = async () => {
-    try {
-      const data = await getProductsApi()
-      setProducts(data)
-      if (data.length > 0 && !selectedProductId) {
-        setSelectedProductId(data[0].ProductID)
+    let ignore = false
+    const load = async () => {
+      if (!isOpen) return
+      try {
+        const data = await getProductsApi()
+        if (!ignore) {
+          setProducts(data)
+          if (data.length > 0 && !selectedProductId) {
+            setSelectedProductId(data[0].ProductID)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch products for stock out modal:', err)
       }
-    } catch (err) {
-      console.error('Failed to fetch products for stock out modal:', err)
     }
-  }
+    load()
+    return () => {
+      ignore = true
+    }
+  }, [isOpen, selectedProductId])
 
   if (!isOpen) return null
 
@@ -60,8 +64,9 @@ export default function StockOutModal({
 
       onSuccess()
       onClose()
-    } catch (err: any) {
-      setError(err.message || 'Gagal mencatat pengurangan stok ke server')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal mencatat pengurangan stok ke server'
+      setError(msg)
     } finally {
       setLoading(false)
     }

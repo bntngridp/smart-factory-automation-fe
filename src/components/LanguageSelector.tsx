@@ -9,11 +9,11 @@ export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const languages: { code: Language; label: string; flag: string }[] = [
-    { code: 'en', label: 'English', flag: '🇬🇧' },
-    { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
-    { code: 'ar', label: 'العربية (Arabic)', flag: '🇸🇦' },
-    { code: 'es', label: 'Español', flag: '🇪🇸' },
+  const languages: { code: Language; label: string; tag: string }[] = [
+    { code: 'en', label: 'English', tag: 'EN' },
+    { code: 'id', label: 'Bahasa Indonesia', tag: 'ID' },
+    { code: 'ar', label: 'العربية (Arabic)', tag: 'AR' },
+    { code: 'es', label: 'Español', tag: 'ES' },
   ]
 
   const currentLangObj = languages.find((l) => l.code === language) || languages[0]
@@ -36,17 +36,19 @@ export default function LanguageSelector() {
         title="Change Language"
       >
         <Globe className="w-3.5 h-3.5 text-blue-400" />
-        <span className="flex items-center gap-1">
-          <span>{currentLangObj.flag}</span>
-          <span className="hidden md:inline">{currentLangObj.label}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-mono text-[10px] font-bold text-slate-400 bg-[#0B0F17] px-1.5 py-0.5 rounded border border-[#1E293B]">
+            {currentLangObj.tag}
+          </span>
+          <span className="hidden md:inline text-xs">{currentLangObj.label}</span>
         </span>
         <ChevronDown className="w-3 h-3 text-slate-400" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-[#162032] border border-[#1E293B] rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in">
+        <div className="absolute right-0 mt-2 w-52 bg-[#162032] border border-[#1E293B] rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in">
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 mb-1 border-b border-[#1E293B]">
-            Select Language
+            Interface Language
           </div>
           {languages.map((lang) => (
             <button
@@ -62,7 +64,9 @@ export default function LanguageSelector() {
               }`}
             >
               <span className="flex items-center gap-2">
-                <span>{lang.flag}</span>
+                <span className="font-mono text-[10px] font-bold text-slate-400 bg-[#0B0F17] px-1.5 py-0.5 rounded border border-[#1E293B]">
+                  {lang.tag}
+                </span>
                 <span>{lang.label}</span>
               </span>
               {language === lang.code && <Check className="w-3.5 h-3.5" />}

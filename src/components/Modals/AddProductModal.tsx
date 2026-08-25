@@ -47,8 +47,9 @@ export default function AddProductModal({
       setProductName('')
       setSupplier('')
       setDescription('')
-    } catch (err: any) {
-      setError(err.message || 'Gagal menambahkan produk baru ke server')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menambahkan produk baru ke server'
+      setError(msg)
     } finally {
       setLoading(false)
     }

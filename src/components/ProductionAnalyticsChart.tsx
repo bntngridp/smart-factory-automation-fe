@@ -91,7 +91,7 @@ export default function ProductionAnalyticsChart() {
                 boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)'
               }}
               itemStyle={{ color: '#2563EB', fontSize: '12px' }}
-              formatter={(val: any) => [`${val} units`, 'Production']}
+              formatter={(val: unknown) => [`${val} units`, 'Production']}
             />
             <Area
               type="monotone"

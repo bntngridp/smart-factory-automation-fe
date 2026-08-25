@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, X, AlertTriangle, ShieldCheck } from 'lucide-react'
+import { LogOut, X, ShieldCheck } from 'lucide-react'
 
 interface LogoutModalProps {
   isOpen: boolean
@@ -45,7 +45,7 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
       try {
         const parsed = JSON.parse(savedUser)
         username = parsed.Username || username
-      } catch (e) {}
+      } catch {}
     }
   }
 

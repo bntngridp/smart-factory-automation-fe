@@ -44,7 +44,23 @@ export default function UsersModule() {
   }
 
   useEffect(() => {
-    fetchUsers()
+    let ignore = false
+    const load = async () => {
+      try {
+        const data = await getUsersApi()
+        if (!ignore) {
+          setUsers(data)
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to fetch users:', err)
+        if (!ignore) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      ignore = true
+    }
   }, [])
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -64,8 +80,9 @@ export default function UsersModule() {
       fetchUsers()
       setIsInviteOpen(false)
       setNewUsername('')
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal membuat akun user baru')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal membuat akun user baru'
+      setErrorMsg(msg)
     } finally {
       setSubmitting(false)
     }
@@ -101,7 +118,7 @@ export default function UsersModule() {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchUsers}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Sync</span>

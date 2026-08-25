@@ -25,25 +25,28 @@ export default function RecordProductionModal({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (isOpen) {
-      fetchProducts()
-      if (preselectedProductId) {
-        setSelectedProductId(preselectedProductId)
+    let ignore = false
+    const load = async () => {
+      if (!isOpen) return
+      try {
+        const data = await getProductsApi()
+        if (!ignore) {
+          setProducts(data)
+          if (preselectedProductId) {
+            setSelectedProductId(preselectedProductId)
+          } else if (data.length > 0 && !selectedProductId) {
+            setSelectedProductId(data[0].ProductID)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch products for production log modal:', err)
       }
     }
-  }, [isOpen, preselectedProductId])
-
-  const fetchProducts = async () => {
-    try {
-      const data = await getProductsApi()
-      setProducts(data)
-      if (data.length > 0 && !selectedProductId && !preselectedProductId) {
-        setSelectedProductId(data[0].ProductID)
-      }
-    } catch (err) {
-      console.error('Failed to fetch products for production log modal:', err)
+    load()
+    return () => {
+      ignore = true
     }
-  }
+  }, [isOpen, preselectedProductId, selectedProductId])
 
   if (!isOpen) return null
 
@@ -66,8 +69,9 @@ export default function RecordProductionModal({
 
       onSuccess()
       onClose()
-    } catch (err: any) {
-      setError(err.message || 'Gagal mencatat log produksi ke server')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal mencatat log produksi ke server'
+      setError(msg)
     } finally {
       setLoading(false)
     }

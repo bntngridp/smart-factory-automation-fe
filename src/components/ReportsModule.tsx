@@ -26,6 +26,7 @@ import {
 import { getReportsApi, ReportsAnalyticsData } from '@/services/api'
 
 export default function ReportsModule() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [timeframe, setTimeframe] = useState('Last 30 Days')
   const [data, setData] = useState<ReportsAnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -43,7 +44,23 @@ export default function ReportsModule() {
   }
 
   useEffect(() => {
-    fetchReports()
+    let ignore = false
+    const load = async () => {
+      try {
+        const res = await getReportsApi()
+        if (!ignore) {
+          setData(res)
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to fetch reports analytics:', err)
+        if (!ignore) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      ignore = true
+    }
   }, [])
 
   const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
@@ -100,7 +117,7 @@ export default function ReportsModule() {
         <div className="flex items-center gap-2">
           <button
             onClick={fetchReports}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Sync</span>
@@ -169,7 +186,7 @@ export default function ReportsModule() {
                     borderRadius: '12px',
                     color: '#F8FAFC'
                   }}
-                  formatter={(val: any) => [`${val} units`, 'Output']}
+                  formatter={(val: unknown) => [`${val} units`, 'Output']}
                 />
                 <Bar dataKey="output" radius={[6, 6, 0, 0]} fill="#3B82F6" />
               </BarChart>
@@ -242,7 +259,7 @@ export default function ReportsModule() {
               Machine Performance Heatmap
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Uptime & efficiency across active units (Last 24h)
+              Uptime and efficiency across active units (Last 24h)
             </p>
           </div>
           <div className="flex items-center gap-3 text-[10px] text-slate-400">

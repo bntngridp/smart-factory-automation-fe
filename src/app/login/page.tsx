@@ -43,8 +43,9 @@ export default function LoginPage() {
       setTimeout(() => {
         router.push('/')
       }, 800)
-    } catch (err: any) {
-      setError(err.message || 'Authentication server unreachable')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Authentication server unreachable'
+      setError(msg)
     } finally {
       setLoading(false)
     }

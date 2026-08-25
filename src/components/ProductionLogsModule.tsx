@@ -24,6 +24,7 @@ interface ProductionLogsModuleProps {
 }
 
 export default function ProductionLogsModule({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onOpenRecordProduction
 }: ProductionLogsModuleProps) {
   const [products, setProducts] = useState<Product[]>([])
@@ -41,23 +42,6 @@ export default function ProductionLogsModule({
   const [shift, setShift] = useState('Morning (06:00 - 14:00)')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
 
-  useEffect(() => {
-    fetchProducts()
-    fetchLogs()
-  }, [])
-
-  const fetchProducts = async () => {
-    try {
-      const data = await getProductsApi()
-      setProducts(data)
-      if (data.length > 0 && !selectedProductId) {
-        setSelectedProductId(data[0].ProductID)
-      }
-    } catch (err) {
-      console.error('Failed to fetch products for logs:', err)
-    }
-  }
-
   const fetchLogs = async () => {
     setLoading(true)
     try {
@@ -69,6 +53,33 @@ export default function ProductionLogsModule({
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      try {
+        const [prodData, logsData] = await Promise.all([
+          getProductsApi(),
+          getProductionLogsApi()
+        ])
+        if (!ignore) {
+          setProducts(prodData)
+          if (prodData.length > 0) {
+            setSelectedProductId(prodData[0].ProductID)
+          }
+          setLogs(logsData)
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to initialize production logs module:', err)
+        if (!ignore) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      ignore = true
+    }
+  }, [])
 
   const handleSubmitLog = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -88,11 +99,12 @@ export default function ProductionLogsModule({
         operator_name: operator
       })
 
-      setSuccessMsg('Log submitted & inventory mutated successfully!')
+      setSuccessMsg('Log submitted and inventory mutated successfully!')
       fetchLogs()
       setQuantity(10)
-    } catch (err: any) {
-      setError(err.message || 'Gagal mencatat log produksi')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal mencatat log produksi'
+      setError(msg)
     } finally {
       setSubmitting(false)
     }
@@ -113,7 +125,7 @@ export default function ProductionLogsModule({
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Record and monitor real-time manufacturing data & yield.
+            Record and monitor real-time manufacturing data and yield.
           </p>
         </div>
 
@@ -319,7 +331,7 @@ export default function ProductionLogsModule({
                         +{log.Quantity}
                       </td>
                       <td className="p-3.5 text-right">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                           Completed
                         </span>
                       </td>

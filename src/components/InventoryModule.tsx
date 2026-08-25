@@ -26,7 +26,7 @@ import { getInventoryMovementsApi, InventoryMovementItem } from '@/services/api'
 
 interface InventoryModuleProps {
   onOpenStockOut: () => void
-  onOpenRecordProduction: () => void
+  onOpenRecordProduction?: () => void
 }
 
 const zoneChartData = [
@@ -38,7 +38,6 @@ const zoneChartData = [
 
 export default function InventoryModule({
   onOpenStockOut,
-  onOpenRecordProduction
 }: InventoryModuleProps) {
   const [filterType, setFilterType] = useState<'All' | 'IN' | 'OUT'>('All')
   const [movements, setMovements] = useState<InventoryMovementItem[]>([])
@@ -58,7 +57,24 @@ export default function InventoryModule({
   }
 
   useEffect(() => {
-    fetchMovements()
+    let ignore = false
+    const load = async () => {
+      try {
+        const typeFilter = filterType !== 'All' ? filterType : undefined
+        const data = await getInventoryMovementsApi(typeFilter)
+        if (!ignore) {
+          setMovements(data)
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to fetch inventory movements:', err)
+        if (!ignore) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      ignore = true
+    }
   }, [filterType])
 
   return (
@@ -83,7 +99,7 @@ export default function InventoryModule({
         <div className="flex items-center gap-3">
           <button
             onClick={fetchMovements}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Sync</span>
@@ -110,7 +126,7 @@ export default function InventoryModule({
       {/* Top 3 KPI Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card 1: Total Warehouse Value */}
-        <div className="glass-card rounded-2xl p-5">
+        <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs font-semibold text-slate-400">Total Warehouse Value</span>
             <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
@@ -124,7 +140,7 @@ export default function InventoryModule({
         </div>
 
         {/* Card 2: Storage Capacity */}
-        <div className="glass-card rounded-2xl p-5">
+        <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-2">
             <span className="text-xs font-semibold text-slate-400">Storage Capacity</span>
             <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
@@ -141,7 +157,7 @@ export default function InventoryModule({
         </div>
 
         {/* Card 3: Last Stock Audit */}
-        <div className="glass-card rounded-2xl p-5">
+        <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs font-semibold text-slate-400">Last Stock Audit</span>
             <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
@@ -161,14 +177,14 @@ export default function InventoryModule({
       {/* Main Grid Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Stock Movement History */}
-        <div className="lg:col-span-2 glass-card rounded-2xl p-5">
+        <div className="lg:col-span-2 glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
             <div>
               <h2 className="text-base font-bold text-white tracking-wide">
                 Stock Movement
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Audit trail of incoming & outgoing inventory mutations
+                Audit trail of incoming and outgoing inventory mutations
               </p>
             </div>
 
@@ -232,12 +248,12 @@ export default function InventoryModule({
                         </td>
                         <td className="p-3.5 text-center">
                           {isIN ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                               <ArrowDownLeft className="w-3 h-3" />
                               IN
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
                               <ArrowUpRight className="w-3 h-3" />
                               OUT
                             </span>
@@ -259,7 +275,7 @@ export default function InventoryModule({
         </div>
 
         {/* Right Column: Zone Utilization Chart */}
-        <div className="glass-card rounded-2xl p-5">
+        <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <h2 className="text-base font-bold text-white tracking-wide mb-1">
             Zone Utilization
           </h2>
@@ -280,7 +296,7 @@ export default function InventoryModule({
                     borderRadius: '12px',
                     color: '#F8FAFC'
                   }}
-                  formatter={(val: any) => [`${val}%`, 'Capacity Used']}
+                  formatter={(val: unknown) => [`${val}%`, 'Capacity Used']}
                 />
                 <Bar dataKey="capacity" radius={[6, 6, 0, 0]}>
                   {zoneChartData.map((entry, index) => (

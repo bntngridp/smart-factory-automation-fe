@@ -41,7 +41,23 @@ export default function ProductsModule({
   }
 
   useEffect(() => {
-    fetchProducts()
+    let ignore = false
+    const load = async () => {
+      try {
+        const data = await getProductsApi()
+        if (!ignore) {
+          setProducts(data)
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to fetch products:', err)
+        if (!ignore) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      ignore = true
+    }
   }, [])
 
   const handleDeleteProduct = async (id: number) => {
@@ -49,8 +65,9 @@ export default function ProductsModule({
     try {
       await deleteProductApi(id)
       setProducts((prev) => prev.filter((p) => p.ProductID !== id))
-    } catch (err: any) {
-      alert(err.message || 'Gagal menghapus produk')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menghapus produk'
+      alert(msg)
     }
   }
 
@@ -89,14 +106,14 @@ export default function ProductsModule({
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Manage and track manufacturing inventory & safety thresholds.
+            Manage and track manufacturing inventory and safety thresholds.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={fetchProducts}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -113,7 +130,7 @@ export default function ProductsModule({
       </div>
 
       {/* Filter & Search Toolbar */}
-      <div className="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 border border-[#1E293B]">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -205,7 +222,7 @@ export default function ProductsModule({
                         {item.Unit || 'pcs'}
                       </td>
                       <td
-                        className={`p-4 text-center font-bold ${
+                        className={`p-4 text-center font-bold font-mono ${
                           isOut
                             ? 'text-rose-400'
                             : isLow
@@ -215,20 +232,20 @@ export default function ProductsModule({
                       >
                         {currentStock.toLocaleString()}
                       </td>
-                      <td className="p-4 text-center text-slate-400 font-medium">
+                      <td className="p-4 text-center text-slate-400 font-medium font-mono">
                         {minStock.toLocaleString()}
                       </td>
                       <td className="p-4 text-center">
                         {isOut ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
                             OUT OF STOCK
                           </span>
                         ) : isLow ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
                             LOW STOCK
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                             IN STOCK
                           </span>
                         )}

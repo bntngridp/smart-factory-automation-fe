@@ -54,7 +54,23 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchDashboardSummary()
+    let ignore = false
+    const load = async () => {
+      try {
+        const data = await getDashboardSummaryApi()
+        if (!ignore) {
+          setSummaryData(data)
+          setLoadingSummary(false)
+        }
+      } catch (err) {
+        console.error('Failed to fetch dashboard summary from backend:', err)
+        if (!ignore) setLoadingSummary(false)
+      }
+    }
+    load()
+    return () => {
+      ignore = true
+    }
   }, [])
 
   const handleOpenProduce = (productId?: number) => {

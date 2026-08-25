@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useSyncExternalStore } from 'react'
 
 export type Language = 'en' | 'id' | 'ar' | 'es'
 
@@ -524,31 +524,44 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en')
-  const [mounted, setMounted] = useState(false)
+const emptySubscribe = () => () => {}
 
-  useEffect(() => {
-    setMounted(true)
-    const savedLang = localStorage.getItem('forge_lang') as Language
-    if (savedLang && ['en', 'id', 'ar', 'es'].includes(savedLang)) {
-      setLanguageState(savedLang)
-    }
-  }, [])
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
+
+  const [language, setLanguageState] = useState<Language>('en')
+
+  // Initialize from storage once mounted
+  const storedLang = useSyncExternalStore(
+    emptySubscribe,
+    () => {
+      const saved = localStorage.getItem('forge_lang') as Language
+      return saved && ['en', 'id', 'ar', 'es'].includes(saved) ? saved : null
+    },
+    () => null
+  )
+
+  const currentLanguage = storedLang || language
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
-    localStorage.setItem('forge_lang', lang)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('forge_lang', lang)
+    }
   }
 
-  const isRTL = language === 'ar'
+  const isRTL = currentLanguage === 'ar'
 
   const t = (key: string): string => {
-    return translations[language]?.[key] || translations['en']?.[key] || key
+    return translations[currentLanguage]?.[key] || translations['en']?.[key] || key
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isRTL }}>
+    <LanguageContext.Provider value={{ language: currentLanguage, setLanguage, t, isRTL }}>
       <div
         dir={mounted && isRTL ? 'rtl' : 'ltr'}
         style={{ minHeight: '100%' }}
