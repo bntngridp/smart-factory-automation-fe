@@ -19,7 +19,7 @@ import { getUsersApi, createUserApi, UserItem } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
 
 export default function UsersModule() {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
   const [users, setUsers] = useState<UserItem[]>([])
   const [loading, setLoading] = useState(true)
   const [roleFilter, setRoleFilter] = useState<string>('All Roles')
@@ -198,7 +198,7 @@ export default function UsersModule() {
                     return (
                       <tr key={user.UserID} className="hover:bg-[#1E2D47]/40 transition-colors">
                         <td className="p-3.5 font-mono text-slate-400 font-bold">
-                          USR-{user.UserID}
+                          USR-{formatNumber(user.UserID)}
                         </td>
                         <td className="p-3.5">
                           <div className="flex items-center gap-3">
@@ -234,7 +234,7 @@ export default function UsersModule() {
                         <td className="p-3.5 text-center">
                           <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Active
+                            {t('active_status_label')}
                           </span>
                         </td>
 
@@ -256,7 +256,7 @@ export default function UsersModule() {
 
           {/* Table Pagination */}
           <div className="flex items-center justify-between gap-4 mt-5 pt-4 border-t border-[#1E293B] text-xs text-slate-400">
-            <span>Showing {filteredUsers.length} of {users.length} users</span>
+            <span>{t('showing')} {formatNumber(filteredUsers.length)} {t('of')} {formatNumber(users.length)} {t('users')}</span>
             <div className="flex items-center gap-1">
               <button className="p-1.5 rounded-lg bg-[#0F172A] border border-[#1E293B] text-slate-400 hover:text-white disabled:opacity-40">
                 <ChevronLeft className="w-3.5 h-3.5" />

@@ -23,7 +23,7 @@ export default function LowStockAlertsTable({
   loading,
   onRecordProduction
 }: LowStockAlertsTableProps) {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
 
   // Sample fallback data if backend is empty
   const displayAlerts: LowStockAlertItem[] = alerts.length > 0 ? alerts : [
@@ -54,7 +54,7 @@ export default function LowStockAlertsTable({
           onClick={() => alert('Viewing all inventory alerts...')}
           className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
         >
-          {t('view')}
+          {t('view_all')}
           <ArrowUpRight className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -75,11 +75,12 @@ export default function LowStockAlertsTable({
             {loading ? (
               <tr>
                 <td colSpan={5} className="py-6 text-center text-slate-400">
-                  Loading inventory alerts...
+                  {t('loading')}
                 </td>
               </tr>
             ) : displayAlerts.map((item) => {
               const isOut = item.CurrentStock === 0
+              const unitLabel = item.Unit === 'pcs' || item.Unit === 'pzas' ? t('pcs') : t('units')
 
               return (
                 <tr key={item.ProductID} className="hover:bg-[#1E2D47]/40 transition-colors">
@@ -90,10 +91,10 @@ export default function LowStockAlertsTable({
                     </div>
                   </td>
                   <td className="py-3 px-2 text-center font-bold text-rose-400">
-                    {item.CurrentStock.toLocaleString()} {item.Unit || 'pcs'}
+                    {formatNumber(item.CurrentStock)} {unitLabel}
                   </td>
                   <td className="py-3 px-2 text-center text-slate-400">
-                    {item.MinStock.toLocaleString()} {item.Unit || 'pcs'}
+                    {formatNumber(item.MinStock)} {unitLabel}
                   </td>
                   <td className="py-3 px-2 text-center">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold ${
@@ -101,7 +102,7 @@ export default function LowStockAlertsTable({
                         ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                         : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                     }`}>
-                      {isOut ? 'OUT OF STOCK' : 'LOW STOCK'}
+                      {isOut ? t('out_of_stock_status') : t('low_stock_status')}
                     </span>
                   </td>
                   <td className="py-3 px-2 text-right">
@@ -110,7 +111,7 @@ export default function LowStockAlertsTable({
                       className="inline-flex items-center gap-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all"
                     >
                       <PlusCircle className="w-3 h-3" />
-                      Produce
+                      {t('produce')}
                     </button>
                   </td>
                 </tr>

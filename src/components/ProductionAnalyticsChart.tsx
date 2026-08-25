@@ -14,22 +14,28 @@ import { TrendingUp } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
 
-const sampleChartData = [
-  { name: 'Mon', production: 1100, inventory: 80000 },
-  { name: 'Tue', production: 1250, inventory: 81200 },
-  { name: 'Wed', production: 1380, inventory: 81900 },
-  { name: 'Thu', production: 1240, inventory: 82450 },
-  { name: 'Fri', production: 1420, inventory: 83100 },
-  { name: 'Sat', production: 980, inventory: 83500 },
-  { name: 'Sun', production: 850, inventory: 83900 },
-]
-
 export default function ProductionAnalyticsChart() {
   const { theme } = useTheme()
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
   const [timeframe, setTimeframe] = useState<'7D' | '30D' | 'YTD'>('30D')
 
   const isLight = theme === 'light'
+
+  const chartData = [
+    { name: t('days_mon'), production: 1100, inventory: 80000 },
+    { name: t('days_tue'), production: 1250, inventory: 81200 },
+    { name: t('days_wed'), production: 1380, inventory: 81900 },
+    { name: t('days_thu'), production: 1240, inventory: 82450 },
+    { name: t('days_fri'), production: 1420, inventory: 83100 },
+    { name: t('days_sat'), production: 980, inventory: 83500 },
+    { name: t('days_sun'), production: 850, inventory: 83900 },
+  ]
+
+  const timeframes: Array<{ id: '7D' | '30D' | 'YTD'; label: string }> = [
+    { id: '7D', label: t('tf_7d') },
+    { id: '30D', label: t('tf_30d') },
+    { id: 'YTD', label: t('tf_ytd') },
+  ]
 
   return (
     <div className="glass-card rounded-2xl p-5 mb-6">
@@ -52,17 +58,17 @@ export default function ProductionAnalyticsChart() {
 
         {/* Timeframe selector */}
         <div className="flex items-center bg-[#0F172A] border border-[#1E293B] p-1 rounded-xl">
-          {(['7D', '30D', 'YTD'] as const).map((item) => (
+          {timeframes.map((item) => (
             <button
-              key={item}
-              onClick={() => setTimeframe(item)}
+              key={item.id}
+              onClick={() => setTimeframe(item.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                timeframe === item
+                timeframe === item.id
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              {item}
+              {item.label}
             </button>
           ))}
         </div>
@@ -72,7 +78,7 @@ export default function ProductionAnalyticsChart() {
       <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={sampleChartData}
+            data={chartData}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
@@ -83,7 +89,13 @@ export default function ProductionAnalyticsChart() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#E2E8F0' : '#1E293B'} vertical={false} />
             <XAxis dataKey="name" stroke={isLight ? '#64748B' : '#64748B'} fontSize={11} tickLine={false} axisLine={false} />
-            <YAxis stroke={isLight ? '#64748B' : '#64748B'} fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis
+              stroke={isLight ? '#64748B' : '#64748B'}
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(val: number) => formatNumber(val)}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: isLight ? '#FFFFFF' : '#162032',
@@ -93,7 +105,7 @@ export default function ProductionAnalyticsChart() {
                 boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)'
               }}
               itemStyle={{ color: '#2563EB', fontSize: '12px' }}
-              formatter={(val: unknown) => [`${val} units`, 'Production']}
+              formatter={(val: unknown) => [`${formatNumber(val as number)} ${t('units')}`, t('live_output')]}
             />
             <Area
               type="monotone"

@@ -83,7 +83,7 @@ export default function Sidebar({
             {!isCollapsed && (
               <div className="truncate">
                 <h1 className="font-bold text-white tracking-wide text-lg leading-tight">Forge</h1>
-                <p className="text-[11px] text-slate-400 font-medium">Enterprise Automation</p>
+                <p className="text-[11px] text-slate-400 font-medium">{t('enterprise_automation')}</p>
               </div>
             )}
           </div>
@@ -127,7 +127,7 @@ export default function Sidebar({
         <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
           {!isCollapsed && (
             <div className="px-3 pb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-              Main Menu
+              {t('main_menu')}
             </div>
           )}
           {menuItems.map((item) => {

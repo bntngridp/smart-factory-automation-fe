@@ -5,7 +5,6 @@ import {
   Search,
   Filter,
   Plus,
-  Edit2,
   Trash2,
   Package,
   RefreshCw,
@@ -24,7 +23,7 @@ export default function ProductsModule({
   onOpenAddProduct,
   onOpenRecordProduction
 }: ProductsModuleProps) {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -215,13 +214,13 @@ export default function ProductsModule({
                         />
                       </td>
                       <td className="p-4 font-mono font-bold text-slate-400">
-                        PRD-{item.ProductID}
+                        PRD-{formatNumber(item.ProductID)}
                       </td>
                       <td className="p-4 font-bold text-white">
                         {item.ProductName}
                       </td>
                       <td className="p-4 text-center text-slate-300">
-                        {item.Unit || 'pcs'}
+                        {item.Unit === 'pcs' || item.Unit === 'pzas' ? t('pcs') : item.Unit || t('units')}
                       </td>
                       <td
                         className={`p-4 text-center font-bold font-mono ${
@@ -232,10 +231,10 @@ export default function ProductsModule({
                             : 'text-emerald-400'
                         }`}
                       >
-                        {currentStock.toLocaleString()}
+                        {formatNumber(currentStock)}
                       </td>
                       <td className="p-4 text-center text-slate-400 font-medium font-mono">
-                        {minStock.toLocaleString()}
+                        {formatNumber(minStock)}
                       </td>
                       <td className="p-4 text-center">
                         {isOut ? (
@@ -253,25 +252,18 @@ export default function ProductsModule({
                         )}
                       </td>
                       <td className="p-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => onOpenRecordProduction(item.ProductID)}
-                            className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors"
-                            title="Produce Item"
+                            className="p-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white transition-colors"
+                            title={t('produce')}
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => alert(`Edit PRD-${item.ProductID}`)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                            title="Edit"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
                             onClick={() => handleDeleteProduct(item.ProductID)}
                             className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
-                            title="Delete"
+                            title={t('delete')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -288,27 +280,18 @@ export default function ProductsModule({
         {/* Table Footer / Pagination Bar */}
         <div className="bg-[#0F172A] p-4 border-t border-[#1E293B] flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
           <div className="flex items-center gap-3">
-            <select className="bg-[#162032] border border-[#1E293B] text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none">
-              <option>Bulk Actions</option>
-              <option>Delete Selected</option>
-              <option>Export CSV</option>
-            </select>
-            <button className="bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 px-3 py-1.5 rounded-lg transition-colors font-medium">
-              Apply
-            </button>
-            <span className="text-[11px] text-slate-500">
-              {selectedIds.length} selected
+            <span className="text-[11px] text-slate-400">
+              {formatNumber(selectedIds.length)} {t('active_catalog')}
             </span>
           </div>
 
           <div className="flex items-center gap-4">
-            <span>Showing 1-{filteredProducts.length} of {products.length} products</span>
+            <span>{t('showing')} {formatNumber(filteredProducts.length)} {t('of')} {formatNumber(products.length)} {t('products')}</span>
             <div className="flex items-center gap-1">
               <button className="p-1.5 rounded-lg bg-[#162032] border border-[#1E293B] text-slate-400 hover:text-white disabled:opacity-40">
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
-              <button className="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold">1</button>
-              <button className="px-2.5 py-1 rounded-lg bg-[#162032] text-slate-300 hover:bg-[#1E2D47]">2</button>
+              <button className="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold">{formatNumber(1)}</button>
               <button className="p-1.5 rounded-lg bg-[#162032] border border-[#1E293B] text-slate-400 hover:text-white">
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>

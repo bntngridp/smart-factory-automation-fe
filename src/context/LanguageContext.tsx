@@ -8,7 +8,51 @@ export interface LanguageContextType {
   language: Language
   setLanguage: (lang: Language) => void
   t: (key: string) => string
+  formatNumber: (value: number | string | null | undefined) => string
+  formatDate: (date?: Date | string | number, options?: Intl.DateTimeFormatOptions) => string
   isRTL: boolean
+}
+
+export function formatNumberByLang(
+  value: number | string | null | undefined,
+  lang: Language = 'en'
+): string {
+  if (value === null || value === undefined) return ''
+  const str = String(value)
+  if (lang === 'ar') {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']
+    return str
+      .replace(/[0-9]/g, (d) => arabicDigits[Number(d)])
+      .replace(/,/g, '،')
+      .replace(/%/g, '٪')
+  }
+  return str
+}
+
+export function formatDateByLang(
+  date: Date | string | number = new Date(),
+  lang: Language = 'en',
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const d = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date
+  const localeMap: Record<Language, string> = {
+    en: 'en-US',
+    id: 'id-ID',
+    ar: 'ar-EG',
+    es: 'es-ES'
+  }
+  const defaultOptions: Intl.DateTimeFormatOptions = options || {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }
+  try {
+    const formatted = new Intl.DateTimeFormat(localeMap[lang] || 'en-US', defaultOptions).format(d)
+    return formatNumberByLang(formatted, lang)
+  } catch {
+    return d.toDateString()
+  }
 }
 
 const translations: Record<Language, Record<string, string>> = {
@@ -24,6 +68,7 @@ const translations: Record<Language, Record<string, string>> = {
     help: 'Help Center',
     logout: 'Sign Out',
     main_menu: 'Main Navigation',
+    enterprise_automation: 'Enterprise Automation',
 
     // Dashboard Page
     executive_dashboard: 'Executive Dashboard',
@@ -57,9 +102,14 @@ const translations: Record<Language, Record<string, string>> = {
     quick_actions_subtitle: 'Direct manufacturing inputs & inventory transactions',
     system_status: 'Infrastructure Status',
     system_status_subtitle: 'Live database and backend API health monitoring',
+    all_systems_nominal: 'All Systems Nominal',
+    last_sync_text: 'Last sync: 2 mins ago (Port 6060/6063)',
+    online: 'Online',
+    synced: 'Synced',
     action_required: 'Action Required',
     low_stock_subtitle: 'Products falling below minimum safety threshold',
     live_output: 'Live Output',
+    production_analytics: 'Production Analytics',
     production_analytics_subtitle: 'Real-time daily manufacturing output & yield efficiency trend',
 
     // Products Module
@@ -175,7 +225,7 @@ const translations: Record<Language, Record<string, string>> = {
     add_user: 'Add User',
     save_preferences: 'Save Preferences',
 
-    // Table Headers
+    // Table Headers & Labels
     time: 'Time',
     operator: 'Operator',
     machine_id: 'Machine ID',
@@ -186,6 +236,31 @@ const translations: Record<Language, Record<string, string>> = {
     role: 'Role',
     user: 'User',
     last_login: 'Last Login',
+    active_status_label: 'Active',
+    admin: 'Admin',
+    supervisor: 'Supervisor',
+    operator_text: 'Operator',
+
+    // Units & Measures
+    units: 'units',
+    pcs: 'pcs',
+    produce: 'Produce',
+    view_all: 'View All',
+    showing: 'Showing',
+    of: 'of',
+    loading: 'Loading...',
+
+    // Timeframes & Days
+    tf_7d: '7D',
+    tf_30d: '30D',
+    tf_ytd: 'YTD',
+    days_mon: 'Mon',
+    days_tue: 'Tue',
+    days_wed: 'Wed',
+    days_thu: 'Thu',
+    days_fri: 'Fri',
+    days_sat: 'Sat',
+    days_sun: 'Sun',
 
     // Buttons
     save: 'Save Product',
@@ -208,6 +283,7 @@ const translations: Record<Language, Record<string, string>> = {
     help: 'Pusat Bantuan',
     logout: 'Keluar Akun',
     main_menu: 'Menu Utama',
+    enterprise_automation: 'Otomasi Industri Terpadu',
 
     // Dashboard Page
     executive_dashboard: 'Dashboard Eksekutif',
@@ -241,142 +317,172 @@ const translations: Record<Language, Record<string, string>> = {
     quick_actions_subtitle: 'Akses cepat input manufaktur & mutasi inventaris',
     system_status: 'Status Infrastruktur Sistem',
     system_status_subtitle: 'Pemantauan langsung kesehatan database & layanan backend API',
+    all_systems_nominal: 'Semua Sistem Normal',
+    last_sync_text: 'Sinkronisasi: 2 mnt lalu (Port 6060/6063)',
+    online: 'Online',
+    synced: 'Tersinkron',
     action_required: 'Tindakan Diperlukan',
     low_stock_subtitle: 'Produk yang berada di bawah ambang batas stok minimum aman',
     live_output: 'Output Real-Time',
+    production_analytics: 'Analitik Produksi',
     production_analytics_subtitle: 'Tren harian hasil manufaktur & efisiensi produksi real-time',
 
     // Products Module
     products_management: 'Katalog Master & Spesifikasi Produk',
     master_catalog: 'Katalog Master',
-    products_subtitle: 'Kelola spesifikasi produk manufaktur, pelacakan stok, dan batas minimum aman.',
+    products_subtitle: 'Kelola spesifikasi teknis komponen manufaktur, bill of materials, dan batas stok.',
     search_products: 'Cari produk berdasarkan nama atau ID...',
     add_product: 'Tambah Produk',
-    product_name: 'Nama Produk',
+    product_name: 'Nama Produk / Komponen',
     category: 'Kategori',
     unit_of_measure: 'Satuan Ukuran',
     initial_stock: 'Stok Awal',
-    min_stock_level: 'Batas Minimum Stok',
+    min_stock_level: 'Batas Stok Minimum',
     primary_supplier: 'Pemasok Utama',
-    description: 'Deskripsi',
+    description: 'Deskripsi Spesifikasi',
     active_status: 'Status Aktif',
     all_categories: 'Semua Kategori',
     all_statuses: 'Semua Status',
     in_stock_status: 'Stok Aman',
-    low_stock_status: 'Stok Menipis',
+    low_stock_status: 'Stok Kritis',
     out_of_stock_status: 'Stok Habis',
     product_id: 'ID Produk',
     unit: 'Satuan',
     current_stock: 'Stok Saat Ini',
-    min_stock: 'Stok Min',
+    min_stock: 'Batas Min.',
 
     // Production Logs Module
     production_logs_title: 'Log & Riwayat Produksi Manufaktur',
     live_manufacturing_data: 'Data Output Pabrik Real-Time',
-    production_logs_subtitle: 'Catat output shift kerja, pantau operasional mesin, dan kelola volume per batch.',
+    production_logs_subtitle: 'Pencatatan output per shift kerja, pengawasan mesin, dan kuantitas batch.',
     new_log_entry: 'Input Catatan Produksi Baru',
-    recent_logs: 'Riwayat Produksi Terbaru',
-    select_product: 'Produk Sasaran',
-    select_machine: 'Mesin Produksi',
-    quantity_produced: 'Jumlah Diproduksi',
+    recent_logs: 'Riwayat Catatan Produksi Terkini',
+    select_product: 'Pilih Produk Target',
+    select_machine: 'Pilih Mesin Produksi',
+    quantity_produced: 'Jumlah Output Dihasilkan',
     shift: 'Shift Kerja',
-    operator_name: 'Nama Operator',
+    operator_name: 'Nama Operator Bertugas',
     submit_log: 'Simpan Catatan Produksi',
     log_id: 'ID Log',
-    timestamp: 'Waktu Pencatatan',
-    filter_by_machine: 'Semua Mesin',
+    timestamp: 'Waktu Input',
+    filter_by_machine: 'Semua Mesin Produksi',
 
     // Inventory Module
     inventory_title: 'Manajemen Inventaris & Operasional Gudang',
-    stock_operations: 'Operasional Stok',
-    inventory_subtitle: 'Audit mutasi stok, pantau kapasitas gudang, dan valuasi nilai aset barang secara real-time.',
-    inventory_management: 'Manajemen Inventaris',
+    stock_operations: 'Operasional Gudang',
+    inventory_subtitle: 'Audit pergerakan stok, pemantauan kapasitas penyimpanan, dan valuasi aset material.',
+    inventory_management: 'Manajemen Stok',
     stock_movements: 'Audit Riwayat Mutasi Stok',
-    stock_movements_subtitle: 'Rekam jejak komprehensif mutasi masuk (IN) dan keluar (OUT) barang gudang.',
-    total_warehouse_value: 'Total Valuasi Aset Gudang',
-    storage_capacity: 'Kapasitas Utilisasi Gudang',
-    last_audit: 'Audit Stok Terakhir',
-    zone_utilization: 'Utilisasi Area Penyimpanan Gudang',
-    all_movements: 'Semua Mutasi',
-    incoming_in: 'Masuk (Produksi)',
-    outgoing_out: 'Keluar (Pengiriman)',
+    stock_movements_subtitle: 'Jejak audit komprehensif mutasi barang masuk (IN) dan barang keluar (OUT).',
+    total_warehouse_value: 'Total Valuasi Material Gudang',
+    storage_capacity: 'Kapasitas Penyimpanan Terpakai',
+    last_audit: 'Audit Terakhir Gudang',
+    zone_utilization: 'Utilisasi Zona Penyimpanan',
+    all_movements: 'Semua Jenis Mutasi',
+    incoming_in: 'Barang Masuk (Produksi)',
+    outgoing_out: 'Barang Keluar (Distribusi)',
     movement_id: 'ID Mutasi',
-    mutation_type: 'Tipe Mutasi',
-    mutation_date: 'Tanggal & Waktu',
-    export_report: 'Ekspor Laporan',
-    stock_out_btn: 'Keluarkan Stok (Out)',
+    mutation_type: 'Jenis Mutasi',
+    mutation_date: 'Waktu Transaksi',
+    export_report: 'Ekspor Laporan Mutasi',
+    stock_out_btn: 'Keluarkan Stok (Dispatch)',
 
     // Reports Module
     reports_title: 'Laporan & Analisis Kinerja Manufaktur',
     intelligence_center: 'Pusat Analisis & Intelijen',
-    reports_subtitle: 'Laporan mendalam hasil produksi, performa utilisasi mesin, dan proyeksi kebutuhan stok.',
+    reports_subtitle: 'Laporan mendalam hasil produksi, efisiensi mesin, dan proyeksi stok barang.',
     reports_analytics: 'Laporan & Analitik',
     monthly_yield: 'Tren Hasil Produksi Bulanan',
     top_products_distribution: 'Distribusi Volume Produk Teratas',
-    machine_performance_heatmap: 'Heatmap Utilisasi & Efisiensi Mesin',
-    inventory_forecast: 'Proyeksi Kebutuhan Stok 30 Hari',
+    machine_performance_heatmap: 'Heatmap Efisiensi Mesin Pabrik',
+    inventory_forecast: 'Proyeksi Stok Inventaris 30 Hari',
 
     // Users Module
     users_title: 'Manajemen Pengguna & Hak Akses',
     access_control: 'Kontrol Hak Akses & Keamanan',
-    users_subtitle: 'Kelola akun pengguna, penetapan peran jabatan, dan otorisasi akses platform.',
+    users_subtitle: 'Pengelolaan akun personil, penetapan peran hierarkis, dan konfigurasi izin sistem.',
     user_management: 'Manajemen Pengguna',
     registered_users: 'Daftar Pengguna Terdaftar',
     invite_user: 'Tambah Akun Pengguna',
-    role_permissions: 'Matriks Izin & Hak Akses Peran',
+    role_permissions: 'Matriks Hak Akses Peran',
     all_roles: 'Semua Peran',
     admin_role: 'Administrator',
-    supervisor_role: 'Supervisor',
-    operator_role: 'Operator',
-    admin_role_desc: 'Hak akses penuh sistem. Mengelola konfigurasi global, audit, dan seluruh akun pengguna.',
-    supervisor_role_desc: 'Mengawasi lini manufaktur, membuat laporan analitik, dan menyetujui jadwal operasional.',
-    operator_role_desc: 'Menjalankan lini produksi, mencatat log batch mesin, dan memantau target harian.',
-    manage_roles: 'Kelola akses platform, peran, dan izin keamanan.',
+    supervisor_role: 'Supervisor Lini',
+    operator_role: 'Operator Mesin',
+    admin_role_desc: 'Akses penuh ke semua modul sistem, pengaturan global, penagihan, dan akun pengguna.',
+    supervisor_role_desc: 'Mengawasi jadwal produksi, mengekspor laporan kinerja, dan menyetujui mutasi stok.',
+    operator_role_desc: 'Akses pencatatan log hasil mesin, input shift harian, dan melihat kuota produksi.',
+    manage_roles: 'Kelola hak akses, peran, dan izin keamanan platform.',
 
     // Settings Module
     system_settings: 'Pengaturan Sistem & Preferensi',
-    settings_description: 'Kelola konfigurasi akun, pilihan bahasa antarmuka, dan preferensi sistem.',
-    search_settings: 'Cari pengaturan...',
+    settings_description: 'Kelola preferensi akun, pelokalan bahasa, dan konfigurasi sistem.',
+    search_settings: 'Cari pengaturan sistem...',
     select_language: 'Pilih Bahasa Antarmuka',
     language: 'Bahasa Antarmuka',
-    language_subtitle: 'Pilih bahasa pusat kontrol yang Anda inginkan.',
-    appearance: 'Tampilan Visual',
-    appearance_subtitle: 'Sesuaikan tema warna dan nuansa tampilan kontrol.',
+    language_subtitle: 'Pilih bahasa operasional untuk panel kontrol pabrik.',
+    appearance: 'Tampilan & Tema',
+    appearance_subtitle: 'Kustomisasi tema warna dan kenyamanan visual.',
     theme: 'Tema Antarmuka',
     theme_dark: 'Mode Gelap (Dark)',
     theme_light: 'Mode Terang (Light)',
     high_contrast: 'Mode Kontras Tinggi',
-    high_contrast_desc: 'Tingkatkan kontras untuk keterbacaan optimal di lingkungan pabrik.',
-    profile: 'Profil Akun',
+    high_contrast_desc: 'Tingkatkan keterbacaan di area pabrik dengan pencahayaan tinggi.',
+    profile: 'Profil Pengguna',
     security: 'Keamanan & Sandi',
-    notifications: 'Notifikasi Sistem',
+    notifications: 'Pengaturan Notifikasi',
     system: 'Konfigurasi Sistem',
     configuration: 'Konfigurasi',
     config_active: 'Opsi konfigurasi untuk',
-    config_active_suffix: 'sedang aktif.',
-    system_roles: 'Peran & Izin Sistem',
-    manage_user_access: 'Kelola akses dan hak perizinan pengguna.',
+    config_active_suffix: 'sudah aktif.',
+    system_roles: 'Peran Sistem',
+    manage_user_access: 'Kelola akses dan izin pengguna platform.',
     add_user: 'Tambah Pengguna',
     save_preferences: 'Simpan Preferensi',
 
-    // Table Headers
+    // Table Headers & Labels
     time: 'Waktu',
     operator: 'Operator',
     machine_id: 'ID Mesin',
     quantity: 'Jumlah',
     status: 'Status',
     last_activity: 'Aktivitas Terakhir',
-    actions: 'Aksi',
+    actions: 'Tindakan',
     role: 'Peran',
     user: 'Pengguna',
     last_login: 'Login Terakhir',
+    active_status_label: 'Aktif',
+    admin: 'Admin',
+    supervisor: 'Supervisor',
+    operator_text: 'Operator',
+
+    // Units & Measures
+    units: 'unit',
+    pcs: 'pcs',
+    produce: 'Produksi',
+    view_all: 'Lihat Semua',
+    showing: 'Menampilkan',
+    of: 'dari',
+    loading: 'Memuat...',
+
+    // Timeframes & Days
+    tf_7d: '7H',
+    tf_30d: '30H',
+    tf_ytd: 'YTD',
+    days_mon: 'Sen',
+    days_tue: 'Sel',
+    days_wed: 'Rab',
+    days_thu: 'Kam',
+    days_fri: 'Jum',
+    days_sat: 'Sab',
+    days_sun: 'Min',
 
     // Buttons
     save: 'Simpan Produk',
     cancel: 'Batal',
-    submit: 'Kirim',
-    view: 'Lihat',
-    edit: 'Ubah',
+    submit: 'Kirim Log',
+    view: 'Lihat Detail',
+    edit: 'Ubah Data',
     delete: 'Hapus',
   },
 
@@ -392,6 +498,7 @@ const translations: Record<Language, Record<string, string>> = {
     help: 'مركز المساعدة',
     logout: 'تسجيل الخروج',
     main_menu: 'القائمة الرئيسية',
+    enterprise_automation: 'أتمتة المؤسسات الذكية',
 
     // Dashboard Page
     executive_dashboard: 'لوحة التحكم التنفيذية',
@@ -425,9 +532,14 @@ const translations: Record<Language, Record<string, string>> = {
     quick_actions_subtitle: 'إدخالات التصنيع المباشرة وحركات المخزون',
     system_status: 'حالة البنية التحتية',
     system_status_subtitle: 'مراقبة حية لصحة قاعدة البيانات وواجهة API',
+    all_systems_nominal: 'جميع الأنظمة تعمل بشكل طبيعي',
+    last_sync_text: 'آخر مزامنة: منذ دقيقتين (المنفذ ٦٠٦٠ / ٦٠٦٣)',
+    online: 'متصل',
+    synced: 'متزامن',
     action_required: 'مطلوب إجراء',
     low_stock_subtitle: 'المنتجات الأقل من الحد الأدنى الآمن للمخزون',
     live_output: 'الإنتاج المباشر',
+    production_analytics: 'تحليلات الإنتاج',
     production_analytics_subtitle: 'اتجاه مخرجات التصنيع اليومية وكفاءة الإنتاج في الوقت الفعلي',
 
     // Products Module
@@ -498,7 +610,7 @@ const translations: Record<Language, Record<string, string>> = {
     monthly_yield: 'اتجاه إنتاجية التصنيع الشهرية',
     top_products_distribution: 'توزيع حجم المنتجات الأعلى',
     machine_performance_heatmap: 'الخريطة الحرارية لأداء الآلات',
-    inventory_forecast: 'توقعات المخزون لـ 30 يوماً',
+    inventory_forecast: 'توقعات المخزون لـ ٣٠ يوماً',
 
     // Users Module
     users_title: 'إدارة المستخدمين وصلاحيات الوصول',
@@ -543,7 +655,7 @@ const translations: Record<Language, Record<string, string>> = {
     add_user: 'إضافة مستخدم',
     save_preferences: 'حفظ التفضيلات',
 
-    // Table Headers
+    // Table Headers & Labels
     time: 'الوقت',
     operator: 'المشغل',
     machine_id: 'رقم الآلة',
@@ -554,6 +666,31 @@ const translations: Record<Language, Record<string, string>> = {
     role: 'الدور',
     user: 'المستخدم',
     last_login: 'آخر دخول',
+    active_status_label: 'نشط',
+    admin: 'مسؤول',
+    supervisor: 'مشرف',
+    operator_text: 'مشغل',
+
+    // Units & Measures
+    units: 'وحدة',
+    pcs: 'قطعة',
+    produce: 'إنتاج',
+    view_all: 'عرض الكل',
+    showing: 'عرض',
+    of: 'من',
+    loading: 'جار التحميل...',
+
+    // Timeframes & Days
+    tf_7d: '٧ أيام',
+    tf_30d: '٣٠ يوماً',
+    tf_ytd: 'منذ بداية العام',
+    days_mon: 'الإثنين',
+    days_tue: 'الثلاثاء',
+    days_wed: 'الأربعاء',
+    days_thu: 'الخميس',
+    days_fri: 'الجمعة',
+    days_sat: 'السبت',
+    days_sun: 'الأحد',
 
     // Buttons
     save: 'حفظ المنتج',
@@ -576,6 +713,7 @@ const translations: Record<Language, Record<string, string>> = {
     help: 'Centro de Ayuda',
     logout: 'Cerrar Sesión',
     main_menu: 'Menú Principal',
+    enterprise_automation: 'Automatización Empresarial',
 
     // Dashboard Page
     executive_dashboard: 'Panel Ejecutivo',
@@ -609,9 +747,14 @@ const translations: Record<Language, Record<string, string>> = {
     quick_actions_subtitle: 'Entradas directas de fabricación y transacciones de inventario',
     system_status: 'Estado de la Infraestructura',
     system_status_subtitle: 'Monitoreo en vivo de la base de datos y la API backend',
+    all_systems_nominal: 'Todos los Sistemas Nominales',
+    last_sync_text: 'Última sinc.: hace 2 min (Puerto 6060/6063)',
+    online: 'En Línea',
+    synced: 'Sincronizado',
     action_required: 'Acción Requerida',
     low_stock_subtitle: 'Productos por debajo del umbral mínimo de seguridad',
     live_output: 'Producción en Vivo',
+    production_analytics: 'Análisis de Producción',
     production_analytics_subtitle: 'Tendencia diaria de producción y eficiencia en tiempo real',
 
     // Products Module
@@ -727,7 +870,7 @@ const translations: Record<Language, Record<string, string>> = {
     add_user: 'Añadir Usuario',
     save_preferences: 'Guardar Preferencias',
 
-    // Table Headers
+    // Table Headers & Labels
     time: 'Hora',
     operator: 'Operador',
     machine_id: 'ID de Máquina',
@@ -738,6 +881,31 @@ const translations: Record<Language, Record<string, string>> = {
     role: 'Rol',
     user: 'Usuario',
     last_login: 'Último Acceso',
+    active_status_label: 'Activo',
+    admin: 'Admin',
+    supervisor: 'Supervisor',
+    operator_text: 'Operador',
+
+    // Units & Measures
+    units: 'unidades',
+    pcs: 'pzas',
+    produce: 'Producir',
+    view_all: 'Ver Todo',
+    showing: 'Mostrando',
+    of: 'de',
+    loading: 'Cargando...',
+
+    // Timeframes & Days
+    tf_7d: '7D',
+    tf_30d: '30D',
+    tf_ytd: 'YTD',
+    days_mon: 'Lun',
+    days_tue: 'Mar',
+    days_wed: 'Mié',
+    days_thu: 'Jue',
+    days_fri: 'Vie',
+    days_sat: 'Sáb',
+    days_sun: 'Dom',
 
     // Buttons
     save: 'Guardar Producto',
@@ -754,6 +922,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const emptySubscribe = () => () => {}
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -787,10 +956,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return translations[currentLanguage]?.[key] || translations['en']?.[key] || key
   }
 
+  const formatNumber = (value: number | string | null | undefined): string => {
+    return formatNumberByLang(value, currentLanguage)
+  }
+
+  const formatDate = (date?: Date | string | number, options?: Intl.DateTimeFormatOptions): string => {
+    return formatDateByLang(date, currentLanguage, options)
+  }
+
   return (
-    <LanguageContext.Provider value={{ language: currentLanguage, setLanguage, t, isRTL }}>
+    <LanguageContext.Provider value={{ language: currentLanguage, setLanguage, t, formatNumber, formatDate, isRTL }}>
       <div
-        dir={mounted && isRTL ? 'rtl' : 'ltr'}
+        dir="ltr"
+        className={currentLanguage === 'ar' ? 'font-arabic' : ''}
         style={{ minHeight: '100%' }}
       >
         {children}

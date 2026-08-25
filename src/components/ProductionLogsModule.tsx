@@ -28,7 +28,7 @@ export default function ProductionLogsModule({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onOpenRecordProduction
 }: ProductionLogsModuleProps) {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [logs, setLogs] = useState<ProductionLogItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -327,14 +327,14 @@ export default function ProductionLogsModule({
                         CNC-01
                       </td>
                       <td className="p-3.5 font-medium text-slate-200">
-                        {log.Products?.ProductName || `PRD-${log.ProductID}`}
+                        {log.Products?.ProductName || `PRD-${formatNumber(log.ProductID)}`}
                       </td>
                       <td className="p-3.5 text-center font-mono font-bold text-white">
-                        +{log.Quantity}
+                        +{formatNumber(log.Quantity)}
                       </td>
                       <td className="p-3.5 text-right">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                          Completed
+                          {t('active_status_label')}
                         </span>
                       </td>
                     </tr>

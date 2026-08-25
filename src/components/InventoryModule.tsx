@@ -40,7 +40,7 @@ const zoneChartData = [
 export default function InventoryModule({
   onOpenStockOut,
 }: InventoryModuleProps) {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
   const [filterType, setFilterType] = useState<'All' | 'IN' | 'OUT'>('All')
   const [movements, setMovements] = useState<InventoryMovementItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -98,7 +98,7 @@ export default function InventoryModule({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={fetchMovements}
             className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
@@ -109,15 +109,15 @@ export default function InventoryModule({
 
           <button
             onClick={() => alert('Exporting inventory report...')}
-            className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all"
           >
             <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>{t('export_report')}</span>
+            <span>{t('export')}</span>
           </button>
 
           <button
             onClick={onOpenStockOut}
-            className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all"
+            className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>{t('stock_out_btn')}</span>
@@ -126,7 +126,7 @@ export default function InventoryModule({
       </div>
 
       {/* Top 3 KPI Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Card 1: Total Warehouse Value */}
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
@@ -135,7 +135,7 @@ export default function InventoryModule({
               <Building2 className="w-4 h-4" />
             </div>
           </div>
-          <h2 className="text-2xl font-extrabold text-white tracking-tight">$14.2M</h2>
+          <h2 className="text-2xl font-extrabold text-white tracking-tight">{formatNumber('$14.2M')}</h2>
           <p className="text-xs text-emerald-400 font-medium mt-1.5">
             +2.4% from last month
           </p>
@@ -150,8 +150,8 @@ export default function InventoryModule({
             </div>
           </div>
           <div className="flex items-baseline justify-between gap-2">
-            <h2 className="text-2xl font-extrabold text-white tracking-tight">78%</h2>
-            <span className="text-[11px] text-slate-400 font-medium">42,500 / 54,000 sq ft</span>
+            <h2 className="text-2xl font-extrabold text-white tracking-tight">{formatNumber('78%')}</h2>
+            <span className="text-[11px] text-slate-400 font-medium">{formatNumber(42500)} / {formatNumber(54000)} sq ft</span>
           </div>
           <div className="w-full bg-[#0F172A] rounded-full h-2 mt-3 border border-[#1E293B] overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-amber-500 h-2 rounded-full w-[78%]"></div>
@@ -224,7 +224,7 @@ export default function InventoryModule({
                 {loading ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-400">
-                      Loading...
+                      {t('loading')}
                     </td>
                   </tr>
                 ) : movements.length === 0 ? (
@@ -246,7 +246,7 @@ export default function InventoryModule({
                           {dateStr}
                         </td>
                         <td className="p-3.5 font-bold text-white">
-                          {m.Products?.ProductName || `PRD-${m.ProductID}`}
+                          {m.Products?.ProductName || `PRD-${formatNumber(m.ProductID)}`}
                         </td>
                         <td className="p-3.5 text-center">
                           {isIN ? (
@@ -262,7 +262,7 @@ export default function InventoryModule({
                           )}
                         </td>
                         <td className={`p-3.5 text-center font-mono font-bold ${isIN ? 'text-emerald-400' : 'text-amber-400'}`}>
-                          {isIN ? `+${m.Quantity}` : `-${m.Quantity}`}
+                          {isIN ? `+${formatNumber(m.Quantity)}` : `-${formatNumber(m.Quantity)}`}
                         </td>
                         <td className="p-3.5 text-right text-slate-300 font-medium">
                           {isIN ? 'Production Output' : 'Warehouse Dispatch'}

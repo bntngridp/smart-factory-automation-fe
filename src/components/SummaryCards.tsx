@@ -24,13 +24,19 @@ interface SummaryCardsProps {
 }
 
 export default function SummaryCards({ data, loading }: SummaryCardsProps) {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
+
+  const rawProdCount = data?.total_products !== undefined ? data.total_products : 6
+  const rawTodayCount = data?.total_production_today !== undefined ? data.total_production_today : 1127
+  const rawInventoryCount = 82450
+  const rawAlertsCount = data?.low_stock_alerts_count !== undefined ? data.low_stock_alerts_count : 1
+  const rawEfficiency = '94.2%'
 
   const cards = [
     {
       id: 'products',
       label: t('total_products'),
-      value: data?.total_products !== undefined ? data.total_products.toLocaleString() : '4,821',
+      value: formatNumber(rawProdCount),
       subtext: t('active_catalog'),
       isPositive: true,
       icon: Package,
@@ -39,7 +45,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
     {
       id: 'today_production',
       label: t('today_production'),
-      value: data?.total_production_today !== undefined ? `${data.total_production_today.toLocaleString()} units` : '1,240 units',
+      value: `${formatNumber(rawTodayCount)} ${t('units')}`,
       subtext: t('vs_daily_target'),
       isPositive: true,
       icon: Activity,
@@ -48,7 +54,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
     {
       id: 'inventory',
       label: t('current_inventory'),
-      value: '82,450',
+      value: formatNumber(rawInventoryCount),
       subtext: t('total_items_in_stock'),
       isPositive: false,
       icon: Boxes,
@@ -57,7 +63,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
     {
       id: 'low_stock',
       label: t('low_stock_alerts'),
-      value: data?.low_stock_alerts_count !== undefined ? data.low_stock_alerts_count.toString() : '3',
+      value: formatNumber(rawAlertsCount),
       subtext: t('require_attention'),
       isAlert: true,
       icon: AlertTriangle,
@@ -66,7 +72,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
     {
       id: 'efficiency',
       label: t('production_efficiency'),
-      value: '94.2%',
+      value: formatNumber(rawEfficiency),
       subtext: t('optimal_output'),
       isPositive: true,
       icon: Gauge,

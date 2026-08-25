@@ -23,14 +23,9 @@ export default function Header({
   setIsCollapsed,
   setIsMobileOpen
 }: HeaderProps) {
-  const { t } = useLanguage()
+  const { t, formatDate } = useLanguage()
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
+  const currentDate = formatDate(new Date())
 
   return (
     <header className="bg-[#0B0F17]/80 backdrop-blur-md sticky top-0 z-20 border-b border-[#1E293B] px-6 py-3 flex flex-wrap items-center justify-between gap-3">
@@ -133,10 +128,10 @@ export default function Header({
             BR
           </div>
           <div className="hidden lg:block text-left">
-            <p className="text-xs font-semibold text-white leading-tight">Bintang R.</p>
+            <p className="text-xs font-semibold text-white leading-tight">Bintang R</p>
             <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
               <ShieldCheck className="w-2.5 h-2.5" />
-              <span>Admin</span>
+              <span>{t('admin')}</span>
             </div>
           </div>
         </div>

@@ -49,10 +49,10 @@ export default function SystemStatusCard() {
       </div>
 
       <h3 className="text-sm font-bold text-emerald-400 mt-3">
-        All Systems Nominal
+        {t('all_systems_nominal')}
       </h3>
       <p className="text-[11px] text-slate-400 mt-0.5">
-        Last sync: 2 mins ago (Port 6060/6063)
+        {t('last_sync_text')}
       </p>
 
       {/* Micro Status Badges */}
@@ -60,17 +60,17 @@ export default function SystemStatusCard() {
         <div className="bg-[#0F172A] p-2 rounded-lg border border-[#1E293B] flex flex-col items-center gap-1">
           <Database className="w-3.5 h-3.5 text-blue-400" />
           <span className="text-slate-300 font-semibold">MSSQL DB</span>
-          <span className="text-emerald-400">Online</span>
+          <span className="text-emerald-400">{t('online')}</span>
         </div>
         <div className="bg-[#0F172A] p-2 rounded-lg border border-[#1E293B] flex flex-col items-center gap-1">
           <Server className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-slate-300 font-semibold">API Gateway</span>
-          <span className="text-emerald-400">Online</span>
+          <span className="text-emerald-400">{t('online')}</span>
         </div>
         <div className="bg-[#0F172A] p-2 rounded-lg border border-[#1E293B] flex flex-col items-center gap-1">
           <Cpu className="w-3.5 h-3.5 text-purple-400" />
           <span className="text-slate-300 font-semibold">Prisma ORM</span>
-          <span className="text-emerald-400">Synced</span>
+          <span className="text-emerald-400">{t('synced')}</span>
         </div>
       </div>
     </div>

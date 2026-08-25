@@ -27,7 +27,7 @@ import { getReportsApi, ReportsAnalyticsData } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
 
 export default function ReportsModule() {
-  const { t } = useLanguage()
+  const { t, formatNumber } = useLanguage()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [timeframe, setTimeframe] = useState('Last 30 Days')
   const [data, setData] = useState<ReportsAnalyticsData | null>(null)
@@ -171,7 +171,7 @@ export default function ReportsModule() {
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-              <span className="text-xs text-slate-400">Actual Output</span>
+              <span className="text-xs text-slate-400">{t('live_output')}</span>
             </div>
           </div>
 
@@ -180,7 +180,13 @@ export default function ReportsModule() {
               <BarChart data={monthlyYieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis
+                  stroke="#64748B"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(val: number) => formatNumber(val)}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#162032',
@@ -188,7 +194,7 @@ export default function ReportsModule() {
                     borderRadius: '12px',
                     color: '#F8FAFC'
                   }}
-                  formatter={(val: unknown) => [`${val} units`, 'Output']}
+                  formatter={(val: unknown) => [`${formatNumber(val as number)} ${t('units')}`, t('live_output')]}
                 />
                 <Bar dataKey="output" radius={[6, 6, 0, 0]} fill="#3B82F6" />
               </BarChart>
@@ -230,12 +236,13 @@ export default function ReportsModule() {
                     borderRadius: '12px',
                     color: '#F8FAFC'
                   }}
+                  formatter={(val: unknown) => [formatNumber(val as number), t('quantity')]}
                 />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xl font-extrabold text-white">{data?.total_logs_count || 7}</span>
-              <span className="text-[10px] text-slate-400 font-medium">Logs Count</span>
+              <span className="text-xl font-extrabold text-white">{formatNumber(data?.total_logs_count || 7)}</span>
+              <span className="text-[10px] text-slate-400 font-medium">{t('production_logs')}</span>
             </div>
           </div>
 
@@ -246,7 +253,7 @@ export default function ReportsModule() {
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
                   <span className="text-slate-300 font-medium truncate max-w-[120px]">{item.name}</span>
                 </div>
-                <span className="font-mono text-slate-400">{item.value.toLocaleString()}</span>
+                <span className="font-mono text-slate-400">{formatNumber(item.value)}</span>
               </div>
             ))}
           </div>
