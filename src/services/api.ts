@@ -68,6 +68,7 @@ export interface UserItem {
   UserID: number
   Username: string
   Role: string
+  TwoFactorEnabled?: boolean
 }
 
 export interface CreateUserPayload {
@@ -383,3 +384,100 @@ export async function triggerDatabaseBackupApi(): Promise<BackupResponseData> {
 
   return res.json()
 }
+
+export interface Setup2FAResponse {
+  success: boolean
+  secret: string
+  otpauthUri: string
+  qrCodeUri: string
+  recoveryCodes: string[]
+}
+
+export async function setup2FAApi(): Promise<Setup2FAResponse> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('forge_token') : null
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${API_BASE_URL}/auth/2fa/setup`, {
+    method: 'POST',
+    headers,
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal menyiapkan 2FA')
+  }
+
+  return res.json()
+}
+
+export async function enable2FAApi(payload: {
+  secret: string
+  code: string
+  recoveryCodes: string[]
+}): Promise<{ success: boolean; message: string }> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('forge_token') : null
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${API_BASE_URL}/auth/2fa/enable`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mengaktifkan 2FA')
+  }
+
+  return res.json()
+}
+
+export async function disable2FAApi(payload?: {
+  password?: string
+  code?: string
+}): Promise<{ success: boolean; message: string }> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('forge_token') : null
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${API_BASE_URL}/auth/2fa/disable`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload || {}),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal menonaktifkan 2FA')
+  }
+
+  return res.json()
+}
+
+export interface VerifyLogin2FAResponse {
+  success: boolean
+  token: string
+  user: UserItem
+  message: string
+}
+
+export async function verifyLogin2FAApi(payload: {
+  tempToken: string
+  code: string
+}): Promise<VerifyLogin2FAResponse> {
+  const res = await fetch(`${API_BASE_URL}/auth/2fa/verify-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Verifikasi 2FA gagal')
+  }
+
+  return res.json()
+}
+

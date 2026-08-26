@@ -23,7 +23,13 @@ import {
   Sparkles,
   AlertCircle,
   Activity,
-  RefreshCw
+  RefreshCw,
+  ShieldCheck,
+  ShieldAlert,
+  Key,
+  Copy,
+  X,
+  QrCode
 } from 'lucide-react'
 import { useLanguage, Language } from '@/context/LanguageContext'
 import { useTheme, AccentColor } from '@/context/ThemeContext'
@@ -32,6 +38,10 @@ import {
   changePasswordApi,
   getSystemStatusApi,
   triggerDatabaseBackupApi,
+  setup2FAApi,
+  enable2FAApi,
+  disable2FAApi,
+  Setup2FAResponse,
   SystemStatusData,
   BackupResponseData
 } from '@/services/api'
@@ -133,10 +143,20 @@ export default function SettingsModule() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(() => {
-    if (typeof window === 'undefined') return true
-    return localStorage.getItem('forge_2fa_enabled') !== 'false'
-  })
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+  const [is2FAModalOpen, setIs2FAModalOpen] = useState(false)
+  const [isDisable2FAModalOpen, setIsDisable2FAModalOpen] = useState(false)
+  const [twoFASetupLoading, setTwoFASetupLoading] = useState(false)
+  const [twoFASetupData, setTwoFASetupData] = useState<Setup2FAResponse | null>(null)
+  const [twoFAInputCode, setTwoFAInputCode] = useState('')
+  const [twoFAVerifying, setTwoFAVerifying] = useState(false)
+  const [twoFAError, setTwoFAError] = useState<string | null>(null)
+  const [twoFAToast, setTwoFAToast] = useState<string | null>(null)
+  const [copiedSecret, setCopiedSecret] = useState(false)
+  const [copiedRecovery, setCopiedRecovery] = useState(false)
+  const [disablePasswordInput, setDisablePasswordInput] = useState('')
+  const [disableLoading, setDisableLoading] = useState(false)
+  const [disableError, setDisableError] = useState<string | null>(null)
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [passwordToast, setPasswordToast] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
@@ -263,6 +283,9 @@ export default function SettingsModule() {
           if (authData.user.Role) {
             setCurrentUserRole(authData.user.Role)
           }
+          if (authData.user.TwoFactorEnabled !== undefined) {
+            setTwoFactorEnabled(authData.user.TwoFactorEnabled)
+          }
         }
       } catch {
         // Handled silently
@@ -349,12 +372,91 @@ export default function SettingsModule() {
     }
   }
 
-  const handleToggle2FA = () => {
-    const nextVal = !twoFactorEnabled
-    setTwoFactorEnabled(nextVal)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('forge_2fa_enabled', String(nextVal))
+  const handleOpen2FASetup = async () => {
+    setTwoFASetupLoading(true)
+    setTwoFAError(null)
+    setTwoFAInputCode('')
+    setCopiedSecret(false)
+    setCopiedRecovery(false)
+    try {
+      const data = await setup2FAApi()
+      setTwoFASetupData(data)
+      setIs2FAModalOpen(true)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menyiapkan 2FA'
+      setPasswordError(msg)
+    } finally {
+      setTwoFASetupLoading(false)
     }
+  }
+
+  const handleConfirmEnable2FA = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!twoFASetupData) return
+    const cleanCode = twoFAInputCode.trim()
+    if (cleanCode.length !== 6 || !/^\d+$/.test(cleanCode)) {
+      setTwoFAError('Masukkan 6 digit angka kode verifikasi dari aplikasi authenticator Anda')
+      return
+    }
+
+    setTwoFAVerifying(true)
+    setTwoFAError(null)
+
+    try {
+      const res = await enable2FAApi({
+        secret: twoFASetupData.secret,
+        code: cleanCode,
+        recoveryCodes: twoFASetupData.recoveryCodes,
+      })
+      setTwoFactorEnabled(true)
+      setIs2FAModalOpen(false)
+      setTwoFAToast(res.message || t('two_factor_enabled_toast'))
+      setTimeout(() => setTwoFAToast(null), 4000)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Kode verifikasi salah'
+      setTwoFAError(msg)
+    } finally {
+      setTwoFAVerifying(false)
+    }
+  }
+
+  const handleOpenDisable2FA = () => {
+    setDisablePasswordInput('')
+    setDisableError(null)
+    setIsDisable2FAModalOpen(true)
+  }
+
+  const handleConfirmDisable2FA = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setDisableLoading(true)
+    setDisableError(null)
+
+    try {
+      const res = await disable2FAApi({ password: disablePasswordInput })
+      setTwoFactorEnabled(false)
+      setIsDisable2FAModalOpen(false)
+      setTwoFAToast(res.message || t('two_factor_disabled_toast'))
+      setTimeout(() => setTwoFAToast(null), 4000)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menonaktifkan 2FA'
+      setDisableError(msg)
+    } finally {
+      setDisableLoading(false)
+    }
+  }
+
+  const handleCopySecret = () => {
+    if (!twoFASetupData) return
+    navigator.clipboard.writeText(twoFASetupData.secret)
+    setCopiedSecret(true)
+    setTimeout(() => setCopiedSecret(false), 2500)
+  }
+
+  const handleCopyRecoveryCodes = () => {
+    if (!twoFASetupData) return
+    navigator.clipboard.writeText(twoFASetupData.recoveryCodes.join('\n'))
+    setCopiedRecovery(true)
+    setTimeout(() => setCopiedRecovery(false), 2500)
   }
 
   const handleRevokeSessions = () => {
@@ -905,32 +1007,69 @@ export default function SettingsModule() {
                   </button>
                 </form>
 
-                {/* 2FA Security Switch */}
-                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 flex items-center justify-between max-w-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                      <Smartphone className="w-4 h-4" />
+                {/* 2FA Security Card */}
+                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 max-w-xl">
+                  {twoFAToast && (
+                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 animate-fade-in">
+                      <Check className="w-4 h-4 shrink-0" />
+                      <span>{twoFAToast}</span>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-white text-xs">{t('two_factor_auth')}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{t('two_factor_desc')}</p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3.5">
+                      <div
+                        className={`p-2.5 rounded-xl border shrink-0 ${
+                          twoFactorEnabled
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                        }`}
+                      >
+                        {twoFactorEnabled ? <ShieldCheck className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-white text-xs">{t('two_factor_auth')}</h4>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                              twoFactorEnabled
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                : 'bg-slate-800 text-slate-400 border-slate-700'
+                            }`}
+                          >
+                            {twoFactorEnabled ? t('two_factor_status_active') : t('two_factor_status_inactive')}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{t('two_factor_desc')}</p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 flex items-center">
+                      {twoFactorEnabled ? (
+                        <button
+                          type="button"
+                          onClick={handleOpenDisable2FA}
+                          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer outline-none focus:outline-none"
+                        >
+                          {t('two_factor_disable_btn')}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={twoFASetupLoading}
+                          onClick={handleOpen2FASetup}
+                          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-purple-600/20 transition-all disabled:opacity-50 cursor-pointer outline-none focus:outline-none"
+                        >
+                          {twoFASetupLoading ? (
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Key className="w-3.5 h-3.5" />
+                          )}
+                          <span>{twoFASetupLoading ? 'Menyiapkan...' : t('two_factor_setup_btn')}</span>
+                        </button>
+                      )}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleToggle2FA}
-                    className="text-blue-500 hover:text-blue-400 transition-colors"
-                  >
-                    {twoFactorEnabled ? (
-                      <div className="w-10 h-5 bg-purple-600 rounded-full p-0.5 flex justify-end transition-all">
-                        <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
-                      </div>
-                    ) : (
-                      <div className="w-10 h-5 bg-slate-700 rounded-full p-0.5 flex justify-start transition-all">
-                        <div className="w-4 h-4 bg-slate-400 rounded-full shadow-md"></div>
-                      </div>
-                    )}
-                  </button>
                 </div>
 
                 {/* Active Sessions List */}
@@ -1264,6 +1403,221 @@ export default function SettingsModule() {
           </div>
         </div>
       </div>
+
+      {/* 2FA SETUP MODAL */}
+      {is2FAModalOpen && twoFASetupData && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative my-8">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white tracking-tight">{t('two_factor_modal_title')}</h3>
+                  <p className="text-[11px] text-slate-400">RFC 6238 TOTP Authenticator</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIs2FAModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#162032] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Error Message */}
+            {twoFAError && (
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{twoFAError}</span>
+              </div>
+            )}
+
+            <div className="space-y-4 text-xs">
+              {/* STEP 1: SCAN QR CODE */}
+              <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-2 font-bold text-white text-xs">
+                  <QrCode className="w-4 h-4 text-purple-400" />
+                  <span>{t('two_factor_step_1')}</span>
+                </div>
+                <p className="text-[11px] text-slate-400">{t('two_factor_step_1_desc')}</p>
+
+                {/* QR Code Container */}
+                <div className="flex justify-center p-3 bg-white rounded-xl shadow-inner max-w-[200px] mx-auto">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={twoFASetupData.qrCodeUri}
+                    alt="2FA QR Code"
+                    className="w-40 h-40 object-contain"
+                  />
+                </div>
+
+                {/* Manual Secret Key */}
+                <div className="pt-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    {t('two_factor_manual_key')}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 tracking-wider select-all overflow-x-auto">
+                      {twoFASetupData.secret}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopySecret}
+                      className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-200 border border-[#1E293B] px-3 py-2 rounded-xl transition-colors font-semibold text-xs shrink-0 cursor-pointer"
+                    >
+                      {copiedSecret ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedSecret ? t('two_factor_copied') : t('two_factor_copy_key')}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 2: RECOVERY CODES */}
+              <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-bold text-white text-xs">
+                    <Key className="w-4 h-4 text-amber-400" />
+                    <span>{t('two_factor_step_2')}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyRecoveryCodes}
+                    className="text-[11px] text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1 cursor-pointer"
+                  >
+                    {copiedRecovery ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedRecovery ? t('two_factor_copied') : 'Salin Semua'}</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-400">{t('two_factor_step_2_desc')}</p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#162032] p-3 rounded-xl border border-[#1E293B]">
+                  {twoFASetupData.recoveryCodes.map((code, idx) => (
+                    <div
+                      key={idx}
+                      className="text-center font-mono text-[11px] text-slate-300 font-bold bg-[#0F172A] py-1 rounded-lg border border-slate-700/50"
+                    >
+                      {code}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* STEP 3: VERIFICATION FORM */}
+              <form onSubmit={handleConfirmEnable2FA} className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-3">
+                <label className="block font-bold text-white text-xs">
+                  {t('two_factor_step_3')}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    autoFocus
+                    placeholder="123456"
+                    value={twoFAInputCode}
+                    onChange={(e) => setTwoFAInputCode(e.target.value.replace(/\D/g, ''))}
+                    className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIs2FAModalOpen(false)}
+                    className="px-4 py-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer"
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={twoFAVerifying || twoFAInputCode.length !== 6}
+                    className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-purple-600/20 transition-all text-xs disabled:opacity-50 cursor-pointer"
+                  >
+                    {twoFAVerifying ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Check className="w-3.5 h-3.5" />
+                    )}
+                    <span>{twoFAVerifying ? 'Memverifikasi...' : t('two_factor_verify_btn')}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2FA DISABLE CONFIRMATION MODAL */}
+      {isDisable2FAModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+              <div className="flex items-center gap-2.5 text-rose-400">
+                <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                  <ShieldAlert className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white">{t('two_factor_disable_btn')}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDisable2FAModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#162032] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {disableError && (
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{disableError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleConfirmDisable2FA} className="space-y-4 text-xs">
+              <p className="text-slate-300 leading-relaxed">
+                Menonaktifkan 2FA akan mengurangi perlindungan keamanan akun Anda. Masukkan kata sandi saat ini untuk melanjutkan:
+              </p>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1.5">{t('current_password')} *</label>
+                <input
+                  type="password"
+                  required
+                  autoFocus
+                  placeholder="••••••••••••"
+                  value={disablePasswordInput}
+                  onChange={(e) => setDisablePasswordInput(e.target.value)}
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#1E293B]">
+                <button
+                  type="button"
+                  onClick={() => setIsDisable2FAModalOpen(false)}
+                  className="px-4 py-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer"
+                >
+                  {t('cancel')}
+                </button>
+                <button
+                  type="submit"
+                  disabled={disableLoading || !disablePasswordInput}
+                  className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl shadow-lg shadow-rose-600/20 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {disableLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldAlert className="w-3.5 h-3.5" />}
+                  <span>{disableLoading ? 'Memproses...' : 'Konfirmasi Nonaktifkan'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
