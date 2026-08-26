@@ -137,14 +137,15 @@ export default function Sidebar({
             return (
               <button
                 key={item.id}
+                type="button"
                 onClick={() => handleSelectTab(item.id)}
                 title={isCollapsed ? t(item.translationKey) : undefined}
-                className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer ${
                   isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
                 } ${
                   isActive
                     ? 'bg-[#1E2D47] text-emerald-400 border-l-4 border-emerald-500 shadow-md shadow-emerald-500/10'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032]'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032] border-l-4 border-transparent'
                 }`}
               >
                 <Icon className={`w-4 h-4 min-w-[16px] ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
@@ -157,14 +158,15 @@ export default function Sidebar({
         {/* Bottom Actions & Logout */}
         <div className="p-3 border-t border-[#1E293B] space-y-1.5">
           <button
+            type="button"
             onClick={() => handleSelectTab('settings')}
             title={isCollapsed ? t('settings') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium transition-colors ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             } ${
               activeTab === 'settings'
                 ? 'bg-[#1E2D47] text-emerald-400 border-l-4 border-emerald-500'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032]'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032] border-l-4 border-transparent'
             }`}
           >
             <Settings className="w-4 h-4 min-w-[16px] text-slate-400" />
@@ -172,9 +174,10 @@ export default function Sidebar({
           </button>
 
           <button
+            type="button"
             onClick={() => handleSelectTab('help')}
             title={isCollapsed ? t('help') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#162032] transition-colors ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#162032] transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer border-l-4 border-transparent ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             }`}
           >
@@ -184,12 +187,13 @@ export default function Sidebar({
 
           {/* Clean Logout Button */}
           <button
+            type="button"
             onClick={() => {
               setIsMobileOpen(false)
               if (onOpenLogout) onOpenLogout()
             }}
             title={isCollapsed ? t('logout') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer border-l-4 border-transparent ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             }`}
           >

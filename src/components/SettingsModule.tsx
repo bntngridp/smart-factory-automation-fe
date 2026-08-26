@@ -462,18 +462,19 @@ export default function SettingsModule() {
               return (
                 <button
                   key={tab.id}
+                  type="button"
                   onClick={() => setActiveSubTab(tab.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-semibold transition-all ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-semibold transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 select-none cursor-pointer border ${
                     isActive
-                      ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#0F172A]'
+                      ? 'bg-blue-600/15 text-blue-400 border-blue-500/30 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#0F172A] border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`w-4 h-4 ${isActive ? 'text-blue-400' : 'text-slate-500'}`} />
                     <span>{tab.label}</span>
                   </div>
-                  {isActive && <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>}
+                  {isActive && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>}
                 </button>
               )
             })}
@@ -668,9 +669,9 @@ export default function SettingsModule() {
                         key={accent.id}
                         type="button"
                         onClick={() => setAccentColor(accent.id as AccentColor)}
-                        className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+                        className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer ${
                           accentColor === accent.id
-                            ? 'border-white bg-[#162032] text-white font-bold'
+                            ? 'border-blue-500 bg-blue-500/10 text-blue-400 font-bold ring-1 ring-blue-500/30'
                             : 'border-[#1E293B] bg-[#162032]/60 text-slate-400 hover:text-slate-200'
                         }`}
                       >
