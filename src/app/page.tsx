@@ -100,6 +100,7 @@ export default function Home() {
           onOpenRecordProduction={() => handleOpenProduce()}
           onOpenStockOut={() => setIsStockOutOpen(true)}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
+          onNavigateTab={setActiveTab}
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
           setIsMobileOpen={setIsMobileOpen}
@@ -244,6 +245,7 @@ export default function Home() {
       <NotificationsModal
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
+        onOpenProduce={handleOpenProduce}
       />
 
       <LogoutModal

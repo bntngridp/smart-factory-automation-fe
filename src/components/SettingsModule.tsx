@@ -45,6 +45,7 @@ import {
   SystemStatusData,
   BackupResponseData
 } from '@/services/api'
+import { playNotificationTone } from '@/services/notificationService'
 
 export default function SettingsModule() {
   const { language, setLanguage, t, formatNumber, formatDate, isRTL } = useLanguage()
@@ -552,6 +553,10 @@ export default function SettingsModule() {
           alertDbSync,
         })
       )
+      window.dispatchEvent(new Event('forge_notif_rules_change'))
+    }
+    if (notifAudio) {
+      playNotificationTone('success')
     }
     setNotifSavedToast(true)
     setTimeout(() => setNotifSavedToast(false), 3500)
