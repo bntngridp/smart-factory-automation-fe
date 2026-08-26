@@ -6,10 +6,11 @@
   --bg-card: #162032;
   --bg-card-hover: #1E2D47;
   --border-card: #1E293B;
-  --accent-blue: #3B82F6;
-  --accent-green: #10B981;
-  --accent-amber: #F59E0B;
-  --accent-red: #EF4444;
+  --accent-primary: #3B82F6;
+  --accent-primary-hover: #2563EB;
+  --accent-soft: rgba(59, 130, 246, 0.12);
+  --accent-border: rgba(59, 130, 246, 0.3);
+  --accent-text: #60A5FA;
 }
 
 body {
@@ -82,7 +83,7 @@ body {
 }
 
 .light-mode .bg-\[\#1E2D47\] {
-  background-color: #EFF6FF !important; /* Soft active blue tint */
+  background-color: #EFF6FF !important;
   border-color: #BFDBFE !important;
 }
 
@@ -168,8 +169,8 @@ body {
 .light-mode select:focus,
 .light-mode textarea:focus {
   background-color: #FFFFFF !important;
-  border-color: #3B82F6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 2px var(--accent-soft) !important;
 }
 
 /* Modal Windows Overlay in Light Mode */
@@ -218,4 +219,129 @@ body {
 
 .density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) {
   margin-top: 1rem !important;
+}
+
+/* ==========================================================================
+   Dynamic Telemetry Accent Color Themes
+   (Forge Blue, Emerald Automation, Cyber Amber, Tech Violet)
+   ========================================================================= */
+
+/* 1. EMERALD AUTOMATION ACCENT */
+.accent-emerald {
+  --accent-primary: #10B981;
+  --accent-primary-hover: #059669;
+  --accent-soft: rgba(16, 185, 129, 0.15);
+  --accent-border: rgba(16, 185, 129, 0.35);
+  --accent-text: #34D399;
+}
+
+.accent-emerald .bg-blue-600,
+.accent-emerald .bg-blue-500 {
+  background-color: #10B981 !important;
+}
+
+.accent-emerald .hover\:bg-blue-500:hover,
+.accent-emerald .hover\:bg-blue-600:hover {
+  background-color: #059669 !important;
+}
+
+.accent-emerald .text-blue-400,
+.accent-emerald .text-blue-500 {
+  color: #34D399 !important;
+}
+
+.accent-emerald .border-blue-500,
+.accent-emerald .border-blue-500\/20,
+.accent-emerald .border-blue-500\/30 {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+.accent-emerald .bg-blue-500\/10,
+.accent-emerald .bg-blue-600\/15,
+.accent-emerald .bg-blue-600\/20 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+.accent-emerald .shadow-blue-500\/20 {
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* 2. CYBER AMBER ACCENT */
+.accent-amber {
+  --accent-primary: #F59E0B;
+  --accent-primary-hover: #D97706;
+  --accent-soft: rgba(245, 158, 11, 0.15);
+  --accent-border: rgba(245, 158, 11, 0.35);
+  --accent-text: #FBBF24;
+}
+
+.accent-amber .bg-blue-600,
+.accent-amber .bg-blue-500 {
+  background-color: #F59E0B !important;
+}
+
+.accent-amber .hover\:bg-blue-500:hover,
+.accent-amber .hover\:bg-blue-600:hover {
+  background-color: #D97706 !important;
+}
+
+.accent-amber .text-blue-400,
+.accent-amber .text-blue-500 {
+  color: #FBBF24 !important;
+}
+
+.accent-amber .border-blue-500,
+.accent-amber .border-blue-500\/20,
+.accent-amber .border-blue-500\/30 {
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+.accent-amber .bg-blue-500\/10,
+.accent-amber .bg-blue-600\/15,
+.accent-amber .bg-blue-600\/20 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+.accent-amber .shadow-blue-500\/20 {
+  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25) !important;
+}
+
+/* 3. TECH VIOLET ACCENT */
+.accent-violet {
+  --accent-primary: #8B5CF6;
+  --accent-primary-hover: #7C3AED;
+  --accent-soft: rgba(139, 92, 246, 0.15);
+  --accent-border: rgba(139, 92, 246, 0.35);
+  --accent-text: #A78BFA;
+}
+
+.accent-violet .bg-blue-600,
+.accent-violet .bg-blue-500 {
+  background-color: #8B5CF6 !important;
+}
+
+.accent-violet .hover\:bg-blue-500:hover,
+.accent-violet .hover\:bg-blue-600:hover {
+  background-color: #7C3AED !important;
+}
+
+.accent-violet .text-blue-400,
+.accent-violet .text-blue-500 {
+  color: #A78BFA !important;
+}
+
+.accent-violet .border-blue-500,
+.accent-violet .border-blue-500\/20,
+.accent-violet .border-blue-500\/30 {
+  border-color: rgba(139, 92, 246, 0.35) !important;
+}
+
+.accent-violet .bg-blue-500\/10,
+.accent-violet .bg-blue-600\/15,
+.accent-violet .bg-blue-600\/20 {
+  background-color: rgba(139, 92, 246, 0.12) !important;
+}
+
+.accent-violet .shadow-blue-500\/20 {
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.25) !important;
 }
