@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useSyncExternalStore } from 'react'
 
 export type Theme = 'dark' | 'light'
 export type UiDensity = 'comfortable' | 'compact'
@@ -20,75 +20,61 @@ export interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
+const subscribeTheme = (callback: () => void) => {
+  window.addEventListener('storage', callback)
+  window.addEventListener('forge_theme_change', callback)
+  return () => {
+    window.removeEventListener('storage', callback)
+    window.removeEventListener('forge_theme_change', callback)
+  }
+}
+
+const getThemeSnapshot = (): Theme => {
+  try {
+    const saved = localStorage.getItem('forge_theme') as Theme
+    if (saved && ['dark', 'light'].includes(saved)) return saved
+  } catch {}
+  return 'dark'
+}
+const getServerThemeSnapshot = (): Theme => 'dark'
+
+const getContrastSnapshot = (): boolean => {
+  try {
+    return localStorage.getItem('forge_high_contrast') === 'true'
+  } catch {}
+  return false
+}
+const getServerContrastSnapshot = (): boolean => false
+
+const getDensitySnapshot = (): UiDensity => {
+  try {
+    const saved = localStorage.getItem('forge_ui_density') as UiDensity
+    if (saved && ['comfortable', 'compact'].includes(saved)) return saved
+  } catch {}
+  return 'comfortable'
+}
+const getServerDensitySnapshot = (): UiDensity => 'comfortable'
+
+const getAccentSnapshot = (): AccentColor => {
+  try {
+    const saved = localStorage.getItem('forge_accent_color') as AccentColor
+    if (saved && ['blue', 'emerald', 'amber', 'violet'].includes(saved)) return saved
+  } catch {}
+  return 'blue'
+}
+const getServerAccentSnapshot = (): AccentColor => 'blue'
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'dark'
-    try {
-      const saved = localStorage.getItem('forge_theme') as Theme
-      if (saved && ['dark', 'light'].includes(saved)) return saved
-    } catch {}
-    return 'dark'
-  })
-
-  const [highContrast, setHighContrastState] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    try {
-      return localStorage.getItem('forge_high_contrast') === 'true'
-    } catch {}
-    return false
-  })
-
-  const [uiDensity, setUiDensityState] = useState<UiDensity>(() => {
-    if (typeof window === 'undefined') return 'comfortable'
-    try {
-      const saved = localStorage.getItem('forge_ui_density') as UiDensity
-      if (saved && ['comfortable', 'compact'].includes(saved)) return saved
-    } catch {}
-    return 'comfortable'
-  })
-
-  const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
-    if (typeof window === 'undefined') return 'blue'
-    try {
-      const saved = localStorage.getItem('forge_accent_color') as AccentColor
-      if (saved && ['blue', 'emerald', 'amber', 'violet'].includes(saved)) return saved
-    } catch {}
-    return 'blue'
-  })
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      try {
-        const savedTheme = localStorage.getItem('forge_theme') as Theme
-        if (savedTheme && ['dark', 'light'].includes(savedTheme)) setThemeState(savedTheme)
-
-        const savedContrast = localStorage.getItem('forge_high_contrast')
-        if (savedContrast !== null) setHighContrastState(savedContrast === 'true')
-
-        const savedDensity = localStorage.getItem('forge_ui_density') as UiDensity
-        if (savedDensity && ['comfortable', 'compact'].includes(savedDensity)) setUiDensityState(savedDensity)
-
-        const savedAccent = localStorage.getItem('forge_accent_color') as AccentColor
-        if (savedAccent && ['blue', 'emerald', 'amber', 'violet'].includes(savedAccent)) setAccentColorState(savedAccent)
-      } catch {}
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('forge_theme_change', handleStorageChange)
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('forge_theme_change', handleStorageChange)
-    }
-  }, [])
+  const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot)
+  const highContrast = useSyncExternalStore(subscribeTheme, getContrastSnapshot, getServerContrastSnapshot)
+  const uiDensity = useSyncExternalStore(subscribeTheme, getDensitySnapshot, getServerDensitySnapshot)
+  const accentColor = useSyncExternalStore(subscribeTheme, getAccentSnapshot, getServerAccentSnapshot)
 
   const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme)
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('forge_theme', newTheme)
-        window.dispatchEvent(new Event('forge_theme_change'))
-      } catch {}
-    }
+    try {
+      localStorage.setItem('forge_theme', newTheme)
+      window.dispatchEvent(new Event('forge_theme_change'))
+    } catch {}
   }
 
   const toggleTheme = () => {
@@ -97,33 +83,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   const setHighContrast = (val: boolean) => {
-    setHighContrastState(val)
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('forge_high_contrast', String(val))
-        window.dispatchEvent(new Event('forge_theme_change'))
-      } catch {}
-    }
+    try {
+      localStorage.setItem('forge_high_contrast', String(val))
+      window.dispatchEvent(new Event('forge_theme_change'))
+    } catch {}
   }
 
   const setUiDensity = (val: UiDensity) => {
-    setUiDensityState(val)
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('forge_ui_density', val)
-        window.dispatchEvent(new Event('forge_theme_change'))
-      } catch {}
-    }
+    try {
+      localStorage.setItem('forge_ui_density', val)
+      window.dispatchEvent(new Event('forge_theme_change'))
+    } catch {}
   }
 
   const setAccentColor = (val: AccentColor) => {
-    setAccentColorState(val)
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('forge_accent_color', val)
-        window.dispatchEvent(new Event('forge_theme_change'))
-      } catch {}
-    }
+    try {
+      localStorage.setItem('forge_accent_color', val)
+      window.dispatchEvent(new Event('forge_theme_change'))
+    } catch {}
   }
 
   const rootClassNames = [
