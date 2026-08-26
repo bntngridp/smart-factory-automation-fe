@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useSyncExternalStore } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 
 export type Language = 'en' | 'id' | 'ar' | 'es'
 
@@ -1495,56 +1495,66 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-const emptySubscribe = () => () => {}
-
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const mounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  )
-
-  const [language, setLanguageState] = useState<Language>('en')
-
-  // Initialize from storage once mounted
-  const storedLang = useSyncExternalStore(
-    emptySubscribe,
-    () => {
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'en'
+    try {
       const saved = localStorage.getItem('forge_lang') as Language
-      return saved && ['en', 'id', 'ar', 'es'].includes(saved) ? saved : null
-    },
-    () => null
-  )
+      if (saved && ['en', 'id', 'ar', 'es'].includes(saved)) {
+        return saved
+      }
+    } catch {}
+    return 'en'
+  })
 
-  const currentLanguage = storedLang || language
+  // Sync with localStorage across tabs and direct events
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('forge_lang') as Language
+        if (saved && ['en', 'id', 'ar', 'es'].includes(saved)) {
+          setLanguageState(saved)
+        }
+      } catch {}
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('forge_lang_change', handleStorageChange)
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('forge_lang_change', handleStorageChange)
+    }
+  }, [])
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('forge_lang', lang)
+      try {
+        localStorage.setItem('forge_lang', lang)
+        window.dispatchEvent(new Event('forge_lang_change'))
+      } catch {}
     }
   }
 
-  const isRTL = currentLanguage === 'ar'
+  const isRTL = language === 'ar'
 
   const t = (key: string): string => {
-    return translations[currentLanguage]?.[key] || translations['en']?.[key] || key
+    return translations[language]?.[key] || translations['en']?.[key] || key
   }
 
   const formatNumber = (value: number | string | null | undefined): string => {
-    return formatNumberByLang(value, currentLanguage)
+    return formatNumberByLang(value, language)
   }
 
   const formatDate = (date?: Date | string | number, options?: Intl.DateTimeFormatOptions): string => {
-    return formatDateByLang(date, currentLanguage, options)
+    return formatDateByLang(date, language, options)
   }
 
   return (
-    <LanguageContext.Provider value={{ language: currentLanguage, setLanguage, t, formatNumber, formatDate, isRTL }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, formatNumber, formatDate, isRTL }}>
       <div
         dir="ltr"
-        className={currentLanguage === 'ar' ? 'font-arabic' : ''}
+        className={language === 'ar' ? 'font-arabic' : ''}
         style={{ minHeight: '100%' }}
       >
         {children}
