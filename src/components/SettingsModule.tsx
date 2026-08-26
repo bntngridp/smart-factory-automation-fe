@@ -151,6 +151,7 @@ export default function SettingsModule() {
   const [twoFAInputCode, setTwoFAInputCode] = useState('')
   const [twoFAVerifying, setTwoFAVerifying] = useState(false)
   const [twoFAError, setTwoFAError] = useState<string | null>(null)
+  const [twoFACardError, setTwoFACardError] = useState<string | null>(null)
   const [twoFAToast, setTwoFAToast] = useState<string | null>(null)
   const [copiedSecret, setCopiedSecret] = useState(false)
   const [copiedRecovery, setCopiedRecovery] = useState(false)
@@ -375,6 +376,7 @@ export default function SettingsModule() {
   const handleOpen2FASetup = async () => {
     setTwoFASetupLoading(true)
     setTwoFAError(null)
+    setTwoFACardError(null)
     setTwoFAInputCode('')
     setCopiedSecret(false)
     setCopiedRecovery(false)
@@ -384,7 +386,15 @@ export default function SettingsModule() {
       setIs2FAModalOpen(true)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal menyiapkan 2FA'
-      setPasswordError(msg)
+      if (
+        msg.toLowerCase().includes('sesi') ||
+        msg.toLowerCase().includes('unauthorized') ||
+        msg.toLowerCase().includes('login')
+      ) {
+        setTwoFACardError('Sesi aktif diperlukan. Silakan login ke akun Anda terlebih dahulu untuk mengonfigurasi 2FA.')
+      } else {
+        setTwoFACardError(msg)
+      }
     } finally {
       setTwoFASetupLoading(false)
     }
@@ -923,28 +933,28 @@ export default function SettingsModule() {
                 </div>
 
                 {passwordToast && (
-                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 max-w-3xl animate-fade-in">
                     <Check className="w-4 h-4" />
                     <span>{passwordToast}</span>
                   </div>
                 )}
 
                 {passwordError && (
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2 max-w-3xl animate-fade-in">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>{passwordError}</span>
                   </div>
                 )}
 
                 {sessionRevokedToast && (
-                  <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
+                  <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-blue-400 text-xs flex items-center gap-2 max-w-3xl animate-fade-in">
                     <Check className="w-4 h-4" />
                     <span>{t('session_revoked')}</span>
                   </div>
                 )}
 
                 {/* Password Update Form (Connected to Backend API) */}
-                <form onSubmit={handleUpdatePassword} className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 max-w-xl">
+                <form onSubmit={handleUpdatePassword} className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 space-y-4 max-w-3xl">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Lock className="w-4 h-4 text-blue-400" />
@@ -1008,18 +1018,25 @@ export default function SettingsModule() {
                 </form>
 
                 {/* 2FA Security Card */}
-                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 max-w-xl">
+                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 space-y-4 max-w-3xl">
                   {twoFAToast && (
-                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 animate-fade-in">
+                    <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2.5 animate-fade-in">
                       <Check className="w-4 h-4 shrink-0" />
                       <span>{twoFAToast}</span>
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-start gap-3.5">
+                  {twoFACardError && (
+                    <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2.5 animate-fade-in">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>{twoFACardError}</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                    <div className="flex items-start gap-4">
                       <div
-                        className={`p-2.5 rounded-xl border shrink-0 ${
+                        className={`p-3 rounded-xl border shrink-0 ${
                           twoFactorEnabled
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                             : 'bg-purple-500/10 text-purple-400 border-purple-500/20'
@@ -1027,11 +1044,11 @@ export default function SettingsModule() {
                       >
                         {twoFactorEnabled ? <ShieldCheck className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-white text-xs">{t('two_factor_auth')}</h4>
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <h4 className="font-bold text-white text-sm tracking-tight">{t('two_factor_auth')}</h4>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border tracking-wide ${
                               twoFactorEnabled
                                 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                                 : 'bg-slate-800 text-slate-400 border-slate-700'
@@ -1040,16 +1057,16 @@ export default function SettingsModule() {
                             {twoFactorEnabled ? t('two_factor_status_active') : t('two_factor_status_inactive')}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{t('two_factor_desc')}</p>
+                        <p className="text-xs text-slate-400 leading-relaxed max-w-xl">{t('two_factor_desc')}</p>
                       </div>
                     </div>
 
-                    <div className="shrink-0 flex items-center">
+                    <div className="shrink-0 flex items-center sm:self-center">
                       {twoFactorEnabled ? (
                         <button
                           type="button"
                           onClick={handleOpenDisable2FA}
-                          className="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer outline-none focus:outline-none"
+                          className="px-4 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer outline-none focus:outline-none whitespace-nowrap"
                         >
                           {t('two_factor_disable_btn')}
                         </button>
@@ -1058,7 +1075,7 @@ export default function SettingsModule() {
                           type="button"
                           disabled={twoFASetupLoading}
                           onClick={handleOpen2FASetup}
-                          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-purple-600/20 transition-all disabled:opacity-50 cursor-pointer outline-none focus:outline-none"
+                          className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-lg shadow-purple-600/20 transition-all disabled:opacity-50 cursor-pointer outline-none focus:outline-none whitespace-nowrap"
                         >
                           {twoFASetupLoading ? (
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1073,7 +1090,7 @@ export default function SettingsModule() {
                 </div>
 
                 {/* Active Sessions List */}
-                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 max-w-xl">
+                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 space-y-4 max-w-3xl">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Laptop className="w-4 h-4 text-emerald-400" />

@@ -318,12 +318,25 @@ export async function getReportsApi(): Promise<ReportsAnalyticsData> {
   return res.json()
 }
 
+function getAuthHeaders(customHeaders: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...customHeaders,
+  }
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('forge_token')
+    if (token && token.length > 20) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+  }
+  return headers
+}
+
 export async function getAuthMeApi(): Promise<{ user: UserItem }> {
   const res = await fetch(`${API_BASE_URL}/auth/me`, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
+    credentials: 'include',
     cache: 'no-store',
   })
 
@@ -338,9 +351,8 @@ export async function getAuthMeApi(): Promise<{ user: UserItem }> {
 export async function changePasswordApi(currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
   const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
+    credentials: 'include',
     body: JSON.stringify({ currentPassword, newPassword }),
   })
 
@@ -355,9 +367,8 @@ export async function changePasswordApi(currentPassword: string, newPassword: st
 export async function getSystemStatusApi(): Promise<SystemStatusData> {
   const res = await fetch(`${API_BASE_URL}/system/status`, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
+    credentials: 'include',
     cache: 'no-store',
   })
 
@@ -372,9 +383,8 @@ export async function getSystemStatusApi(): Promise<SystemStatusData> {
 export async function triggerDatabaseBackupApi(): Promise<BackupResponseData> {
   const res = await fetch(`${API_BASE_URL}/system/backup`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
+    credentials: 'include',
   })
 
   if (!res.ok) {
@@ -394,13 +404,10 @@ export interface Setup2FAResponse {
 }
 
 export async function setup2FAApi(): Promise<Setup2FAResponse> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('forge_token') : null
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-
   const res = await fetch(`${API_BASE_URL}/auth/2fa/setup`, {
     method: 'POST',
-    headers,
+    headers: getAuthHeaders(),
+    credentials: 'include',
   })
 
   if (!res.ok) {
@@ -416,13 +423,10 @@ export async function enable2FAApi(payload: {
   code: string
   recoveryCodes: string[]
 }): Promise<{ success: boolean; message: string }> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('forge_token') : null
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-
   const res = await fetch(`${API_BASE_URL}/auth/2fa/enable`, {
     method: 'POST',
-    headers,
+    headers: getAuthHeaders(),
+    credentials: 'include',
     body: JSON.stringify(payload),
   })
 
@@ -438,13 +442,10 @@ export async function disable2FAApi(payload?: {
   password?: string
   code?: string
 }): Promise<{ success: boolean; message: string }> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('forge_token') : null
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-
   const res = await fetch(`${API_BASE_URL}/auth/2fa/disable`, {
     method: 'POST',
-    headers,
+    headers: getAuthHeaders(),
+    credentials: 'include',
     body: JSON.stringify(payload || {}),
   })
 
