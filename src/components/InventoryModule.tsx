@@ -30,7 +30,7 @@ import {
   Product
 } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
-import { exportFactoryInventoryCsv } from '@/utils/exportUtils'
+import { exportStockMovementsCsv } from '@/utils/exportUtils'
 
 interface InventoryModuleProps {
   onOpenStockOut: () => void
@@ -100,8 +100,8 @@ export default function InventoryModule({
   const handleExport = async () => {
     setExporting(true)
     try {
-      await exportFactoryInventoryCsv()
-      showToast(t('export_inventory_success'))
+      const res = await exportStockMovementsCsv()
+      showToast(`${t('export_csv')}: ${res.filename}`)
     } catch (err) {
       console.error('Export error:', err)
     } finally {

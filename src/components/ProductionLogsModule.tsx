@@ -18,7 +18,7 @@ import {
   ProductionLogItem
 } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
-import { exportFactoryInventoryCsv } from '@/utils/exportUtils'
+import { exportProductionLogsCsv } from '@/utils/exportUtils'
 
 interface ProductionLogsModuleProps {
   onOpenRecordProduction?: () => void
@@ -122,8 +122,8 @@ export default function ProductionLogsModule({
   const handleExport = async () => {
     setExporting(true)
     try {
-      await exportFactoryInventoryCsv()
-      showToast(t('export_inventory_success'))
+      const res = await exportProductionLogsCsv()
+      showToast(`${t('export_csv')}: ${res.filename}`)
     } catch (err) {
       console.error('Failed to export production logs:', err)
     } finally {

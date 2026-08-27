@@ -12,10 +12,14 @@ import {
   ChevronRight,
   ShieldAlert,
   X,
-  Check
+  Check,
+  Upload,
+  Download
 } from 'lucide-react'
 import { getProductsApi, deleteProductApi, Product } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
+import { exportProductsCatalogCsv } from '@/utils/exportUtils'
+import ImportProductsModal from '@/components/Modals/ImportProductsModal'
 
 interface ProductsModuleProps {
   onOpenAddProduct: () => void
@@ -36,6 +40,10 @@ export default function ProductsModule({
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  // Import Modal State & Export loading
+  const [importModalOpen, setImportModalOpen] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -113,6 +121,18 @@ export default function ProductsModule({
     }
   }
 
+  const handleExportCatalog = async () => {
+    setExporting(true)
+    try {
+      const res = await exportProductsCatalogCsv()
+      showToast(`${t('export_catalog_csv')}: ${res.filename}`)
+    } catch (err) {
+      console.error('Export catalog failed:', err)
+    } finally {
+      setExporting(false)
+    }
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Toast Alert */}
@@ -140,18 +160,37 @@ export default function ProductsModule({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={fetchProducts}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>{t('sync_data')}</span>
+            <span className="hidden sm:inline">{t('sync_data')}</span>
+          </button>
+
+          <button
+            onClick={handleExportCatalog}
+            disabled={exporting}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 hover:text-white text-xs font-semibold px-3 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer disabled:opacity-50"
+            title="Export Products to CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-400" />
+            <span>{exporting ? '...' : t('export')}</span>
+          </button>
+
+          <button
+            onClick={() => setImportModalOpen(true)}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-emerald-400 hover:text-emerald-300 text-xs font-semibold px-3 py-2 rounded-xl border border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer"
+            title="Import Products from CSV"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>{t('import_csv')}</span>
           </button>
 
           <button
             onClick={onOpenAddProduct}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t('add_product')}</span>
@@ -372,6 +411,16 @@ export default function ProductsModule({
           </div>
         </div>
       )}
+
+      {/* Import Products from CSV Modal */}
+      <ImportProductsModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onSuccess={() => {
+          fetchProducts()
+          showToast(t('import_success'))
+        }}
+      />
     </div>
   )
 }
