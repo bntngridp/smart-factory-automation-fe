@@ -301,6 +301,39 @@ export async function createUserApi(payload: CreateUserPayload): Promise<UserIte
   return res.json()
 }
 
+export async function updateUserRoleApi(userId: number, role: string): Promise<UserItem> {
+  const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ role }),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal memperbarui peran pengguna')
+  }
+
+  return res.json()
+}
+
+export async function deleteUserApi(userId: number): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal menghapus pengguna')
+  }
+
+  return res.json()
+}
+
 export async function getReportsApi(): Promise<ReportsAnalyticsData> {
   const res = await fetch(`${API_BASE_URL}/reports`, {
     method: 'GET',

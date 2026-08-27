@@ -13,9 +13,18 @@ import {
   RefreshCw,
   X,
   Check,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  UserCog,
+  ShieldAlert
 } from 'lucide-react'
-import { getUsersApi, createUserApi, UserItem } from '@/services/api'
+import {
+  getUsersApi,
+  createUserApi,
+  updateUserRoleApi,
+  deleteUserApi,
+  UserItem
+} from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
 
 export default function UsersModule() {
@@ -25,6 +34,18 @@ export default function UsersModule() {
   const [roleFilter, setRoleFilter] = useState<string>('All Roles')
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Toast States
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toastType, setToastType] = useState<'success' | 'error'>('success')
+
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage(msg)
+    setToastType(type)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3500)
+  }
+
   // Invite Modal States
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [newUsername, setNewUsername] = useState('')
@@ -32,6 +53,12 @@ export default function UsersModule() {
   const [newRole, setNewRole] = useState('operator')
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  // Manage / Edit User Modal States
+  const [selectedUser, setSelectedUser] = useState<UserItem | null>(null)
+  const [editRole, setEditRole] = useState('operator')
+  const [manageSubmitting, setManageSubmitting] = useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
 
   const fetchUsers = async () => {
     setLoading(true)
@@ -79,9 +106,11 @@ export default function UsersModule() {
         role: newRole
       })
 
-      fetchUsers()
+      await fetchUsers()
       setIsInviteOpen(false)
       setNewUsername('')
+      setNewPassword('password123')
+      showToast(t('user_created_success'), 'success')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal membuat akun user baru'
       setErrorMsg(msg)
@@ -90,8 +119,52 @@ export default function UsersModule() {
     }
   }
 
+  const handleOpenManage = (user: UserItem) => {
+    setSelectedUser(user)
+    setEditRole(user.Role.toLowerCase())
+    setDeleteConfirmOpen(false)
+  }
+
+  const handleUpdateUserRole = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedUser) return
+
+    setManageSubmitting(true)
+    try {
+      await updateUserRoleApi(selectedUser.UserID, editRole)
+      await fetchUsers()
+      setSelectedUser(null)
+      showToast(t('user_updated_success'), 'success')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memperbarui peran pengguna'
+      showToast(msg, 'error')
+    } finally {
+      setManageSubmitting(false)
+    }
+  }
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return
+
+    setManageSubmitting(true)
+    try {
+      await deleteUserApi(selectedUser.UserID)
+      await fetchUsers()
+      setSelectedUser(null)
+      setDeleteConfirmOpen(false)
+      showToast(t('user_deleted_success'), 'success')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menghapus pengguna'
+      showToast(msg, 'error')
+    } finally {
+      setManageSubmitting(false)
+    }
+  }
+
   const filteredUsers = users.filter((u) => {
-    const matchesSearch = u.Username.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch =
+      u.Username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      `USR-${u.UserID}`.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesRole =
       roleFilter === 'All Roles' || u.Role.toLowerCase() === roleFilter.toLowerCase()
 
@@ -100,7 +173,25 @@ export default function UsersModule() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header & Invite Action */}
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div
+          className={`fixed top-5 right-5 z-50 p-4 rounded-xl border flex items-center gap-3 shadow-2xl animate-fade-in ${
+            toastType === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+          }`}
+        >
+          {toastType === 'success' ? (
+            <Check className="w-5 h-5 shrink-0" />
+          ) : (
+            <AlertCircle className="w-5 h-5 shrink-0" />
+          )}
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Header & Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -120,15 +211,18 @@ export default function UsersModule() {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchUsers}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>{t('sync_data')}</span>
           </button>
 
           <button
-            onClick={() => setIsInviteOpen(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
+            onClick={() => {
+              setIsInviteOpen(true)
+              setErrorMsg(null)
+            }}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>{t('invite_user')}</span>
@@ -156,7 +250,7 @@ export default function UsersModule() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="bg-[#0F172A] border border-[#1E293B] text-slate-300 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none"
+              className="bg-[#0F172A] border border-[#1E293B] text-slate-300 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none cursor-pointer"
             >
               <option value="All Roles">{t('all_roles')}</option>
               <option value="Admin">{t('admin_role')}</option>
@@ -170,7 +264,7 @@ export default function UsersModule() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                  <th className="p-3.5">{t('product_id').replace('Product', 'User').replace('Produk', 'Pengguna')}</th>
+                  <th className="p-3.5">ID</th>
                   <th className="p-3.5">{t('user')}</th>
                   <th className="p-3.5">{t('role')}</th>
                   <th className="p-3.5 text-center">{t('status')}</th>
@@ -181,13 +275,16 @@ export default function UsersModule() {
                 {loading ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-400">
-                      Loading...
+                      <div className="flex items-center justify-center gap-2">
+                        <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
+                        <span>{t('loading_users')}</span>
+                      </div>
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-slate-400">
-                      No user accounts found.
+                      {t('no_users_found')}
                     </td>
                   </tr>
                 ) : (
@@ -202,13 +299,13 @@ export default function UsersModule() {
                         </td>
                         <td className="p-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-xs shadow-md uppercase">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-xs shadow-md uppercase shrink-0">
                               {user.Username.substring(0, 2)}
                             </div>
                             <div>
                               <h4 className="font-bold text-white leading-tight">{user.Username}</h4>
                               <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                                <Mail className="w-3 h-3 text-slate-500" />
+                                <Mail className="w-3 h-3 text-slate-500 shrink-0" />
                                 {user.Username}@forge.inc
                               </p>
                             </div>
@@ -240,8 +337,9 @@ export default function UsersModule() {
 
                         <td className="p-3.5 text-right">
                           <button
-                            onClick={() => alert(`Manage user ${user.Username}`)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors"
+                            onClick={() => handleOpenManage(user)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors cursor-pointer"
+                            title={t('manage_user')}
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
@@ -254,9 +352,11 @@ export default function UsersModule() {
             </table>
           </div>
 
-          {/* Table Pagination */}
+          {/* Table Footer */}
           <div className="flex items-center justify-between gap-4 mt-5 pt-4 border-t border-[#1E293B] text-xs text-slate-400">
-            <span>{t('showing')} {formatNumber(filteredUsers.length)} {t('of')} {formatNumber(users.length)} {t('users')}</span>
+            <span>
+              {t('showing')} {formatNumber(filteredUsers.length)} {t('of')} {formatNumber(users.length)} {t('users')}
+            </span>
             <div className="flex items-center gap-1">
               <button className="p-1.5 rounded-lg bg-[#0F172A] border border-[#1E293B] text-slate-400 hover:text-white disabled:opacity-40">
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -353,7 +453,7 @@ export default function UsersModule() {
           <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button
               onClick={() => setIsInviteOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -363,8 +463,8 @@ export default function UsersModule() {
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white leading-tight">Add New Platform User</h3>
-                <p className="text-xs text-slate-400">Create user account credentials for MSSQL</p>
+                <h3 className="text-lg font-bold text-white leading-tight">{t('add_user_title')}</h3>
+                <p className="text-xs text-slate-400">{t('add_user_desc')}</p>
               </div>
             </div>
 
@@ -377,7 +477,7 @@ export default function UsersModule() {
 
             <form onSubmit={handleCreateUser} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1.5">Username *</label>
+                <label className="block text-slate-300 font-semibold mb-1.5">{t('user')} *</label>
                 <input
                   type="text"
                   required
@@ -389,7 +489,7 @@ export default function UsersModule() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1.5">Password *</label>
+                <label className="block text-slate-300 font-semibold mb-1.5">{t('current_password').replace('Saat Ini', '').replace('Current', '').trim()} *</label>
                 <input
                   type="password"
                   required
@@ -400,15 +500,15 @@ export default function UsersModule() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1.5">Role</label>
+                <label className="block text-slate-300 font-semibold mb-1.5">{t('role')}</label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
-                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
                 >
-                  <option value="operator">Operator</option>
-                  <option value="supervisor">Supervisor</option>
-                  <option value="admin">Admin</option>
+                  <option value="operator">{t('operator_role')}</option>
+                  <option value="supervisor">{t('supervisor_role')}</option>
+                  <option value="admin">{t('admin_role')}</option>
                 </select>
               </div>
 
@@ -416,20 +516,121 @@ export default function UsersModule() {
                 <button
                   type="button"
                   onClick={() => setIsInviteOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-indigo-500/20 transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
-                  <span>{submitting ? 'Creating...' : 'Create Account'}</span>
+                  <span>{submitting ? 'Creating...' : t('invite_user')}</span>
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Manage User Modal */}
+      {selectedUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <button
+              onClick={() => setSelectedUser(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                <UserCog className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white leading-tight">{t('manage_user')}</h3>
+                <p className="text-xs text-slate-400 font-mono">USR-{formatNumber(selectedUser.UserID)} • {selectedUser.Username}</p>
+              </div>
+            </div>
+
+            {!deleteConfirmOpen ? (
+              <form onSubmit={handleUpdateUserRole} className="space-y-4 text-xs">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1.5">{t('role')}</label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value)}
+                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="operator">{t('operator_role')}</option>
+                    <option value="supervisor">{t('supervisor_role')}</option>
+                    <option value="admin">{t('admin_role')}</option>
+                  </select>
+                </div>
+
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#1E293B]">
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmOpen(true)}
+                    className="flex items-center gap-1.5 text-rose-400 hover:text-rose-300 px-3 py-2 rounded-xl hover:bg-rose-500/10 border border-rose-500/20 transition-all font-semibold cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>{t('delete_user')}</span>
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedUser(null)}
+                      className="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
+                    >
+                      {t('cancel')}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={manageSubmitting}
+                      className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>{manageSubmitting ? 'Saving...' : t('save_preferences')}</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-4 text-xs animate-fade-in">
+                <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 flex items-start gap-3">
+                  <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-sm text-white mb-1">{t('delete_user')}</h4>
+                    <p className="text-xs text-rose-300">
+                      {t('confirm_delete_user')} <strong className="text-white underline">&ldquo;{selectedUser.Username}&rdquo;</strong>?
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmOpen(false)}
+                    className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={manageSubmitting}
+                    onClick={handleDeleteUser}
+                    className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-rose-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>{manageSubmitting ? 'Deleting...' : t('delete_user')}</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
