@@ -55,7 +55,7 @@ export default function RecordProductionModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedProductId) {
-      setError('Please select a product')
+      setError(t('please_select_product'))
       return
     }
 
