@@ -50,7 +50,7 @@ export default function StockOutModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedProductId) {
-      setError('Please select a product')
+      setError(t('please_select_product'))
       return
     }
 
@@ -79,7 +79,7 @@ export default function StockOutModal({
       <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -108,14 +108,14 @@ export default function StockOutModal({
               required
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(Number(e.target.value))}
-              className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-500 cursor-pointer"
             >
               {products.length === 0 ? (
-                <option value="">{t('no_products') || 'No products found'}</option>
+                <option value="">{t('no_products')}</option>
               ) : (
                 products.map((p) => (
                   <option key={p.ProductID} value={p.ProductID}>
-                    [PRD-{formatNumber(p.ProductID)}] {p.ProductName} ({p.Unit === 'pcs' || p.Unit === 'pzas' ? t('pcs') : p.Unit || t('units')})
+                    [PRD-{formatNumber(p.ProductID)}] {p.ProductName} ({p.Unit === 'pcs' || p.Unit === 'pzas' ? t('pcs') : p.Unit || t('units')}) - {t('current_stock_label') || t('stock')}: {formatNumber(p.CurrentStock ?? 0)}
                   </option>
                 ))
               )}
@@ -133,7 +133,7 @@ export default function StockOutModal({
               className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-500"
             />
             <p className="text-[11px] text-slate-500 mt-1">
-              Note: Request will fail if requested quantity exceeds current available stock.
+              {t('stock_out_note')}
             </p>
           </div>
 
@@ -141,14 +141,14 @@ export default function StockOutModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors"
+              className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Check className="w-4 h-4" />
               <span>{loading ? '...' : t('confirm_stock_out')}</span>
