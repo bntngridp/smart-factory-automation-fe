@@ -120,6 +120,8 @@ const translations: Record<Language, Record<string, string>> = {
     save_product: 'Save Product',
     saving: 'Processing...',
     confirm_delete: 'Are you sure you want to delete this record?',
+    confirm_delete_product: 'Are you sure you want to delete product',
+    delete_product_success: 'Product deleted from master catalog successfully.',
     delete_warning: 'This action is irreversible and will remove associated telemetry logs.',
 
     // Common
@@ -202,6 +204,7 @@ const translations: Record<Language, Record<string, string>> = {
     two_factor_verify_login_btn: 'Verify & Sign In',
     active_sessions: 'Active Factory Workstations',
     revoke_other_sessions: 'Terminate Other Sessions',
+    confirm_revoke_sessions: 'Are you sure you want to terminate all other workstation sessions?',
     session_revoked: 'All other active sessions have been terminated.',
     notifications: 'Notifications',
     notification_rules: 'Alert & Notification Rules',
@@ -443,6 +446,7 @@ const translations: Record<Language, Record<string, string>> = {
     unread_filter: 'Unread',
     critical_filter: 'Critical',
     clear_all: 'Clear All',
+    confirm_clear_notifications: 'Are you sure you want to clear all notifications?',
     no_notifications: 'No notifications to display',
     new_badge: 'NEW',
     help_center_title: 'Help Center & Documentation',
@@ -530,6 +534,8 @@ const translations: Record<Language, Record<string, string>> = {
     save_product: 'Simpan Produk',
     saving: 'Menyimpan...',
     confirm_delete: 'Apakah Anda yakin ingin menghapus data ini?',
+    confirm_delete_product: 'Apakah Anda yakin ingin menghapus produk',
+    delete_product_success: 'Produk berhasil dihapus dari katalog master.',
     delete_warning: 'Tindakan ini tidak dapat dibatalkan dan akan menghapus catatan telemetri terkait.',
 
     // Common
@@ -612,6 +618,7 @@ const translations: Record<Language, Record<string, string>> = {
     two_factor_verify_login_btn: 'Verifikasi & Masuk',
     active_sessions: 'Sesi Workstation Aktif',
     revoke_other_sessions: 'Putuskan Sesi Lain',
+    confirm_revoke_sessions: 'Apakah Anda yakin ingin memutuskan semua sesi workstation lain?',
     session_revoked: 'Semua sesi workstation lain berhasil diputuskan.',
     notifications: 'Notifikasi Sistem',
     notification_rules: 'Aturan Peringatan & Notifikasi',
@@ -853,6 +860,7 @@ const translations: Record<Language, Record<string, string>> = {
     unread_filter: 'Belum Dibaca',
     critical_filter: 'Kritis',
     clear_all: 'Bersihkan Semua',
+    confirm_clear_notifications: 'Apakah Anda yakin ingin menghapus semua notifikasi?',
     no_notifications: 'Tidak ada notifikasi saat ini',
     new_badge: 'BARU',
     help_center_title: 'Pusat Bantuan & Dokumentasi',
@@ -940,6 +948,8 @@ const translations: Record<Language, Record<string, string>> = {
     save_product: 'حفظ المنتج',
     saving: 'جاري الحفظ...',
     confirm_delete: 'هل أنت متأكد من حذف هذا السجل؟',
+    confirm_delete_product: 'هل أنت متأكد أنك تريد حذف المنتج',
+    delete_product_success: 'تم حذف المنتج من الكتالوج الرئيسي بنجاح.',
     delete_warning: 'لا يمكن التراجع عن هذا الإجراء وسيتم حذف سجلات القياس المرتبطة به نهائياً.',
 
     // Common
@@ -1022,6 +1032,7 @@ const translations: Record<Language, Record<string, string>> = {
     two_factor_verify_login_btn: 'تحقق وتسجيل الدخول',
     active_sessions: 'محطات عمل المصنع النشطة',
     revoke_other_sessions: 'إنهاء الجلسات الأخرى',
+    confirm_revoke_sessions: 'هل أنت متأكد من رغبتك في إنهاء جميع جلسات محطات العمل الأخرى؟',
     session_revoked: 'تم إنهاء جميع الجلسات الأخرى بنجاح.',
     notifications: 'الإشعارات والتنبيهات',
     notification_rules: 'قواعد التنبيهات والإشعارات',
@@ -1263,6 +1274,7 @@ const translations: Record<Language, Record<string, string>> = {
     unread_filter: 'غير مقروء',
     critical_filter: 'حرج',
     clear_all: 'مسح الكل',
+    confirm_clear_notifications: 'هل أنت متأكد من رغبتك في مسح جميع الإشعارات؟',
     no_notifications: 'لا توجد تنبيهات حالياً',
     new_badge: 'جديد',
     help_center_title: 'مركز المساعدة والتوثيق',
@@ -1350,6 +1362,8 @@ const translations: Record<Language, Record<string, string>> = {
     save_product: 'Guardar Producto',
     saving: 'Procesando...',
     confirm_delete: '¿Está seguro de que desea eliminar este registro?',
+    confirm_delete_product: '¿Está seguro de que desea eliminar el producto',
+    delete_product_success: 'Producto eliminado del catálogo principal con éxito.',
     delete_warning: 'Esta acción no se puede deshacer y eliminará los registros de telemetría asociados.',
 
     // Common
@@ -1432,6 +1446,7 @@ const translations: Record<Language, Record<string, string>> = {
     two_factor_verify_login_btn: 'Verificar e Iniciar Sesión',
     active_sessions: 'Sesiones Activas en Planta',
     revoke_other_sessions: 'Cerrar Otras Sesiones',
+    confirm_revoke_sessions: '¿Está seguro de que desea cerrar todas las demás sesiones de las estaciones de trabajo?',
     session_revoked: 'Todas las demás sesiones activas han sido cerradas con éxito.',
     notifications: 'Notificaciones',
     notification_rules: 'Reglas de Alerta y Notificación',
@@ -1673,6 +1688,7 @@ const translations: Record<Language, Record<string, string>> = {
     unread_filter: 'No Leídos',
     critical_filter: 'Críticos',
     clear_all: 'Limpiar Todo',
+    confirm_clear_notifications: '¿Está seguro de que desea borrar todas las notificaciones?',
     no_notifications: 'No hay notificaciones para mostrar',
     new_badge: 'NUEVO',
     help_center_title: 'Centro de Ayuda y Documentación',

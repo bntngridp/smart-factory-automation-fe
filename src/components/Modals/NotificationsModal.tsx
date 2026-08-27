@@ -31,6 +31,7 @@ export default function NotificationsModal({
   const [filter, setFilter] = useState<'all' | 'unread' | 'critical'>('all')
   const [notifications, setNotifications] = useState<RealNotificationItem[]>([])
   const [loading, setLoading] = useState(false)
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
 
   const loadNotifications = async () => {
     setLoading(true)
@@ -72,8 +73,9 @@ export default function NotificationsModal({
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
   }
 
-  const clearAll = () => {
+  const handleConfirmClear = () => {
     setNotifications([])
+    setClearConfirmOpen(false)
   }
 
   const toggleRead = (id: string) => {
@@ -181,14 +183,35 @@ export default function NotificationsModal({
               <span>{t('mark_all_read')}</span>
             </button>
             <button
-              onClick={clearAll}
-              className="flex items-center gap-1.5 text-slate-400 hover:text-rose-400 px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors"
+              onClick={() => setClearConfirmOpen(true)}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-rose-400 px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>{t('clear_all')}</span>
             </button>
           </div>
         </div>
+
+        {/* Clear All Confirmation Dialog */}
+        {clearConfirmOpen && (
+          <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl my-2 flex items-center justify-between gap-3 text-xs animate-fade-in">
+            <span className="text-rose-300 font-semibold">{t('confirm_clear_notifications')}</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setClearConfirmOpen(false)}
+                className="px-2.5 py-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer font-semibold"
+              >
+                {t('cancel')}
+              </button>
+              <button
+                onClick={handleConfirmClear}
+                className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg transition-colors cursor-pointer font-bold"
+              >
+                {t('delete')}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Notifications Scrollable List */}
         <div className="flex-1 overflow-y-auto space-y-3 py-4 pr-1">

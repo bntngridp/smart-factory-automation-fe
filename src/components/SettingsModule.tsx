@@ -167,6 +167,7 @@ export default function SettingsModule() {
   const [passwordToast, setPasswordToast] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [sessionRevokedToast, setSessionRevokedToast] = useState(false)
+  const [isRevokeConfirmModalOpen, setIsRevokeConfirmModalOpen] = useState(false)
 
   // Real Client Workstation Session Detection State (lazy-initialized)
   const [clientSession] = useState<{
@@ -602,7 +603,12 @@ export default function SettingsModule() {
     setTimeout(() => setCopiedRecovery(false), 2500)
   }
 
-  const handleRevokeSessions = () => {
+  const handleOpenRevokeSessions = () => {
+    setIsRevokeConfirmModalOpen(true)
+  }
+
+  const handleConfirmRevokeSessions = () => {
+    setIsRevokeConfirmModalOpen(false)
     setSessionRevokedToast(true)
     setTimeout(() => setSessionRevokedToast(false), 3500)
   }
@@ -1249,7 +1255,7 @@ export default function SettingsModule() {
                     </div>
                     <button
                       type="button"
-                      onClick={handleRevokeSessions}
+                      onClick={handleOpenRevokeSessions}
                       className="text-rose-400 hover:text-rose-300 text-[11px] font-semibold transition-colors cursor-pointer"
                     >
                       {t('revoke_other_sessions')}
@@ -1919,6 +1925,56 @@ export default function SettingsModule() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* REVOKE SESSIONS CONFIRMATION MODAL */}
+      {isRevokeConfirmModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+              <div className="flex items-center gap-2.5 text-rose-400">
+                <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                  <ShieldAlert className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white">{t('revoke_other_sessions')}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRevokeConfirmModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#162032] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs space-y-2">
+              <p className="text-rose-300 font-semibold leading-relaxed">
+                {t('confirm_revoke_sessions')}
+              </p>
+              <p className="text-[11px] text-slate-400">
+                {t('delete_warning')}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#1E293B]">
+              <button
+                type="button"
+                onClick={() => setIsRevokeConfirmModalOpen(false)}
+                className="px-4 py-2 text-slate-400 hover:text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+              >
+                {t('cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRevokeSessions}
+                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-lg shadow-rose-600/20 transition-all cursor-pointer"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>{t('revoke_other_sessions')}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -9,7 +9,10 @@ import {
   Package,
   RefreshCw,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShieldAlert,
+  X,
+  Check
 } from 'lucide-react'
 import { getProductsApi, deleteProductApi, Product } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
@@ -28,6 +31,18 @@ export default function ProductsModule({
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIds, setSelectedIds] = useState<number[]>([])
+
+  // Delete Confirmation Modal States
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3500)
+  }
 
   const fetchProducts = async () => {
     setLoading(true)
@@ -61,19 +76,25 @@ export default function ProductsModule({
     }
   }, [])
 
-  const handleDeleteProduct = async (id: number) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus produk PRD-${id}?`)) return
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return
+    setDeleting(true)
     try {
-      await deleteProductApi(id)
-      setProducts((prev) => prev.filter((p) => p.ProductID !== id))
+      await deleteProductApi(productToDelete.ProductID)
+      setProducts((prev) => prev.filter((p) => p.ProductID !== productToDelete.ProductID))
+      setProductToDelete(null)
+      showToast(t('delete_product_success'))
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal menghapus produk'
-      alert(msg)
+      showToast(msg)
+    } finally {
+      setDeleting(false)
     }
   }
 
   const filteredProducts = products.filter((p) =>
-    p.ProductName.toLowerCase().includes(searchQuery.toLowerCase())
+    p.ProductName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    `PRD-${p.ProductID}`.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +115,14 @@ export default function ProductsModule({
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center gap-3 shadow-2xl animate-fade-in">
+          <Check className="w-5 h-5 shrink-0" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
       {/* Header & Primary Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -103,7 +132,7 @@ export default function ProductsModule({
             </h1>
             <span className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <Package className="w-3 h-3" />
-              {t('master_catalog')}
+              {t('active_catalog')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -114,7 +143,7 @@ export default function ProductsModule({
         <div className="flex items-center gap-3">
           <button
             onClick={fetchProducts}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>{t('sync_data')}</span>
@@ -122,7 +151,7 @@ export default function ProductsModule({
 
           <button
             onClick={onOpenAddProduct}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t('add_product')}</span>
@@ -130,47 +159,45 @@ export default function ProductsModule({
         </div>
       </div>
 
-      {/* Filter & Search Toolbar */}
-      <div className="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 border border-[#1E293B]">
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder={t('search_products')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#0F172A] text-xs text-slate-200 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 border border-[#1E293B] focus:outline-none focus:border-blue-500 transition-all"
-          />
+      {/* Main Table Card */}
+      <div className="glass-card rounded-2xl border border-[#1E293B] overflow-hidden">
+        {/* Toolbar */}
+        <div className="p-4 border-b border-[#1E293B] flex flex-wrap items-center justify-between gap-4 bg-[#0F172A]">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={t('search_products')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#162032] text-xs text-slate-200 placeholder-slate-500 rounded-xl pl-10 pr-4 py-2.5 border border-[#1E293B] focus:outline-none focus:border-blue-500 transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-1.5 bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl hover:text-white transition-colors">
+              <Filter className="w-3.5 h-3.5" />
+              <span>{t('all_statuses')}</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 bg-[#0F172A] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-300 text-xs px-3.5 py-2.5 rounded-xl transition-colors">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span>{t('all_statuses')}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Products Table */}
-      <div className="glass-card rounded-2xl overflow-hidden border border-[#1E293B]">
+        {/* Data Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                <th className="p-4 w-10 text-center">
+              <tr className="bg-[#0B132B] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="p-4 w-12 text-center">
                   <input
                     type="checkbox"
                     onChange={handleSelectAll}
-                    checked={
-                      filteredProducts.length > 0 &&
-                      selectedIds.length === filteredProducts.length
-                    }
-                    className="rounded border-[#1E293B] bg-[#162032] text-blue-600 focus:ring-0"
+                    checked={filteredProducts.length > 0 && selectedIds.length === filteredProducts.length}
+                    className="rounded border-slate-700 bg-[#0F172A] text-blue-600 focus:ring-0 focus:ring-offset-0"
                   />
                 </th>
-                <th className="p-4">{t('product_id')}</th>
+                <th className="p-4">SKU / ID</th>
                 <th className="p-4">{t('product_name')}</th>
-                <th className="p-4 text-center">{t('unit')}</th>
+                <th className="p-4">{t('unit')}</th>
                 <th className="p-4 text-center">{t('current_stock')}</th>
                 <th className="p-4 text-center">{t('min_stock')}</th>
                 <th className="p-4 text-center">{t('status')}</th>
@@ -181,28 +208,30 @@ export default function ProductsModule({
               {loading ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-400">
-                    Loading...
+                    <div className="flex items-center justify-center gap-2">
+                      <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
+                      <span>{t('loading')}</span>
+                    </div>
                   </td>
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-400">
-                    No products found matching query.
+                    {t('no_products')}
                   </td>
                 </tr>
               ) : (
                 filteredProducts.map((item) => {
-                  const isSelected = selectedIds.includes(item.ProductID)
                   const currentStock = item.CurrentStock ?? 0
-                  const minStock = item.MinStock ?? 0
+                  const isSelected = selectedIds.includes(item.ProductID)
+                  const isLow = currentStock > 0 && currentStock <= item.MinStock
                   const isOut = currentStock === 0
-                  const isLow = currentStock < minStock && !isOut
 
                   return (
                     <tr
                       key={item.ProductID}
                       className={`hover:bg-[#1E2D47]/40 transition-colors ${
-                        isSelected ? 'bg-blue-900/10' : ''
+                        isSelected ? 'bg-blue-600/10' : ''
                       }`}
                     >
                       <td className="p-4 text-center">
@@ -210,7 +239,7 @@ export default function ProductsModule({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectOne(item.ProductID)}
-                          className="rounded border-[#1E293B] bg-[#162032] text-blue-600 focus:ring-0"
+                          className="rounded border-slate-700 bg-[#0F172A] text-blue-600 focus:ring-0 focus:ring-offset-0"
                         />
                       </td>
                       <td className="p-4 font-mono font-bold text-slate-400">
@@ -219,22 +248,14 @@ export default function ProductsModule({
                       <td className="p-4 font-bold text-white">
                         {item.ProductName}
                       </td>
-                      <td className="p-4 text-center text-slate-300">
+                      <td className="p-4 text-slate-300">
                         {item.Unit === 'pcs' || item.Unit === 'pzas' ? t('pcs') : item.Unit || t('units')}
                       </td>
-                      <td
-                        className={`p-4 text-center font-bold font-mono ${
-                          isOut
-                            ? 'text-rose-400'
-                            : isLow
-                            ? 'text-amber-400'
-                            : 'text-emerald-400'
-                        }`}
-                      >
+                      <td className="p-4 text-center font-mono font-bold text-white">
                         {formatNumber(currentStock)}
                       </td>
-                      <td className="p-4 text-center text-slate-400 font-medium font-mono">
-                        {formatNumber(minStock)}
+                      <td className="p-4 text-center font-mono text-slate-400">
+                        {formatNumber(item.MinStock)}
                       </td>
                       <td className="p-4 text-center">
                         {isOut ? (
@@ -255,14 +276,14 @@ export default function ProductsModule({
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => onOpenRecordProduction(item.ProductID)}
-                            className="p-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white transition-colors cursor-pointer"
                             title={t('produce')}
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => handleDeleteProduct(item.ProductID)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
+                            onClick={() => setProductToDelete(item)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors cursor-pointer"
                             title={t('delete')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -299,6 +320,58 @@ export default function ProductsModule({
           </div>
         </div>
       </div>
+
+      {/* Delete Product Confirmation Modal */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <button
+              onClick={() => setProductToDelete(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white leading-tight">{t('delete')} {t('products')}</h3>
+                <p className="text-xs text-slate-400 font-mono">PRD-{formatNumber(productToDelete.ProductID)}</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs space-y-2 mb-5">
+              <p className="text-rose-300">
+                {t('confirm_delete_product')} <strong className="text-white underline">&ldquo;{productToDelete.ProductName}&rdquo;</strong>?
+              </p>
+              <p className="text-[11px] text-slate-400">
+                {t('delete_warning')}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer text-xs"
+              >
+                {t('cancel')}
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleConfirmDelete}
+                className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-rose-500/20 transition-all disabled:opacity-50 cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>{deleting ? '...' : t('delete')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
