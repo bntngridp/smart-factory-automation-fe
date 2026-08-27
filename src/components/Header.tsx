@@ -92,15 +92,17 @@ export default function Header({
 
     loadInitialData()
 
-    // Listen for rules change or production updates
+    // Listen for rules change or notification updates
     const handleRulesChange = () => {
       loadInitialData()
     }
     window.addEventListener('forge_notif_rules_change', handleRulesChange)
+    window.addEventListener('forge_notifications_updated', handleRulesChange)
 
     return () => {
       ignore = true
       window.removeEventListener('forge_notif_rules_change', handleRulesChange)
+      window.removeEventListener('forge_notifications_updated', handleRulesChange)
     }
   }, [])
 

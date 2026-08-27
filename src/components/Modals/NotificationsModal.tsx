@@ -11,10 +11,18 @@ import {
   CheckCheck,
   Trash2,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  Check
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
-import { fetchLiveNotifications, RealNotificationItem } from '@/services/notificationService'
+import {
+  fetchLiveNotifications,
+  RealNotificationItem,
+  dismissNotification,
+  dismissAllNotifications,
+  markAllNotificationsAsRead,
+  toggleNotificationRead
+} from '@/services/notificationService'
 
 interface NotificationsModalProps {
   isOpen: boolean
@@ -32,6 +40,14 @@ export default function NotificationsModal({
   const [notifications, setNotifications] = useState<RealNotificationItem[]>([])
   const [loading, setLoading] = useState(false)
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3000)
+  }
 
   const loadNotifications = async () => {
     setLoading(true)
@@ -69,19 +85,33 @@ export default function NotificationsModal({
 
   if (!isOpen) return null
 
-  const markAllAsRead = () => {
+  const handleMarkAllAsRead = () => {
+    const ids = notifications.map((n) => n.id)
+    markAllNotificationsAsRead(ids)
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+    showToast(t('all_marked_read'))
   }
 
   const handleConfirmClear = () => {
+    const ids = notifications.map((n) => n.id)
+    dismissAllNotifications(ids)
     setNotifications([])
     setClearConfirmOpen(false)
+    showToast(t('all_notifications_cleared'))
   }
 
-  const toggleRead = (id: string) => {
+  const handleToggleRead = (id: string, currentRead: boolean) => {
+    const nextRead = toggleNotificationRead(id, currentRead)
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: nextRead } : n))
     )
+  }
+
+  const handleDeleteOne = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    dismissNotification(id)
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+    showToast(t('notification_dismissed'))
   }
 
   const filteredNotifications = notifications.filter((n) => {
@@ -94,11 +124,19 @@ export default function NotificationsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center gap-2.5 shadow-2xl animate-fade-in text-xs font-semibold">
+          <Check className="w-4 h-4 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]">
         {/* Modal Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors"
+          className="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -131,11 +169,11 @@ export default function NotificationsModal({
 
           <button
             onClick={loadNotifications}
-            className="p-2 rounded-xl bg-[#0F172A] border border-[#1E293B] text-slate-300 hover:text-white hover:border-blue-500/30 transition-all text-xs flex items-center gap-1.5 mr-6"
+            className="p-2 rounded-xl bg-[#0F172A] border border-[#1E293B] text-slate-300 hover:text-white hover:border-blue-500/30 transition-all text-xs flex items-center gap-1.5 mr-6 cursor-pointer"
             title="Refresh Live Notifications"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="hidden sm:inline">{t('refresh_notifications')}</span>
           </button>
         </div>
 
@@ -144,7 +182,7 @@ export default function NotificationsModal({
           <div className="flex items-center gap-1.5 bg-[#0F172A] p-1 rounded-xl border border-[#1E293B] text-xs">
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filter === 'all'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
@@ -154,7 +192,7 @@ export default function NotificationsModal({
             </button>
             <button
               onClick={() => setFilter('unread')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filter === 'unread'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
@@ -164,7 +202,7 @@ export default function NotificationsModal({
             </button>
             <button
               onClick={() => setFilter('critical')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 filter === 'critical'
                   ? 'bg-rose-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
@@ -176,15 +214,17 @@ export default function NotificationsModal({
 
           <div className="flex items-center gap-2 text-xs">
             <button
-              onClick={markAllAsRead}
-              className="flex items-center gap-1.5 text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors"
+              onClick={handleMarkAllAsRead}
+              disabled={unreadCount === 0}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors cursor-pointer disabled:opacity-40"
             >
               <CheckCheck className="w-3.5 h-3.5 text-blue-400" />
               <span>{t('mark_all_read')}</span>
             </button>
             <button
               onClick={() => setClearConfirmOpen(true)}
-              className="flex items-center gap-1.5 text-slate-400 hover:text-rose-400 px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors cursor-pointer"
+              disabled={notifications.length === 0}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-rose-400 px-2.5 py-1.5 rounded-lg hover:bg-[#0F172A] transition-colors cursor-pointer disabled:opacity-40"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>{t('clear_all')}</span>
@@ -218,7 +258,7 @@ export default function NotificationsModal({
           {loading ? (
             <div className="py-12 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
               <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
-              <span>Memuat notifikasi real-time dari database...</span>
+              <span>{t('loading')}</span>
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="py-12 text-center text-slate-400 text-xs">
@@ -229,11 +269,11 @@ export default function NotificationsModal({
             filteredNotifications.map((item) => (
               <div
                 key={item.id}
-                onClick={() => toggleRead(item.id)}
-                className={`cursor-pointer rounded-xl p-4 border transition-all relative ${
+                onClick={() => handleToggleRead(item.id, item.read)}
+                className={`group cursor-pointer rounded-xl p-4 border transition-all relative ${
                   !item.read
                     ? 'bg-[#0F172A] border-blue-500/40 hover:border-blue-500/70 shadow-sm'
-                    : 'bg-[#0F172A] border-[#1E293B] opacity-80 hover:opacity-100'
+                    : 'bg-[#0F172A]/70 border-[#1E293B] opacity-85 hover:opacity-100 hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -267,10 +307,20 @@ export default function NotificationsModal({
                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                         )}
                       </h4>
-                      <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {item.timeAgo}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {item.timeAgo}
+                        </span>
+                        {/* Delete Single Notification Button */}
+                        <button
+                          onClick={(e) => handleDeleteOne(item.id, e)}
+                          className="opacity-60 group-hover:opacity-100 hover:text-rose-400 p-1 text-slate-400 rounded-lg hover:bg-[#162032] transition-all cursor-pointer"
+                          title={t('delete_notification')}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-xs text-slate-300 leading-relaxed">
@@ -303,13 +353,13 @@ export default function NotificationsModal({
 
         {/* Footer */}
         <div className="pt-4 border-t border-[#1E293B] flex items-center justify-between text-xs text-slate-400">
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-1.5 text-xs text-slate-400">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Sinkronisasi Notifikasi Aktif
+            {t('notification_sync_active')}
           </span>
           <button
             onClick={onClose}
-            className="bg-[#0F172A] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer"
+            className="bg-[#0F172A] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer text-xs"
           >
             {t('cancel')}
           </button>
