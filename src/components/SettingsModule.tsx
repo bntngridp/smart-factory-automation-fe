@@ -7,7 +7,6 @@ import {
   Shield,
   Palette,
   Bell,
-  Server,
   Search,
   Check,
   Globe,
@@ -29,7 +28,12 @@ import {
   Key,
   Copy,
   X,
-  QrCode
+  QrCode,
+  Factory,
+  Gauge,
+  Layers,
+  SlidersHorizontal,
+  HardDrive
 } from 'lucide-react'
 import { useLanguage, Language } from '@/context/LanguageContext'
 import { useTheme, AccentColor } from '@/context/ThemeContext'
@@ -314,11 +318,77 @@ export default function SettingsModule() {
 
   const [notifSavedToast, setNotifSavedToast] = useState(false)
 
-  // System Infrastructure States
+  // Factory Operations & Parameter States
   const [systemStatus, setSystemStatus] = useState<SystemStatusData | null>(null)
   const [loadingStatus, setLoadingStatus] = useState(false)
-  const [backendUrl, setBackendUrl] = useState('http://localhost:6060')
-  const [mssqlHost, setMssqlHost] = useState('localhost:6063 (FactoryDB)')
+  const backendUrl = 'http://localhost:6060'
+  const mssqlHost = 'localhost:6063 (FactoryDB)'
+  const [shift1Target, setShift1Target] = useState(() => {
+    if (typeof window === 'undefined') return 500
+    try {
+      const saved = localStorage.getItem('forge_factory_operations_config')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.shift1Target !== undefined) return Number(p.shift1Target)
+      }
+    } catch {}
+    return 500
+  })
+  const [shift2Target, setShift2Target] = useState(() => {
+    if (typeof window === 'undefined') return 450
+    try {
+      const saved = localStorage.getItem('forge_factory_operations_config')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.shift2Target !== undefined) return Number(p.shift2Target)
+      }
+    } catch {}
+    return 450
+  })
+  const [shift3Target, setShift3Target] = useState(() => {
+    if (typeof window === 'undefined') return 400
+    try {
+      const saved = localStorage.getItem('forge_factory_operations_config')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.shift3Target !== undefined) return Number(p.shift3Target)
+      }
+    } catch {}
+    return 400
+  })
+  const [oeeTarget, setOeeTarget] = useState(() => {
+    if (typeof window === 'undefined') return 85
+    try {
+      const saved = localStorage.getItem('forge_factory_operations_config')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.oeeTarget !== undefined) return Number(p.oeeTarget)
+      }
+    } catch {}
+    return 85
+  })
+  const [globalSafetyStock, setGlobalSafetyStock] = useState(() => {
+    if (typeof window === 'undefined') return 50
+    try {
+      const saved = localStorage.getItem('forge_factory_operations_config')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.globalSafetyStock !== undefined) return Number(p.globalSafetyStock)
+      }
+    } catch {}
+    return 50
+  })
+  const [backupSchedule, setBackupSchedule] = useState(() => {
+    if (typeof window === 'undefined') return 'shift'
+    try {
+      const saved = localStorage.getItem('forge_factory_operations_config')
+      if (saved) {
+        const p = JSON.parse(saved)
+        if (p.backupSchedule !== undefined) return p.backupSchedule
+      }
+    } catch {}
+    return 'shift'
+  })
   const [autoSyncInterval, setAutoSyncInterval] = useState(() => {
     if (typeof window === 'undefined') return '15s'
     return localStorage.getItem('forge_sync_interval') || '15s'
@@ -327,7 +397,6 @@ export default function SettingsModule() {
     if (typeof window === 'undefined') return 'CSV'
     return localStorage.getItem('forge_export_format') || 'CSV'
   })
-  const [logLevel, setLogLevel] = useState('Info')
   const [backupLoading, setBackupLoading] = useState(false)
   const [backupData, setBackupData] = useState<BackupResponseData | null>(null)
   const [systemConfigToast, setSystemConfigToast] = useState(false)
@@ -579,8 +648,22 @@ export default function SettingsModule() {
   const handleSaveSystemConfig = (e: React.FormEvent) => {
     e.preventDefault()
     if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'forge_factory_operations_config',
+        JSON.stringify({
+          shift1Target,
+          shift2Target,
+          shift3Target,
+          oeeTarget,
+          globalSafetyStock,
+          backupSchedule,
+          autoSyncInterval,
+          exportFormat,
+        })
+      )
       localStorage.setItem('forge_sync_interval', autoSyncInterval)
       localStorage.setItem('forge_export_format', exportFormat)
+      window.dispatchEvent(new Event('forge_factory_config_change'))
     }
     setSystemConfigToast(true)
     setTimeout(() => setSystemConfigToast(false), 3500)
@@ -592,7 +675,7 @@ export default function SettingsModule() {
     { id: 'profile', label: t('profile'), icon: User },
     { id: 'security', label: t('security'), icon: Shield },
     { id: 'notifications', label: t('notifications'), icon: Bell },
-    { id: 'system', label: t('system'), icon: Server },
+    { id: 'system', label: t('system'), icon: Factory },
   ]
 
   const filteredNavTabs = navTabs.filter((tab) =>
@@ -1347,28 +1430,28 @@ export default function SettingsModule() {
               </div>
             )}
 
-            {/* SUB-TAB 6: KONFIGURASI SISTEM (SYSTEM INFRASTRUCTURE) */}
+            {/* SUB-TAB 6: KONFIGURASI OPERASIONAL PABRIK & INFRASTRUKTUR */}
             {activeSubTab === 'system' && (
-              <div className="space-y-6 animate-fade-in">
+              <div className="space-y-6 animate-fade-in max-w-3xl">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">{t('system_infra')}</h3>
                   <p className="text-slate-400 mt-0.5">{t('system_infra_desc')}</p>
                 </div>
 
                 {systemConfigToast && (
-                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 max-w-xl animate-fade-in">
-                    <Check className="w-4 h-4" />
+                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 animate-fade-in shadow-lg">
+                    <Check className="w-4 h-4 shrink-0" />
                     <span>{t('system_config_saved')}</span>
                   </div>
                 )}
 
                 {backupData && (
-                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center justify-between max-w-xl animate-fade-in">
+                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center justify-between animate-fade-in shadow-lg">
                     <div className="flex items-center gap-2.5">
                       <Database className="w-4 h-4 shrink-0 text-emerald-400" />
                       <div>
                         <span className="font-bold block">{backupData.message}</span>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-slate-400 font-mono">
                           ID: {backupData.backupId} • Size: {backupData.snapshotSize}
                         </span>
                       </div>
@@ -1377,119 +1460,247 @@ export default function SettingsModule() {
                   </div>
                 )}
 
-                {/* Topology Status Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4">
+                {/* Live Telemetry Status Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase">Go / Next API Runtime</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Go / Next API Runtime</span>
                       <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded flex items-center gap-1">
                         <Activity className="w-3 h-3" />
-                        {loadingStatus ? 'Checking...' : systemStatus?.status === 'healthy' ? 'Online (200 OK)' : 'Online (200 OK)'}
+                        {loadingStatus ? 'Checking...' : 'Online (200 OK)'}
                       </span>
                     </div>
                     <div className="font-mono text-xs text-white font-bold">{backendUrl}</div>
-                    <span className="text-[10px] text-slate-500 block mt-1">
+                    <span className="text-[10px] text-slate-400 block mt-1 font-mono">
                       {systemStatus?.backendRuntime || 'Next.js / Node.js Engine (Port 6060)'}
                     </span>
                   </div>
 
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4">
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase">MSSQL 2022 Cluster</span>
-                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">MSSQL 2022 Cluster</span>
+                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded flex items-center gap-1">
+                        <Database className="w-3 h-3" />
                         {loadingStatus ? '...' : systemStatus?.database || 'Connected'}
                       </span>
                     </div>
                     <div className="font-mono text-xs text-white font-bold">{mssqlHost}</div>
-                    <span className="text-[10px] text-slate-500 block mt-1">
-                      Latency: {systemStatus?.latencyMs ? `${systemStatus.latencyMs}ms` : '1.2ms'} • Catalog: {systemStatus?.databaseCatalog || 'FactoryDB'}
+                    <span className="text-[10px] text-slate-400 block mt-1 font-mono">
+                      Latency: {systemStatus?.latencyMs ? `${systemStatus.latencyMs}ms` : '17ms'} • Catalog: {systemStatus?.databaseCatalog || 'FactoryDB'}
                     </span>
                   </div>
                 </div>
 
-                {/* Infrastructure Form */}
-                <form onSubmit={handleSaveSystemConfig} className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 max-w-xl">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-300 font-semibold mb-1.5">{t('backend_api_url')}</label>
-                      <input
-                        type="text"
-                        value={backendUrl}
-                        onChange={(e) => setBackendUrl(e.target.value)}
-                        className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 font-mono text-xs focus:outline-none focus:border-blue-500"
-                      />
+                <form onSubmit={handleSaveSystemConfig} className="space-y-5">
+                  {/* SECTION 1: Production Shift Targets & OEE */}
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4">
+                    <div className="flex items-center gap-2 border-b border-[#1E293B] pb-3">
+                      <Gauge className="w-4 h-4 text-blue-400" />
+                      <h4 className="font-bold text-white text-xs">{t('shift_output_targets')}</h4>
                     </div>
-                    <div>
-                      <label className="block text-slate-300 font-semibold mb-1.5">{t('mssql_db_host')}</label>
-                      <input
-                        type="text"
-                        value={mssqlHost}
-                        onChange={(e) => setMssqlHost(e.target.value)}
-                        className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 font-mono text-xs focus:outline-none focus:border-blue-500"
-                      />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] text-slate-300 font-semibold mb-1">
+                          {t('target_shift_1')}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="1"
+                            value={shift1Target}
+                            onChange={(e) => setShift1Target(Number(e.target.value))}
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                            {t('pcs')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] text-slate-300 font-semibold mb-1">
+                          {t('target_shift_2')}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="1"
+                            value={shift2Target}
+                            onChange={(e) => setShift2Target(Number(e.target.value))}
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                            {t('pcs')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] text-slate-300 font-semibold mb-1">
+                          {t('target_shift_3')}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="1"
+                            value={shift3Target}
+                            onChange={(e) => setShift3Target(Number(e.target.value))}
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                            {t('pcs')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-[11px] text-slate-300 font-semibold">
+                            {t('oee_standard_target')}
+                          </label>
+                          <span className="text-xs font-bold text-blue-400 font-mono">{oeeTarget}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="60"
+                          max="99"
+                          value={oeeTarget}
+                          onChange={(e) => setOeeTarget(Number(e.target.value))}
+                          className="w-full accent-blue-500 cursor-pointer h-1.5 bg-[#162032] rounded-lg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] text-slate-300 font-semibold mb-1">
+                          {t('global_safety_stock_threshold')}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="1"
+                            value={globalSafetyStock}
+                            onChange={(e) => setGlobalSafetyStock(Number(e.target.value))}
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+                            {t('pcs')}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-300 font-semibold mb-1.5">{t('auto_sync_interval')}</label>
-                      <select
-                        value={autoSyncInterval}
-                        onChange={(e) => setAutoSyncInterval(e.target.value)}
-                        className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-blue-500"
+                  {/* SECTION 2: Active Manufacturing Lines */}
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center gap-2 border-b border-[#1E293B] pb-3">
+                      <Layers className="w-4 h-4 text-purple-400" />
+                      <h4 className="font-bold text-white text-xs">{t('factory_production_lines')}</h4>
+                    </div>
+
+                    <div className="space-y-2 text-xs">
+                      <div className="bg-[#162032] border border-[#1E293B] p-3 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="font-semibold text-slate-200">{t('line_1_name')}</span>
+                        </div>
+                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                          Running (High Precision)
+                        </span>
+                      </div>
+
+                      <div className="bg-[#162032] border border-[#1E293B] p-3 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="font-semibold text-slate-200">{t('line_2_name')}</span>
+                        </div>
+                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                          Running (Automated)
+                        </span>
+                      </div>
+
+                      <div className="bg-[#162032] border border-[#1E293B] p-3 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="font-semibold text-slate-200">{t('line_3_name')}</span>
+                        </div>
+                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                          Running (QC Checked)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SECTION 3: Database Retention & Telemetry Polling */}
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4">
+                    <div className="flex items-center gap-2 border-b border-[#1E293B] pb-3">
+                      <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
+                      <h4 className="font-bold text-white text-xs">{t('backup_retention_policy')}</h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <label className="block text-slate-300 font-semibold mb-1.5">{t('auto_backup_schedule')}</label>
+                        <select
+                          value={backupSchedule}
+                          onChange={(e) => setBackupSchedule(e.target.value)}
+                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                        >
+                          <option value="shift">{t('backup_shift_change')}</option>
+                          <option value="daily">{t('backup_daily_midnight')}</option>
+                          <option value="weekly">{t('backup_weekly_sunday')}</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-300 font-semibold mb-1.5">{t('auto_sync_interval')}</label>
+                        <select
+                          value={autoSyncInterval}
+                          onChange={(e) => setAutoSyncInterval(e.target.value)}
+                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                        >
+                          <option value="5s">5 Detik / 5 Seconds</option>
+                          <option value="15s">15 Detik / 15 Seconds (Recommended)</option>
+                          <option value="30s">30 Detik / 30 Seconds</option>
+                          <option value="60s">60 Detik / 60 Seconds</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-300 font-semibold mb-1.5">{t('default_export_format')}</label>
+                        <select
+                          value={exportFormat}
+                          onChange={(e) => setExportFormat(e.target.value)}
+                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                        >
+                          <option value="CSV">CSV (Raw Tabular)</option>
+                          <option value="XLSX">Excel Spreadsheet (.xlsx)</option>
+                          <option value="PDF">Formatted PDF Document</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#1E293B]">
+                      <button
+                        type="button"
+                        onClick={handleTriggerBackup}
+                        disabled={backupLoading}
+                        className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 hover:text-white font-semibold px-4 py-2.5 rounded-xl border border-[#1E293B] transition-all text-xs disabled:opacity-50 cursor-pointer"
                       >
-                        <option value="5s">5 {t('units') || 'seconds'}</option>
-                        <option value="15s">15 {t('units') || 'seconds'} (Recommended)</option>
-                        <option value="30s">30 {t('units') || 'seconds'}</option>
-                        <option value="60s">60 {t('units') || 'seconds'}</option>
-                      </select>
-                    </div>
+                        {backupLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-400" /> : <HardDrive className="w-3.5 h-3.5 text-blue-400" />}
+                        <span>{backupLoading ? 'Creating Backup...' : t('trigger_backup')}</span>
+                      </button>
 
-                    <div>
-                      <label className="block text-slate-300 font-semibold mb-1.5">{t('default_export_format')}</label>
-                      <select
-                        value={exportFormat}
-                        onChange={(e) => setExportFormat(e.target.value)}
-                        className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-blue-500"
+                      <button
+                        type="submit"
+                        className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs cursor-pointer"
                       >
-                        <option value="CSV">CSV (Raw Tabular)</option>
-                        <option value="XLSX">Excel Spreadsheet (.xlsx)</option>
-                        <option value="PDF">Formatted PDF Document</option>
-                      </select>
+                        <Check className="w-4 h-4" />
+                        <span>{t('save_factory_config')}</span>
+                      </button>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-300 font-semibold mb-1.5">{t('telemetry_log_level')}</label>
-                    <select
-                      value={logLevel}
-                      onChange={(e) => setLogLevel(e.target.value)}
-                      className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="Info">Info (Standard Production)</option>
-                      <option value="Warn">Warn (Warnings & Errors Only)</option>
-                      <option value="Debug">Debug (Verbose Diagnostics)</option>
-                    </select>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#1E293B]">
-                    <button
-                      type="button"
-                      onClick={handleTriggerBackup}
-                      disabled={backupLoading}
-                      className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 hover:text-white font-semibold px-4 py-2 rounded-xl border border-[#1E293B] transition-all text-xs disabled:opacity-50"
-                    >
-                      {backupLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-400" /> : <Database className="w-3.5 h-3.5 text-blue-400" />}
-                      <span>{backupLoading ? 'Creating Backup...' : t('trigger_backup')}</span>
-                    </button>
-
-                    <button
-                      type="submit"
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>{t('save_preferences')}</span>
-                    </button>
                   </div>
                 </form>
               </div>
