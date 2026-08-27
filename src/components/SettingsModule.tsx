@@ -1308,7 +1308,7 @@ export default function SettingsModule() {
 
                 {/* Notification Channels */}
                 <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-3 max-w-xl">
-                  <h4 className="font-bold text-white text-xs uppercase tracking-wider text-slate-400">Delivery Channels</h4>
+                  <h4 className="font-bold text-white text-xs uppercase tracking-wider text-slate-400">{t('delivery_channels')}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <button
                       type="button"
@@ -1356,12 +1356,12 @@ export default function SettingsModule() {
                   <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-white text-xs">{t('alert_low_stock')}</h4>
-                      <p className="text-[11px] text-slate-400">Trigger alert when catalog item drops below safety minimum.</p>
+                      <p className="text-[11px] text-slate-400">{t('alert_low_stock_desc')}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setAlertLowStock(!alertLowStock)}
-                      className="text-blue-500"
+                      className="text-blue-500 cursor-pointer"
                     >
                       <div className={`w-10 h-5 rounded-full p-0.5 flex transition-all ${alertLowStock ? 'bg-blue-600 justify-end' : 'bg-slate-700 justify-start'}`}>
                         <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
@@ -1372,12 +1372,12 @@ export default function SettingsModule() {
                   <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-white text-xs">{t('alert_maintenance')}</h4>
-                      <p className="text-[11px] text-slate-400">Alert operators when CNC or Press machine reaches 500 runtime hours.</p>
+                      <p className="text-[11px] text-slate-400">{t('alert_maintenance_desc')}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setAlertMaintenance(!alertMaintenance)}
-                      className="text-blue-500"
+                      className="text-blue-500 cursor-pointer"
                     >
                       <div className={`w-10 h-5 rounded-full p-0.5 flex transition-all ${alertMaintenance ? 'bg-blue-600 justify-end' : 'bg-slate-700 justify-start'}`}>
                         <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
@@ -1388,12 +1388,12 @@ export default function SettingsModule() {
                   <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-white text-xs">{t('alert_shift_batch')}</h4>
-                      <p className="text-[11px] text-slate-400">Dispatch shift output summary & inventory mutation log.</p>
+                      <p className="text-[11px] text-slate-400">{t('alert_shift_batch_desc')}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setAlertShiftBatch(!alertShiftBatch)}
-                      className="text-blue-500"
+                      className="text-blue-500 cursor-pointer"
                     >
                       <div className={`w-10 h-5 rounded-full p-0.5 flex transition-all ${alertShiftBatch ? 'bg-blue-600 justify-end' : 'bg-slate-700 justify-start'}`}>
                         <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
@@ -1404,12 +1404,12 @@ export default function SettingsModule() {
                   <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-white text-xs">{t('alert_db_sync')}</h4>
-                      <p className="text-[11px] text-slate-400">Warn on MSSQL latency spike or telemetry polling disconnects.</p>
+                      <p className="text-[11px] text-slate-400">{t('alert_db_sync_desc')}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setAlertDbSync(!alertDbSync)}
-                      className="text-blue-500"
+                      className="text-blue-500 cursor-pointer"
                     >
                       <div className={`w-10 h-5 rounded-full p-0.5 flex transition-all ${alertDbSync ? 'bg-blue-600 justify-end' : 'bg-slate-700 justify-start'}`}>
                         <div className="w-4 h-4 bg-white rounded-full shadow-md"></div>
@@ -1420,7 +1420,7 @@ export default function SettingsModule() {
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs"
+                      className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs cursor-pointer"
                     >
                       <Check className="w-4 h-4" />
                       <span>{t('save_notifications')}</span>
