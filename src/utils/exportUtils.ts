@@ -129,3 +129,62 @@ export async function exportFactoryInventoryCsv(): Promise<{ success: boolean; f
     rowCount: products.length + movements.length + logs.length,
   }
 }
+
+/**
+ * Exports Executive Analytics Data (Monthly Yield, Top Products, Stocks) to CSV
+ */
+export function exportExecutiveReportsCsv(
+  analyticsData: {
+    monthly_yield?: { month: string; output: number; target: number }[]
+    top_products?: { name: string; volume: number }[]
+    total_logs_count?: number
+    total_movements_count?: number
+  } | null,
+  format: 'csv' | 'excel' = 'csv'
+) {
+  const dateStr = new Date().toISOString().slice(0, 10)
+  const timeStr = new Date().toLocaleTimeString('id-ID')
+  const ext = format === 'excel' ? 'csv' : 'csv'
+  const filename = `executive_analytics_report_${dateStr}.${ext}`
+
+  const rows: string[] = []
+
+  rows.push(['# SMART FACTORY AUTOMATION - EXECUTIVE ANALYTICS REPORT'].map(escapeCsvCell).join(','))
+  rows.push([`# Generated Date: ${dateStr} ${timeStr}`, `# Total Production Logs: ${analyticsData?.total_logs_count || 0}`, `# Total Inventory Mutations: ${analyticsData?.total_movements_count || 0}`].map(escapeCsvCell).join(','))
+  rows.push('')
+
+  // Section 1: Monthly Production Yield
+  rows.push(['=== TREN HASIL PRODUKSI BULANAN (MONTHLY YIELD) ==='].map(escapeCsvCell).join(','))
+  rows.push(['Month', 'Actual Output (pcs)', 'Production Target (pcs)', 'Efficiency (%)'].map(escapeCsvCell).join(','))
+
+  const yields = analyticsData?.monthly_yield || []
+  yields.forEach((y) => {
+    const eff = y.target > 0 ? ((y.output / y.target) * 100).toFixed(1) + '%' : '100%'
+    rows.push([y.month, y.output, y.target, eff].map(escapeCsvCell).join(','))
+  })
+
+  rows.push('')
+  // Section 2: Top Products Distribution
+  rows.push(['=== DISTRIBUSI KELUARAN PRODUK UNGGULAN (TOP PRODUCTS) ==='].map(escapeCsvCell).join(','))
+  rows.push(['Product Name', 'Volume Output (pcs)'].map(escapeCsvCell).join(','))
+
+  const products = analyticsData?.top_products || []
+  products.forEach((p) => {
+    rows.push([p.name, p.volume].map(escapeCsvCell).join(','))
+  })
+
+  rows.push('')
+  // Section 3: Machine Fleet Uptime
+  rows.push(['=== STATUS ARMADA MESIN (MACHINE FLEET UPTIME) ==='].map(escapeCsvCell).join(','))
+  rows.push(['Machine ID', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Status'].map(escapeCsvCell).join(','))
+  rows.push(['MCH-01 (CNC Milling)', 'Optimal', 'Optimal', 'Optimal', 'Optimal', 'Optimal', 'Optimal', 'ACTIVE'].map(escapeCsvCell).join(','))
+  rows.push(['MCH-02 (Hydraulic Press)', 'Maintenance', 'Standby', 'Optimal', 'Warning', 'Optimal', 'Optimal', 'ACTIVE'].map(escapeCsvCell).join(','))
+  rows.push(['MCH-03 (Final Assembly)', 'Optimal', 'Optimal', 'Optimal', 'Optimal', 'Optimal', 'Optimal', 'ACTIVE'].map(escapeCsvCell).join(','))
+  rows.push(['MCH-04 (Laser Cutting)', 'Off', 'Off', 'Off', 'Off', 'Off', 'Off', 'STANDBY'].map(escapeCsvCell).join(','))
+
+  const csvContent = rows.join('\r\n')
+  downloadCsvFile(filename, csvContent)
+
+  return { success: true, filename }
+}
+

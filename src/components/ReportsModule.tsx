@@ -7,7 +7,9 @@ import {
   Calendar,
   FileSpreadsheet,
   FileText,
-  RefreshCw
+  RefreshCw,
+  TrendingUp,
+  Check
 } from 'lucide-react'
 import {
   BarChart,
@@ -25,13 +27,21 @@ import {
 } from 'recharts'
 import { getReportsApi, ReportsAnalyticsData } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
+import { exportExecutiveReportsCsv } from '@/utils/exportUtils'
 
 export default function ReportsModule() {
   const { t, formatNumber } = useLanguage()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [timeframe, setTimeframe] = useState('Last 30 Days')
+  const [timeframe, setTimeframe] = useState<'30' | '7' | '90'>('30')
   const [data, setData] = useState<ReportsAnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3500)
+  }
 
   const fetchReports = async () => {
     setLoading(true)
@@ -68,36 +78,68 @@ export default function ReportsModule() {
   const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
   const monthlyYieldData = data?.monthly_yield || [
-    { month: 'Jan', output: 75 },
-    { month: 'Feb', output: 65 },
-    { month: 'Mar', output: 85 },
-    { month: 'Apr', output: 45 },
-    { month: 'May', output: 82 },
-    { month: 'Jun', output: 90 },
+    { month: 'Jan', output: 75, target: 85 },
+    { month: 'Feb', output: 65, target: 80 },
+    { month: 'Mar', output: 85, target: 90 },
+    { month: 'Apr', output: 45, target: 60 },
+    { month: 'May', output: 82, target: 95 },
+    { month: 'Jun', output: 90, target: 100 },
   ]
 
-  const topProductsPieData = (data?.top_products || [
-    { name: 'Alpha Core', volume: 12450 },
-    { name: 'Beta Shield', volume: 8320 },
-    { name: 'Gamma Valve', volume: 4150 },
-  ]).map((item, index) => ({
+  const topProductsPieData = (data?.top_products && data.top_products.length > 0
+    ? data.top_products
+    : [
+        { name: 'Bearing SKF 6203', volume: 12450 },
+        { name: 'Relay Industri 24V', volume: 8320 },
+        { name: 'PLC Mitsubishi FX5U', volume: 4150 },
+      ]
+  ).map((item, index) => ({
     ...item,
     value: item.volume,
     color: colors[index % colors.length]
   }))
 
+  // Dynamic stock depletion projection based on total inventory
+  const totalStockCount = data?.product_stocks?.reduce((acc, p) => acc + p.CurrentStock, 0) || 10000
+  const currentBase = Math.max(totalStockCount, 1500)
+
   const forecastData = [
-    { day: 'Day 1', stock: 10000, projected: 10000 },
-    { day: 'Day 5', stock: 9200, projected: 9200 },
-    { day: 'Day 10', stock: 8500, projected: 8500 },
-    { day: 'Today', stock: 7800, projected: 7800 },
-    { day: 'Day 20', stock: null, projected: 6200 },
-    { day: 'Day 25', stock: null, projected: 4800 },
-    { day: 'Day 30', stock: null, projected: 3500 },
+    { day: `${t('day_prefix')} 1`, stock: currentBase, projected: currentBase },
+    { day: `${t('day_prefix')} 5`, stock: Math.round(currentBase * 0.92), projected: Math.round(currentBase * 0.92) },
+    { day: `${t('day_prefix')} 10`, stock: Math.round(currentBase * 0.85), projected: Math.round(currentBase * 0.85) },
+    { day: t('day_today'), stock: Math.round(currentBase * 0.78), projected: Math.round(currentBase * 0.78) },
+    { day: `${t('day_prefix')} 20`, stock: null, projected: Math.round(currentBase * 0.62) },
+    { day: `${t('day_prefix')} 25`, stock: null, projected: Math.round(currentBase * 0.48) },
+    { day: `${t('day_prefix')} 30`, stock: null, projected: Math.round(currentBase * 0.35) },
   ]
+
+  const handleExportCsv = () => {
+    exportExecutiveReportsCsv(data, 'csv')
+    showToast('Laporan eksekutif CSV berhasil diunduh.')
+  }
+
+  const handleExportExcel = () => {
+    exportExecutiveReportsCsv(data, 'excel')
+    showToast('Laporan eksekutif Excel (.csv) berhasil diunduh.')
+  }
+
+  const handleExportPdf = () => {
+    showToast('Menyiapkan tampilan cetak laporan PDF...')
+    setTimeout(() => {
+      window.print()
+    }, 400)
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center gap-3 shadow-2xl animate-fade-in">
+          <Check className="w-5 h-5 shrink-0" />
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
       {/* Header & Export Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -116,42 +158,53 @@ export default function ReportsModule() {
         </div>
 
         {/* Toolbar controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={fetchReports}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all"
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>{t('sync_data')}</span>
           </button>
 
-          <div className="flex items-center bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl gap-2">
-            <Calendar className="w-3.5 h-3.5 text-blue-400" />
-            <span>{timeframe}</span>
+          <div className="flex items-center bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-2.5 py-1.5 rounded-xl gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+            <select
+              value={timeframe}
+              onChange={(e) => setTimeframe(e.target.value as '30' | '7' | '90')}
+              className="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer"
+            >
+              <option value="7" className="bg-[#0F172A]">{t('timeframe_last_7_days')}</option>
+              <option value="30" className="bg-[#0F172A]">{t('timeframe_last_30_days')}</option>
+              <option value="90" className="bg-[#0F172A]">{t('timeframe_last_90_days')}</option>
+            </select>
           </div>
 
           <button
-            onClick={() => alert('Exporting PDF...')}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all"
+            onClick={handleExportPdf}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
+            title="Export / Print to PDF"
           >
             <FileText className="w-3.5 h-3.5 text-rose-400" />
-            <span>PDF</span>
+            <span>{t('export_pdf')}</span>
           </button>
 
           <button
-            onClick={() => alert('Exporting Excel...')}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all"
+            onClick={handleExportExcel}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
+            title="Export to Excel Spreadsheet"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-            <span>EXCEL</span>
+            <span>{t('export_excel')}</span>
           </button>
 
           <button
-            onClick={() => alert('Exporting CSV...')}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all"
+            onClick={handleExportCsv}
+            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
+            title="Download CSV"
           >
             <Download className="w-3.5 h-3.5 text-blue-400" />
-            <span>CSV</span>
+            <span>{t('export_csv')}</span>
           </button>
         </div>
       </div>
@@ -162,11 +215,12 @@ export default function ReportsModule() {
         <div className="lg:col-span-2 glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-white tracking-wide">
+              <h2 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-blue-400" />
                 {t('monthly_yield')}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Real-time aggregated output per month from MSSQL
+                {t('monthly_yield_desc')}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -209,7 +263,7 @@ export default function ReportsModule() {
               {t('top_products_distribution')}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Distribution by volume
+              {t('top_products_desc')}
             </p>
           </div>
 
@@ -241,19 +295,19 @@ export default function ReportsModule() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xl font-extrabold text-white">{formatNumber(data?.total_logs_count || 7)}</span>
+              <span className="text-xl font-extrabold text-white">{formatNumber(data?.total_logs_count || 10)}</span>
               <span className="text-[10px] text-slate-400 font-medium">{t('production_logs')}</span>
             </div>
           </div>
 
           <div className="space-y-1.5 text-xs pt-2 border-t border-[#1E293B]">
-            {topProductsPieData.map((item) => (
+            {topProductsPieData.slice(0, 4).map((item) => (
               <div key={item.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
-                  <span className="text-slate-300 font-medium truncate max-w-[120px]">{item.name}</span>
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }}></span>
+                  <span className="text-slate-300 font-medium truncate max-w-[140px]">{item.name}</span>
                 </div>
-                <span className="font-mono text-slate-400">{formatNumber(item.value)}</span>
+                <span className="font-mono text-slate-400 font-bold">{formatNumber(item.value)}</span>
               </div>
             ))}
           </div>
@@ -268,24 +322,24 @@ export default function ReportsModule() {
               {t('machine_performance_heatmap')}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Uptime and efficiency across active units (Last 24h)
+              {t('heatmap_desc')}
             </p>
           </div>
           <div className="flex items-center gap-3 text-[10px] text-slate-400">
-            <span>Low</span>
+            <span>{t('heatmap_low')}</span>
             <div className="flex gap-1">
               <span className="w-4 h-3 rounded-sm bg-[#1E2D47]"></span>
               <span className="w-4 h-3 rounded-sm bg-[#047857]"></span>
               <span className="w-4 h-3 rounded-sm bg-[#10B981]"></span>
               <span className="w-4 h-3 rounded-sm bg-[#34D399]"></span>
             </div>
-            <span>Optimal</span>
+            <span>{t('heatmap_optimal')}</span>
           </div>
         </div>
 
         {/* Heatmap Grid */}
-        <div className="space-y-2 text-xs">
-          <div className="grid grid-cols-7 gap-2 text-slate-500 font-mono text-[10px] pb-1 border-b border-[#1E293B]">
+        <div className="space-y-2 text-xs overflow-x-auto">
+          <div className="grid grid-cols-7 gap-2 text-slate-500 font-mono text-[10px] pb-1 border-b border-[#1E293B] min-w-[500px]">
             <span></span>
             <span className="text-center">00:00</span>
             <span className="text-center">04:00</span>
@@ -296,15 +350,22 @@ export default function ReportsModule() {
           </div>
 
           {[
-            { id: 'MCH-01', status: ['bg-[#10B981]', 'bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]'] },
-            { id: 'MCH-02', status: ['bg-[#F43F5E]', 'bg-[#047857]', 'bg-[#10B981]', 'bg-[#F59E0B]', 'bg-[#10B981]', 'bg-[#10B981]'] },
-            { id: 'MCH-03', status: ['bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]', 'bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]'] },
-            { id: 'MCH-04', status: ['bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]'] },
+            { id: 'MCH-01', name: 'CNC Milling #1', status: ['bg-[#10B981]', 'bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]'] },
+            { id: 'MCH-02', name: 'Hydraulic Press #2', status: ['bg-[#F43F5E]', 'bg-[#047857]', 'bg-[#10B981]', 'bg-[#F59E0B]', 'bg-[#10B981]', 'bg-[#10B981]'] },
+            { id: 'MCH-03', name: 'Final Assembly #3', status: ['bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]', 'bg-[#10B981]', 'bg-[#34D399]', 'bg-[#10B981]'] },
+            { id: 'MCH-04', name: 'Laser Cutting #4', status: ['bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]', 'bg-[#1E2D47]'] },
           ].map((mch) => (
-            <div key={mch.id} className="grid grid-cols-7 gap-2 items-center">
-              <span className="font-mono text-slate-400 font-semibold text-[11px]">{mch.id}</span>
+            <div key={mch.id} className="grid grid-cols-7 gap-2 items-center min-w-[500px]">
+              <div className="flex flex-col">
+                <span className="font-mono text-slate-300 font-bold text-[11px]">{mch.id}</span>
+                <span className="text-[9px] text-slate-500 truncate">{mch.name}</span>
+              </div>
               {mch.status.map((st, i) => (
-                <div key={i} className={`h-8 rounded-lg ${st} opacity-85 hover:opacity-100 transition-all border border-[#1E293B]`}></div>
+                <div
+                  key={i}
+                  className={`h-8 rounded-lg ${st} opacity-85 hover:opacity-100 transition-all border border-[#1E293B] flex items-center justify-center`}
+                  title={`${mch.name} - Slot ${i + 1}`}
+                ></div>
               ))}
             </div>
           ))}
@@ -319,7 +380,7 @@ export default function ReportsModule() {
               {t('inventory_forecast')}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Predicted stock levels based on current run rate
+              {t('forecast_desc')}
             </p>
           </div>
         </div>
@@ -335,7 +396,13 @@ export default function ReportsModule() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
               <XAxis dataKey="day" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+              <YAxis
+                stroke="#64748B"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(val: number) => formatNumber(val)}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#162032',
@@ -343,6 +410,7 @@ export default function ReportsModule() {
                   borderRadius: '12px',
                   color: '#F8FAFC'
                 }}
+                formatter={(val: unknown) => [formatNumber(val as number), t('stock')]}
               />
               <Area type="monotone" dataKey="stock" stroke="#3B82F6" strokeWidth={3} fill="url(#colorStock)" />
               <Area type="monotone" dataKey="projected" stroke="#F59E0B" strokeWidth={2} strokeDasharray="5 5" fill="none" />
