@@ -727,17 +727,20 @@ export default function SettingsModule() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveSubTab(tab.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-semibold transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 select-none cursor-pointer border ${
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer group ${
                     isActive
-                      ? 'bg-blue-600/15 text-blue-400 border-blue-500/30 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#0F172A] border-transparent'
+                      ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm static-swatch'
+                      : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-blue-400' : 'text-slate-500'}`} />
-                    <span>{tab.label}</span>
-                  </div>
-                  {isActive && <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>}
+                  <Icon
+                    className={`w-4 h-4 min-w-[16px] transition-colors ${
+                      isActive
+                        ? 'text-white'
+                        : 'text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
+                    }`}
+                  />
+                  <span className="truncate">{tab.label}</span>
                 </button>
               )
             })}
