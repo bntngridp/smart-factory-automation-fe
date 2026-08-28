@@ -2,7 +2,6 @@
 
 import React from 'react'
 import {
-  HelpCircle,
   BookOpen,
   FileQuestion,
   Headphones,
@@ -62,15 +61,9 @@ export default function HelpModule({ onBackToDashboard }: HelpModuleProps) {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('help_center_title')}
-            </h1>
-            <span className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <HelpCircle className="w-3 h-3" />
-              {t('documentation')}
-            </span>
-          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            {t('help_center_title')}
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             {t('help_center_subtitle')}
           </p>

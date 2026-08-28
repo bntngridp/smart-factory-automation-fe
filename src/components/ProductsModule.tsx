@@ -6,7 +6,6 @@ import {
   Filter,
   Plus,
   Trash2,
-  Package,
   RefreshCw,
   ChevronLeft,
   ChevronRight,
@@ -146,15 +145,9 @@ export default function ProductsModule({
       {/* Header & Primary Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('products_management')}
-            </h1>
-            <span className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <Package className="w-3 h-3" />
-              {t('active_catalog')}
-            </span>
-          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            {t('products_management')}
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             {t('products_subtitle')}
           </p>

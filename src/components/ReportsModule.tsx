@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  FileBarChart,
   Download,
   Calendar,
   FileSpreadsheet,
@@ -147,15 +146,9 @@ export default function ReportsModule() {
       {/* Header & Export Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('reports_title')}
-            </h1>
-            <span className="text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <FileBarChart className="w-3 h-3" />
-              {t('intelligence_center')}
-            </span>
-          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            {t('reports_title')}
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             {t('reports_subtitle')}
           </p>

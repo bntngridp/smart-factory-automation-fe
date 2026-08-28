@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  ClipboardList,
   Plus,
   RefreshCw,
   AlertCircle,
@@ -144,15 +143,9 @@ export default function ProductionLogsModule({
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('production_logs_title')}
-            </h1>
-            <span className="text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <ClipboardList className="w-3 h-3" />
-              {t('live_manufacturing_data')}
-            </span>
-          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            {t('production_logs_title')}
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             {t('production_logs_subtitle')}
           </p>

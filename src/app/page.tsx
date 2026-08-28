@@ -20,7 +20,7 @@ import RecordProductionModal from '@/components/Modals/RecordProductionModal'
 import StockOutModal from '@/components/Modals/StockOutModal'
 import NotificationsModal from '@/components/Modals/NotificationsModal'
 import LogoutModal from '@/components/Modals/LogoutModal'
-import { Sparkles, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { getDashboardSummaryApi, DashboardSummary } from '@/services/api'
 
@@ -113,15 +113,9 @@ export default function Home() {
               {/* Page Title Header */}
               <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-extrabold text-white tracking-tight">
-                      {t('executive_dashboard')}
-                    </h1>
-                    <span className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      {t('smart_control')}
-                    </span>
-                  </div>
+                  <h1 className="text-2xl font-extrabold text-white tracking-tight">
+                    {t('executive_dashboard')}
+                  </h1>
                   <p className="text-xs text-slate-400 mt-1">
                     {t('realtime_overview')}
                   </p>

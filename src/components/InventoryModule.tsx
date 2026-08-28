@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Boxes,
   Download,
   Plus,
   Building2,
@@ -157,15 +156,9 @@ export default function InventoryModule({
       {/* Header & Primary Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('inventory_title')}
-            </h1>
-            <span className="text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <Boxes className="w-3 h-3" />
-              {t('stock_operations')}
-            </span>
-          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            {t('inventory_title')}
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             {t('inventory_subtitle')}
           </p>

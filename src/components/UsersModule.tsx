@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Users,
   UserPlus,
   Search,
   ShieldCheck,
@@ -194,15 +193,9 @@ export default function UsersModule() {
       {/* Header & Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('users_title')}
-            </h1>
-            <span className="text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              {t('access_control')}
-            </span>
-          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            {t('users_title')}
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             {t('users_subtitle')}
           </p>
