@@ -10,7 +10,9 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   RefreshCw,
-  Check
+  Check,
+  Thermometer,
+  Droplets
 } from 'lucide-react'
 import {
   BarChart,
@@ -137,10 +139,10 @@ export default function InventoryModule({
   })
 
   const zoneChartData = [
-    { zone: 'Zone A', capacity: Math.min(Math.max(Math.round((categoryStock['Zone A (Mech)'] / 1500) * 100), 45), 95), fill: '#3B82F6' },
-    { zone: 'Zone B', capacity: Math.min(Math.max(Math.round((categoryStock['Zone B (Elec)'] / 1500) * 100), 55), 90), fill: '#3B82F6' },
-    { zone: 'Zone C', capacity: Math.min(Math.max(Math.round((categoryStock['Zone C (Sens)'] / 1500) * 100), 40), 85), fill: '#64748B' },
-    { zone: 'Zone D', capacity: Math.min(Math.max(Math.round((categoryStock['Zone D (Raw)'] / 1500) * 100), 30), 75), fill: '#3B82F6' },
+    { zone: 'Zone A', name: 'Mekanikal & Hardware', capacity: Math.min(Math.max(Math.round((categoryStock['Zone A (Mech)'] / 1500) * 100), 45), 95), fill: '#3B82F6' },
+    { zone: 'Zone B', name: 'Elektrik & Kontrol', capacity: Math.min(Math.max(Math.round((categoryStock['Zone B (Elec)'] / 1500) * 100), 55), 90), fill: '#3B82F6' },
+    { zone: 'Zone C', name: 'Sensor & Valve (Hazmat)', capacity: Math.min(Math.max(Math.round((categoryStock['Zone C (Sens)'] / 1500) * 100), 40), 85), fill: '#64748B' },
+    { zone: 'Zone D', name: 'Bahan Mentah & Logam', capacity: Math.min(Math.max(Math.round((categoryStock['Zone D (Raw)'] / 1500) * 100), 30), 75), fill: '#3B82F6' },
   ]
 
   return (
@@ -346,47 +348,89 @@ export default function InventoryModule({
           </div>
         </div>
 
-        {/* Right Column: Zone Utilization Chart */}
-        <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
-          <h2 className="text-base font-bold text-white tracking-wide mb-1">
-            {t('zone_utilization')}
-          </h2>
-          <p className="text-xs text-slate-400 mb-6">
-            {t('zone_capacity_desc')}
-          </p>
+        {/* Right Column: Zone Utilization Chart & Detailed Telemetry */}
+        <div className="glass-card rounded-2xl p-5 border border-[#1E293B] flex flex-col justify-between">
+          <div>
+            <h2 className="text-base font-bold text-white tracking-wide mb-1">
+              {t('zone_utilization')}
+            </h2>
+            <p className="text-xs text-slate-400 mb-4">
+              {t('zone_capacity_desc')}
+            </p>
 
-          <div className="h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={zoneChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
-                <XAxis dataKey="zone" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#162032',
-                    borderColor: '#1E293B',
-                    borderRadius: '12px',
-                    color: '#F8FAFC'
-                  }}
-                  formatter={(val: unknown) => [`${val}%`, t('capacity_used')]}
-                />
-                <Bar dataKey="capacity" radius={[6, 6, 0, 0]}>
-                  {zoneChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-[180px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={zoneChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+                  <XAxis dataKey="zone" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#162032',
+                      borderColor: '#1E293B',
+                      borderRadius: '12px',
+                      color: '#F8FAFC'
+                    }}
+                    formatter={(val: unknown) => [`${val}%`, t('capacity_used')]}
+                  />
+                  <Bar dataKey="capacity" radius={[6, 6, 0, 0]}>
+                    {zoneChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 mt-3 pt-3 border-t border-[#1E293B] text-[11px] text-slate-400">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                <span>{t('standard_storage')}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                <span>{t('hazmat_zone')}</span>
+              </div>
+            </div>
+
+            {/* Detailed Zone Capacity Progress Breakdown */}
+            <div className="space-y-3 mt-4 pt-4 border-t border-[#1E293B]">
+              {zoneChartData.map((z, idx) => (
+                <div key={idx} className="space-y-1.5 text-xs">
+                  <div className="flex items-center justify-between text-slate-300">
+                    <span className="font-semibold text-white">{z.zone} <span className="text-slate-400 font-normal">({z.name})</span></span>
+                    <span className="font-mono font-bold text-white">{z.capacity}%</span>
+                  </div>
+                  <div className="w-full bg-[#0F172A] rounded-full h-1.5 overflow-hidden border border-[#1E293B]">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${z.zone === 'Zone C' ? 'bg-slate-500' : 'bg-blue-600'}`}
+                      style={{ width: `${z.capacity}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-[#1E293B] text-[11px] text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-              <span>{t('standard_storage')}</span>
+          {/* Environmental Telemetry Footer */}
+          <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-[#1E293B] text-[11px]">
+            <div className="p-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                <Thermometer className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <div className="text-slate-400 text-[10px]">Suhu Gudang</div>
+                <div className="font-semibold text-white font-mono text-xs">21.5°C</div>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
-              <span>{t('hazmat_zone')}</span>
+            <div className="p-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                <Droplets className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <div className="text-slate-400 text-[10px]">Kelembaban</div>
+                <div className="font-semibold text-white font-mono text-xs">45% RH</div>
+              </div>
             </div>
           </div>
         </div>
