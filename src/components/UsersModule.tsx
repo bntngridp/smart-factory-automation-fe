@@ -360,18 +360,17 @@ export default function UsersModule() {
         {/* Right Column: Role Permissions Specification Cards */}
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center gap-2 mb-4">
-            <ShieldCheck className="w-5 h-5 text-amber-400" />
+            <ShieldCheck className="w-4 h-4 text-blue-500" />
             <h2 className="text-base font-bold text-white tracking-wide">
               {t('role_permissions')}
             </h2>
           </div>
 
-          <div className="space-y-4 text-xs">
+          <div className="space-y-3 text-xs">
             {/* Admin Card */}
-            <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-2">
+            <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 space-y-2 transition-all">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-amber-400 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                <h4 className="font-bold text-white text-xs">
                   {t('admin_role')}
                 </h4>
                 <span className="text-[10px] text-slate-500 font-mono">Tier #1</span>
@@ -379,21 +378,20 @@ export default function UsersModule() {
               <p className="text-[11px] text-slate-400 leading-relaxed">
                 {t('admin_role_desc')}
               </p>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded text-[10px]">
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                <span className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-md text-[10px] font-medium">
                   All Access
                 </span>
-                <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded text-[10px]">
+                <span className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-md text-[10px] font-medium">
                   Configuration
                 </span>
               </div>
             </div>
 
             {/* Supervisor Card */}
-            <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-2">
+            <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 space-y-2 transition-all">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-blue-400 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                <h4 className="font-bold text-white text-xs">
                   {t('supervisor_role')}
                 </h4>
                 <span className="text-[10px] text-slate-500 font-mono">Tier #2</span>
@@ -401,21 +399,20 @@ export default function UsersModule() {
               <p className="text-[11px] text-slate-400 leading-relaxed">
                 {t('supervisor_role_desc')}
               </p>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded text-[10px]">
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                <span className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-md text-[10px] font-medium">
                   Analytics
                 </span>
-                <span className="bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded text-[10px]">
+                <span className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-md text-[10px] font-medium">
                   Schedules
                 </span>
               </div>
             </div>
 
             {/* Operator Card */}
-            <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-2">
+            <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 space-y-2 transition-all">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-slate-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+                <h4 className="font-bold text-white text-xs">
                   {t('operator_role')}
                 </h4>
                 <span className="text-[10px] text-slate-500 font-mono">Tier #3</span>
@@ -423,11 +420,11 @@ export default function UsersModule() {
               <p className="text-[11px] text-slate-400 leading-relaxed">
                 {t('operator_role_desc')}
               </p>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="bg-slate-500/10 text-slate-300 border border-slate-500/20 px-2 py-0.5 rounded text-[10px]">
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                <span className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-md text-[10px] font-medium">
                   Data Entry
                 </span>
-                <span className="bg-slate-500/10 text-slate-300 border border-slate-500/20 px-2 py-0.5 rounded text-[10px]">
+                <span className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-md text-[10px] font-medium">
                   Line Output
                 </span>
               </div>
