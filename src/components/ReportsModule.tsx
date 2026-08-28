@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Download,
   Calendar,
@@ -8,7 +8,8 @@ import {
   FileText,
   RefreshCw,
   TrendingUp,
-  Check
+  Check,
+  ChevronDown
 } from 'lucide-react'
 import {
   BarChart,
@@ -36,8 +37,21 @@ export default function ReportsModule() {
   const [data, setData] = useState<ReportsAnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false)
+  const exportDropdownRef = useRef<HTMLDivElement>(null)
 
   const isLight = theme === 'light'
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportDropdownRef.current && !exportDropdownRef.current.contains(e.target as Node)) {
+        setExportDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -177,32 +191,58 @@ export default function ReportsModule() {
             </select>
           </div>
 
-          <button
-            onClick={handleExportPdf}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
-            title="Export / Print to PDF"
-          >
-            <FileText className="w-3.5 h-3.5 text-rose-400" />
-            <span>{t('export_pdf')}</span>
-          </button>
+          {/* Export Dropdown Button */}
+          <div className="relative" ref={exportDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+              className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-slate-400" />
+              <span>{t('export')}</span>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${exportDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
 
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
-            title="Export to Excel Spreadsheet"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{t('export_excel')}</span>
-          </button>
+            {exportDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-[#162032] border border-[#1E293B] rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleExportPdf()
+                    setExportDropdownOpen(false)
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors cursor-pointer text-left"
+                >
+                  <FileText className="w-4 h-4 text-slate-400" />
+                  <span>{t('export_pdf')}</span>
+                </button>
 
-          <button
-            onClick={handleExportCsv}
-            className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] border border-[#1E293B] text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer"
-            title="Download CSV"
-          >
-            <Download className="w-3.5 h-3.5 text-blue-400" />
-            <span>{t('export_csv')}</span>
-          </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleExportExcel()
+                    setExportDropdownOpen(false)
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors cursor-pointer text-left"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-slate-400" />
+                  <span>{t('export_excel')}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleExportCsv()
+                    setExportDropdownOpen(false)
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-slate-200 hover:bg-[#1E2D47] rounded-lg transition-colors cursor-pointer text-left"
+                >
+                  <Download className="w-4 h-4 text-slate-400" />
+                  <span>{t('export_csv')}</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
