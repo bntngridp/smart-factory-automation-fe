@@ -365,8 +365,8 @@ export async function deleteUserApi(userId: number): Promise<{ success: boolean;
   return res.json()
 }
 
-export async function getReportsApi(): Promise<ReportsAnalyticsData> {
-  const res = await fetch(`${API_BASE_URL}/reports`, {
+export async function getReportsApi(timeframe: string = '30'): Promise<ReportsAnalyticsData> {
+  const res = await fetch(`${API_BASE_URL}/reports?timeframe=${timeframe}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

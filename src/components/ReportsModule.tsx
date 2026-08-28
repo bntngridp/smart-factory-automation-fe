@@ -60,10 +60,10 @@ export default function ReportsModule() {
     }, 3500)
   }
 
-  const fetchReports = async () => {
+  const fetchReports = async (tf: '30' | '7' | '90' = timeframe) => {
     setLoading(true)
     try {
-      const res = await getReportsApi()
+      const res = await getReportsApi(tf)
       setData(res)
     } catch (err) {
       console.error('Failed to fetch reports analytics:', err)
@@ -75,8 +75,9 @@ export default function ReportsModule() {
   useEffect(() => {
     let ignore = false
     const load = async () => {
+      setLoading(true)
       try {
-        const res = await getReportsApi()
+        const res = await getReportsApi(timeframe)
         if (!ignore) {
           setData(res)
           setLoading(false)
@@ -90,7 +91,7 @@ export default function ReportsModule() {
     return () => {
       ignore = true
     }
-  }, [])
+  }, [timeframe])
 
   const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
@@ -171,19 +172,19 @@ export default function ReportsModule() {
         {/* Toolbar controls */}
         <div className="flex flex-wrap items-center gap-2">
           <button
-            onClick={fetchReports}
+            onClick={() => fetchReports()}
             className="flex items-center gap-1.5 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl border border-[#1E293B] transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>{t('sync_data')}</span>
           </button>
 
-          <div className="flex items-center bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-2.5 py-1.5 rounded-xl gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+          <div className="flex items-center bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl gap-2">
+            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value as '30' | '7' | '90')}
-              className="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs text-slate-200 focus:outline-none cursor-pointer pr-1"
             >
               <option value="7" className="bg-[#0F172A]">{t('timeframe_last_7_days')}</option>
               <option value="30" className="bg-[#0F172A]">{t('timeframe_last_30_days')}</option>
