@@ -198,7 +198,10 @@ export default function Home() {
           ) : activeTab === 'settings' ? (
             <SettingsModule />
           ) : activeTab === 'help' ? (
-            <HelpModule onBackToDashboard={() => setActiveTab('dashboard')} />
+            <HelpModule
+              onBackToDashboard={() => setActiveTab('dashboard')}
+              onNavigateTab={(tab) => setActiveTab(tab)}
+            />
           ) : (
             <div className="glass-card rounded-2xl p-12 text-center my-12">
               <h2 className="text-xl font-bold text-white mb-2 capitalize">
