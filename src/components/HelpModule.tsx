@@ -45,9 +45,105 @@ interface GuideDetail {
   actionTab?: string
 }
 
+interface SupportTicket {
+  id: string
+  subject: string
+  category: string
+  priority: 'low' | 'medium' | 'high' | 'critical'
+  description: string
+  requester: string
+  extension: string
+  timestamp: string
+  status: 'Open' | 'In Progress' | 'Resolved'
+}
+
 export default function HelpModule({ onBackToDashboard, onNavigateTab }: HelpModuleProps) {
   const { t, language } = useLanguage()
   const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null)
+
+  // Support Ticket States
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false)
+  const [ticketModalTab, setTicketModalTab] = useState<'create' | 'history'>('create')
+  const [ticketCategory, setTicketCategory] = useState('telemetry')
+  const [ticketPriority, setTicketPriority] = useState<'low' | 'medium' | 'high' | 'critical'>('medium')
+  const [ticketRequester, setTicketRequester] = useState('Bintang - Shift 1')
+  const [ticketExtension, setTicketExtension] = useState('Ext. 4040 / Plant Floor A')
+  const [ticketSubject, setTicketSubject] = useState('')
+  const [ticketDescription, setTicketDescription] = useState('')
+  const [ticketSubmitting, setTicketSubmitting] = useState(false)
+  const [ticketSuccessMsg, setTicketSuccessMsg] = useState<string | null>(null)
+
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('forge_support_tickets')
+        if (saved) return JSON.parse(saved)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return [
+      {
+        id: 'TCK-202608-8421',
+        subject: 'Kalibrasi Sensor Tekanan Udara Lini 2',
+        category: 'telemetry',
+        priority: 'medium',
+        description: 'Sensor tekanan udara pada lini 2 mendeteksi fluktuasi minor 0.2 bar saat pergantian batch.',
+        requester: 'Operator Shift 1',
+        extension: 'Ext. 4040',
+        timestamp: '28 Agu 2026, 14:30',
+        status: 'In Progress'
+      }
+    ]
+  })
+
+  const handleCreateTicket = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!ticketSubject.trim() || !ticketDescription.trim()) return
+
+    setTicketSubmitting(true)
+    setTimeout(() => {
+      const newTicket: SupportTicket = {
+        id: `TCK-${Math.floor(100000 + Math.random() * 900000)}`,
+        subject: ticketSubject.trim(),
+        category: ticketCategory,
+        priority: ticketPriority,
+        description: ticketDescription.trim(),
+        requester: ticketRequester.trim() || 'Operator Shift',
+        extension: ticketExtension.trim() || 'Ext. 4040',
+        timestamp: new Date().toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        status: 'Open'
+      }
+
+      const updated = [newTicket, ...supportTickets]
+      setSupportTickets(updated)
+      try {
+        localStorage.setItem('forge_support_tickets', JSON.stringify(updated))
+      } catch (err) {
+        console.error(err)
+      }
+
+      setTicketSubmitting(false)
+      setTicketSuccessMsg(
+        language === 'id'
+          ? `Tiket #${newTicket.id} berhasil diajukan ke Tim IT & Engineering Pabrik!`
+          : `Ticket #${newTicket.id} successfully submitted to Factory Engineering Support!`
+      )
+      setTicketSubject('')
+      setTicketDescription('')
+
+      setTimeout(() => {
+        setTicketSuccessMsg(null)
+        setTicketModalTab('history')
+      }, 1200)
+    }, 300)
+  }
 
   const guides: GuideDetail[] = [
     {
@@ -320,13 +416,21 @@ export default function HelpModule({ onBackToDashboard, onNavigateTab }: HelpMod
             <Headphones className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white">{t('contact_support')}</h4>
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-bold text-white">{t('contact_support')}</h4>
+              {supportTickets.length > 0 && (
+                <span className="text-[10px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                  {supportTickets.length} {language === 'id' ? 'Tiket Aktif' : 'Active Tickets'}
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-400">{t('support_team_hours')}</p>
           </div>
         </div>
 
         <button
-          onClick={() => alert('Support ticket system: support@smartfactory.local (Response SLA: < 15 mins)')}
+          type="button"
+          onClick={() => setIsSupportModalOpen(true)}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer"
         >
           <BookOpen className="w-4 h-4" />
@@ -437,7 +541,257 @@ export default function HelpModule({ onBackToDashboard, onNavigateTab }: HelpMod
           </div>
         </div>
       )}
+
+      {/* FULL TECHNICAL SUPPORT TICKET MODAL */}
+      {isSupportModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-xl p-6 space-y-5 shadow-2xl relative my-8">
+            {/* Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-[#1E293B]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50 shrink-0">
+                  <Headphones className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white tracking-tight">
+                    {language === 'id' ? 'Pusat Bantuan & Tiket Dukungan Teknis' : 'Factory Technical Support Ticket Desk'}
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {language === 'id' ? 'Layanan Dukungan Operasional Pabrik 24/7 • Ekstensi 4040' : '24/7 Factory Operations & Engineering Support • Ext. 4040'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsSupportModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#162032] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-2 border-b border-[#1E293B] pb-2">
+              <button
+                type="button"
+                onClick={() => setTicketModalTab('create')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  ticketModalTab === 'create'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-[#162032]'
+                }`}
+              >
+                {language === 'id' ? 'Buat Tiket Baru' : 'Create New Ticket'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTicketModalTab('history')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  ticketModalTab === 'history'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-[#162032]'
+                }`}
+              >
+                <span>{language === 'id' ? 'Riwayat Tiket Saya' : 'My Tickets'}</span>
+                <span className="w-4 h-4 rounded-full bg-slate-800 text-[10px] flex items-center justify-center font-bold">
+                  {supportTickets.length}
+                </span>
+              </button>
+            </div>
+
+            {/* Success Toast */}
+            {ticketSuccessMsg && (
+              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 animate-fade-in shadow-sm">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{ticketSuccessMsg}</span>
+              </div>
+            )}
+
+            {/* VIEW 1: CREATE TICKET FORM */}
+            {ticketModalTab === 'create' && (
+              <form onSubmit={handleCreateTicket} className="space-y-4 text-xs">
+                {/* Category & Priority */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1.5">
+                      {language === 'id' ? 'Kategori Isu' : 'Issue Category'} *
+                    </label>
+                    <select
+                      required
+                      value={ticketCategory}
+                      onChange={(e) => setTicketCategory(e.target.value)}
+                      className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
+                    >
+                      <option value="telemetry">Anomali Telemetri & Sensor</option>
+                      <option value="manufacturing_line">Kendala Lini Manufaktur (Line 1/2/3)</option>
+                      <option value="inventory_stock">Selisih Stok & Mutasi Inventaris</option>
+                      <option value="security_auth">Akses Akun, Keamanan & 2FA</option>
+                      <option value="database_runtime">Integrasi Runtime & Database</option>
+                      <option value="other">Lainnya / Permintaan Fitur</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1.5">
+                      {language === 'id' ? 'Tingkat Prioritas' : 'Priority Level'} *
+                    </label>
+                    <select
+                      value={ticketPriority}
+                      onChange={(e) => setTicketPriority(e.target.value as 'low' | 'medium' | 'high' | 'critical')}
+                      className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
+                    >
+                      <option value="low">🟢 Rendah / Low (Informasi)</option>
+                      <option value="medium">🟡 Sedang / Medium (Non-Kritis)</option>
+                      <option value="high">🟠 Tinggi / High (Gangguan Operasional)</option>
+                      <option value="critical">🔴 Kritis / Critical (Pabrik Terhenti - SLA 15m)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Requester & Workstation / Ext */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1.5">
+                      {language === 'id' ? 'Nama Pelapor / Shift' : 'Requester Name / Shift'} *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Bintang - Shift 1"
+                      value={ticketRequester}
+                      onChange={(e) => setTicketRequester(e.target.value)}
+                      className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1.5">
+                      {language === 'id' ? 'Nomor Ekstensi / Telepon' : 'Extension / Contact Number'}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Ext. 4040 / Plant Floor A"
+                      value={ticketExtension}
+                      onChange={(e) => setTicketExtension(e.target.value)}
+                      className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Subject */}
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1.5">
+                    {language === 'id' ? 'Judul Kendala' : 'Ticket Subject'} *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={language === 'id' ? 'e.g. Sensor Suhu Rak Zona 3 Menunjukkan Deviasi Nilai' : 'e.g. Rack Zone 3 temperature sensor anomaly'}
+                    value={ticketSubject}
+                    onChange={(e) => setTicketSubject(e.target.value)}
+                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1.5">
+                    {language === 'id' ? 'Rincian Masalah & Langkah Terjadinya' : 'Detailed Description & Reproduction Steps'} *
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder={language === 'id' ? 'Jelaskan workstation yang terdampak, waktu kejadian, dan pesan error jika ada...' : 'Explain the affected workstation, time of occurrence, and error messages...'}
+                    value={ticketDescription}
+                    onChange={(e) => setTicketDescription(e.target.value)}
+                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors resize-none"
+                  ></textarea>
+                </div>
+
+                {/* Submit Actions */}
+                <div className="flex items-center justify-between pt-3 border-t border-[#1E293B]">
+                  <span className="text-[10px] text-slate-400">
+                    {language === 'id' ? 'Respons SLA Tim IT: < 15 menit untuk tiket Kritis' : 'IT Response SLA: < 15 mins for Critical tickets'}
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsSupportModalOpen(false)}
+                      className="px-4 py-2 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
+                    >
+                      {t('cancel')}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={ticketSubmitting}
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>{ticketSubmitting ? (language === 'id' ? 'Mengirim...' : 'Submitting...') : (language === 'id' ? 'Kirim Tiket Bantuan' : 'Submit Ticket')}</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            {/* VIEW 2: TICKET HISTORY */}
+            {ticketModalTab === 'history' && (
+              <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1 text-xs">
+                {supportTickets.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400 space-y-2">
+                    <Headphones className="w-8 h-8 mx-auto text-slate-500 opacity-60" />
+                    <p>{language === 'id' ? 'Belum ada tiket bantuan yang diajukan.' : 'No support tickets submitted yet.'}</p>
+                  </div>
+                ) : (
+                  supportTickets.map((ticket) => (
+                    <div
+                      key={ticket.id}
+                      className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-2 hover:border-slate-700 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-bold text-blue-400 text-[11px]">{ticket.id}</span>
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${
+                              ticket.priority === 'critical'
+                                ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                                : ticket.priority === 'high'
+                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                                : 'bg-slate-800 text-slate-300 border border-slate-700'
+                            }`}>
+                              {ticket.priority.toUpperCase()}
+                            </span>
+                          </div>
+                          <h4 className="font-bold text-white text-xs mt-1">{ticket.subject}</h4>
+                        </div>
+
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full shrink-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span>{ticket.status}</span>
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                        {ticket.description}
+                      </p>
+
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 pt-2 border-t border-slate-800/60 font-mono">
+                        <span>{ticket.requester} • {ticket.extension}</span>
+                        <span>{ticket.timestamp}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
 
