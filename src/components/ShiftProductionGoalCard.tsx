@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import {
   Clock,
   Plus,
@@ -17,37 +17,68 @@ interface ShiftProductionGoalCardProps {
 
 export default function ShiftProductionGoalCard({
   todayOutput,
-  targetQuota = 1200,
+  targetQuota: propTargetQuota,
   onRecordProduction
 }: ShiftProductionGoalCardProps) {
   const { t, formatNumber } = useLanguage()
+  const [configTarget, setConfigTarget] = useState<number | null>(null)
 
   // Real-time Shift Detection based on local client hour
   const currentShift = useMemo(() => {
     const hour = new Date().getHours()
     if (hour >= 6 && hour < 14) {
       return {
+        key: 'shift1Target',
         name: t('morning_shift'),
         code: 'SHIFT-1',
         timeRange: '06:00 - 14:00',
+        defaultTarget: 500,
         badgeColor: 'text-blue-400 bg-blue-500/10 border-blue-500/30'
       }
     } else if (hour >= 14 && hour < 22) {
       return {
+        key: 'shift2Target',
         name: t('afternoon_shift'),
         code: 'SHIFT-2',
         timeRange: '14:00 - 22:00',
+        defaultTarget: 450,
         badgeColor: 'text-amber-400 bg-amber-500/10 border-amber-500/30'
       }
     } else {
       return {
+        key: 'shift3Target',
         name: t('night_shift'),
         code: 'SHIFT-3',
         timeRange: '22:00 - 06:00',
+        defaultTarget: 400,
         badgeColor: 'text-purple-400 bg-purple-500/10 border-purple-500/30'
       }
     }
   }, [t])
+
+  // Sync with Factory Operations Config in Settings
+  useEffect(() => {
+    const readSavedConfig = () => {
+      try {
+        const saved = localStorage.getItem('forge_factory_operations_config')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          const val = parsed[currentShift.key]
+          if (val !== undefined && !isNaN(Number(val))) {
+            setConfigTarget(Number(val))
+            return
+          }
+        }
+      } catch {}
+      setConfigTarget(currentShift.defaultTarget)
+    }
+
+    readSavedConfig()
+    window.addEventListener('forge_factory_config_change', readSavedConfig)
+    return () => window.removeEventListener('forge_factory_config_change', readSavedConfig)
+  }, [currentShift])
+
+  const targetQuota = propTargetQuota ?? configTarget ?? currentShift.defaultTarget
 
   const completionPercent = Math.min(
     Math.round((todayOutput / targetQuota) * 100),
