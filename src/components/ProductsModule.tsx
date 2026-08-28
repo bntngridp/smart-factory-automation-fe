@@ -298,34 +298,39 @@ export default function ProductsModule({
                       </td>
                       <td className="p-4 text-center">
                         {isOut ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                            {t('out_of_stock_status')}
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+                            <span>{t('out_of_stock_status')}</span>
                           </span>
                         ) : isLow ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                            {t('low_stock_status')}
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                            <span>{t('low_stock_status')}</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                            {t('in_stock_status')}
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                            <span>{t('in_stock_status')}</span>
                           </span>
                         )}
                       </td>
                       <td className="p-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div className="flex items-center justify-end gap-1">
                           <button
+                            type="button"
                             onClick={() => onOpenRecordProduction(item.ProductID)}
-                            className="p-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 transition-all cursor-pointer"
                             title={t('produce')}
                           >
-                            <Plus className="w-3.5 h-3.5" />
+                            <Plus className="w-4 h-4" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => setProductToDelete(item)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
                             title={t('delete')}
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>

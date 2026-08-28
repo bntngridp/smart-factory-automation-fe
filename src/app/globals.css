@@ -340,31 +340,32 @@ html.light-mode body,
   font-weight: 700 !important;
 }
 
-/* Action Buttons on Tables in Light Mode */
-.light-mode table button.bg-blue-600\/10,
-.light-mode table .bg-blue-600\/10 {
-  background-color: #EFF6FF !important;
-  color: #2563EB !important;
-  border: 1px solid #BFDBFE !important;
+/* Status Badge Pills in Light Mode (Clean & Harmonious) */
+.light-mode .bg-emerald-500\/10 {
+  background-color: #ECFDF5 !important;
+  color: #059669 !important;
+  border-color: #A7F3D0 !important;
 }
 
-.light-mode table button.bg-blue-600\/10:hover,
-.light-mode table .bg-blue-600\/10:hover {
-  background-color: #2563EB !important;
-  color: #FFFFFF !important;
+.light-mode .bg-amber-500\/10 {
+  background-color: #FFFBEB !important;
+  color: #D97706 !important;
+  border-color: #FDE68A !important;
 }
 
-.light-mode table button.bg-rose-500\/10,
-.light-mode table .bg-rose-500\/10 {
+.light-mode .bg-rose-500\/10 {
   background-color: #FEF2F2 !important;
-  color: #DC2626 !important;
-  border: 1px solid #FECACA !important;
+  color: #E11D48 !important;
+  border-color: #FECDD3 !important;
 }
 
-.light-mode table button.bg-rose-500\/10:hover,
-.light-mode table .bg-rose-500\/10:hover {
-  background-color: #DC2626 !important;
-  color: #FFFFFF !important;
+/* Table Row Action Buttons in Light Mode */
+.light-mode table button.text-slate-400 {
+  color: #64748B !important;
+}
+
+.light-mode table button.text-slate-400:hover {
+  background-color: #F1F5F9 !important;
 }
 
 /* Table Pagination Bar in Light Mode */

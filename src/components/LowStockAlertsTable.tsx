@@ -118,19 +118,20 @@ export default function LowStockAlertsTable({
                       {formatNumber(item.MinStock)} <span className="text-[11px] font-normal text-slate-400">{unitLabel}</span>
                     </td>
                     <td className="p-3.5 text-center">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold ${
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                         isOut
-                          ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                          : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                          ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                          : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
                       }`}>
-                        {isOut ? t('out_of_stock_status') : t('low_stock_status')}
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isOut ? 'bg-rose-500' : 'bg-amber-500'}`}></span>
+                        <span>{isOut ? t('out_of_stock_status') : t('low_stock_status')}</span>
                       </span>
                     </td>
                     <td className="p-3.5 text-right">
                       <button
                         type="button"
                         onClick={() => onRecordProduction(item.ProductID)}
-                        className="inline-flex items-center gap-1.5 bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm"
+                        className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-sm cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>{t('produce')}</span>

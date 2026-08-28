@@ -366,9 +366,9 @@ export default function ProductionLogsModule({
                         +{formatNumber(log.Quantity)}
                       </td>
                       <td className="p-3.5 text-right">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                          {t('active_status_label')}
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                          <span>{t('active_status_label')}</span>
                         </span>
                       </td>
                     </tr>
