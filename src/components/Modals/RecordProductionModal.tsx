@@ -93,13 +93,10 @@ export default function RecordProductionModal({
         </button>
 
         <div className="flex items-center gap-3 mb-5">
-          <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50 shrink-0">
             <ClipboardCheck className="w-5 h-5" />
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-white leading-tight">{t('record_daily_production')}</h3>
-            <p className="text-xs text-slate-400">{t('record_daily_desc')}</p>
-          </div>
+          <h3 className="text-lg font-bold text-white leading-tight">{t('record_daily_production')}</h3>
         </div>
 
         {error && (
@@ -116,7 +113,7 @@ export default function RecordProductionModal({
               required
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(Number(e.target.value))}
-              className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
             >
               {products.length === 0 ? (
                 <option value="">{t('no_products') || 'No products found'}</option>
@@ -139,7 +136,7 @@ export default function RecordProductionModal({
                 required
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
             <div>
@@ -149,7 +146,7 @@ export default function RecordProductionModal({
                 required
                 value={operatorName}
                 onChange={(e) => setOperatorName(e.target.value)}
-                className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
           </div>
@@ -158,14 +155,14 @@ export default function RecordProductionModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors"
+              className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               <Check className="w-4 h-4" />
               <span>{loading ? '...' : t('save_production_log')}</span>

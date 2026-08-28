@@ -162,9 +162,6 @@ export default function NotificationsModal({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {t('notifications_desc')}
-              </p>
             </div>
           </div>
 
