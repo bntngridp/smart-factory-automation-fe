@@ -1009,11 +1009,10 @@ export default function SettingsModule() {
                     <div>
                       <h4 className="font-bold text-white text-base leading-tight">{fullName}</h4>
                       <p className="text-xs text-slate-400 mt-0.5">{jobTitle}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 capitalize">
-                          {currentUserRole}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      <div className="flex items-center gap-2.5 mt-2 text-xs font-semibold">
+                        <span className="text-slate-300 capitalize">{currentUserRole}</span>
+                        <span className="text-slate-500">•</span>
+                        <span className="inline-flex items-center gap-1.5 text-emerald-500 font-semibold">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
                           <span>{t('active_status_label')}</span>
                         </span>

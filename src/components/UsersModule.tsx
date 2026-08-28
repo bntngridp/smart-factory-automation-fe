@@ -312,27 +312,15 @@ export default function UsersModule() {
                           </div>
                         </td>
 
-                        <td className="p-3.5">
-                          {isSystemAdmin ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                              {t('admin_role')}
-                            </span>
-                          ) : isSupervisor ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                              {t('supervisor_role')}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20">
-                              {t('operator_role')}
-                            </span>
-                          )}
+                        <td className="p-3.5 font-medium text-xs text-slate-300">
+                          {isSystemAdmin ? t('admin_role') : isSupervisor ? t('supervisor_role') : t('operator_role')}
                         </td>
 
                         <td className="p-3.5 text-center">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
                             <span>{t('active_status_label')}</span>
-                          </span>
+                          </div>
                         </td>
 
                         <td className="p-3.5 text-right">
