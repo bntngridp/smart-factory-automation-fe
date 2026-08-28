@@ -81,7 +81,7 @@ const translations: Record<Language, Record<string, string>> = {
     search_placeholder: 'Search operations, products, logs...',
     export: 'Export Data',
     new_action: 'Quick Action',
-    add_new_product: '+ Add New Product',
+    add_new_product: 'Add New Product',
     record_production: 'Record Production',
     record_stock_out: 'Record Stock Out',
 
@@ -532,7 +532,7 @@ const translations: Record<Language, Record<string, string>> = {
     search_placeholder: 'Cari operasional, produk, log...',
     export: 'Ekspor Data',
     new_action: 'Aksi Cepat',
-    add_new_product: '+ Tambah Produk Baru',
+    add_new_product: 'Tambah Produk Baru',
     record_production: 'Catat Produksi',
     record_stock_out: 'Catat Stok Keluar',
 
@@ -983,7 +983,7 @@ const translations: Record<Language, Record<string, string>> = {
     search_placeholder: 'ابحث في العمليات، المنتجات، السجلات...',
     export: 'تصدير البيانات',
     new_action: 'إجراء سريع',
-    add_new_product: '+ إضافة منتج جديد',
+    add_new_product: 'إضافة منتج جديد',
     record_production: 'تسجيل إنتاج',
     record_stock_out: 'تسجيل صرف مخزون',
 
@@ -1434,7 +1434,7 @@ const translations: Record<Language, Record<string, string>> = {
     search_placeholder: 'Buscar operaciones, productos, registros...',
     export: 'Exportar Datos',
     new_action: 'Acción Rápida',
-    add_new_product: '+ Agregar Nuevo Producto',
+    add_new_product: 'Agregar Nuevo Producto',
     record_production: 'Registrar Producción',
     record_stock_out: 'Registrar Salida de Stock',
 

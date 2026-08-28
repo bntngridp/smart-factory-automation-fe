@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { PlusCircle, ClipboardCheck, ArrowUpRight } from 'lucide-react'
+import { PlusCircle, ClipboardCheck, ArrowUpRight, ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 
 interface QuickActionsProps {
@@ -19,24 +19,21 @@ export default function QuickActions({
 
   const actions = [
     {
-      title: t('add_product'),
-      description: t('add_new_product'),
+      title: t('add_new_product'),
       icon: PlusCircle,
-      color: 'text-blue-500 bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20',
+      color: 'text-blue-500 bg-blue-500/10 border-blue-500/30 group-hover:bg-blue-500 group-hover:text-white',
       onClick: onOpenAddProduct
     },
     {
       title: t('record_production'),
-      description: t('live_manufacturing_data'),
       icon: ClipboardCheck,
-      color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20',
+      color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-white',
       onClick: onOpenRecordProduction
     },
     {
       title: t('stock_out_btn'),
-      description: t('record_stock_out'),
       icon: ArrowUpRight,
-      color: 'text-amber-500 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20',
+      color: 'text-amber-500 bg-amber-500/10 border-amber-500/30 group-hover:bg-amber-500 group-hover:text-white',
       onClick: onOpenStockOut
     }
   ]
@@ -50,7 +47,7 @@ export default function QuickActions({
         {t('quick_actions_subtitle')}
       </p>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {actions.map((action, idx) => {
           const Icon = action.icon
 
@@ -58,24 +55,17 @@ export default function QuickActions({
             <button
               key={idx}
               onClick={action.onClick}
-              className="w-full flex items-center justify-between p-3.5 rounded-xl border border-[#1E293B] bg-[#0F172A] hover:bg-[#1E2D47] transition-all group text-left shadow-sm"
+              className="w-full flex items-center justify-between p-3 rounded-xl border border-[#1E293B] bg-[#0F172A] hover:bg-[#1E2D47] transition-all group text-left shadow-sm cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg border ${action.color}`}>
+                <div className={`p-2 rounded-lg border transition-all ${action.color}`}>
                   <Icon className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white group-hover:text-blue-500 transition-colors">
-                    {action.title}
-                  </h4>
-                  <p className="text-[11px] text-slate-400">
-                    {action.description}
-                  </p>
-                </div>
+                <h4 className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                  {action.title}
+                </h4>
               </div>
-              <span className="text-slate-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all text-xs font-semibold">
-                →
-              </span>
+              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-400 group-hover:translate-x-1 transition-all shrink-0" />
             </button>
           )
         })}
