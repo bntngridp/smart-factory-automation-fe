@@ -1458,7 +1458,7 @@ export default function SettingsModule() {
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs cursor-pointer"
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-6 py-2.5 rounded-xl shadow-sm transition-all text-xs cursor-pointer"
                     >
                       <Check className="w-4 h-4" />
                       <span>{t('save_notifications')}</span>
@@ -1736,7 +1736,7 @@ export default function SettingsModule() {
 
                       <button
                         type="submit"
-                        className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs cursor-pointer"
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-6 py-2.5 rounded-xl shadow-sm transition-all text-xs cursor-pointer"
                       >
                         <Check className="w-4 h-4" />
                         <span>{t('save_factory_config')}</span>

@@ -281,7 +281,7 @@ export default function ProductionLogsModule({
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold text-xs px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs px-6 py-2.5 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               <Check className="w-4 h-4" />
               <span>{submitting ? '...' : t('submit_log')}</span>

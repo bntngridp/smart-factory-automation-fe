@@ -339,7 +339,7 @@ export default function Header({
 
         {/* Calendar Badge */}
         <div className="hidden md:flex items-center gap-2 bg-[#162032] border border-[#1E293B] text-slate-300 text-xs px-3 py-2 rounded-xl">
-          <Calendar className="w-3.5 h-3.5 text-blue-400" />
+          <Calendar className="w-3.5 h-3.5 text-slate-400" />
           <span suppressHydrationWarning>{currentDate}</span>
         </div>
 
@@ -376,7 +376,7 @@ export default function Header({
 
         {/* New Entry Primary Action Button */}
         <div className="relative group">
-          <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer">
+          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer">
             <Plus className="w-4 h-4" />
             <span>{t('new_action')}</span>
           </button>
@@ -406,13 +406,13 @@ export default function Header({
 
         {/* User Profile Avatar */}
         <div className="flex items-center gap-2.5 ml-1 pl-2 border-l border-[#1E293B]">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+          <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase">
             BR
           </div>
           <div className="hidden lg:block text-left">
             <p className="text-xs font-semibold text-white leading-tight">Bintang R</p>
-            <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-              <ShieldCheck className="w-2.5 h-2.5" />
+            <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium mt-0.5">
+              <ShieldCheck className="w-2.5 h-2.5 text-slate-400" />
               <span>{t('admin')}</span>
             </div>
           </div>

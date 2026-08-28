@@ -158,7 +158,7 @@ export default function HelpModule({ onBackToDashboard }: HelpModuleProps) {
 
         <button
           onClick={() => alert('Support ticket system opened: support@forge.inc')}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer"
         >
           <BookOpen className="w-4 h-4" />
           <span>{t('open_support_ticket')}</span>

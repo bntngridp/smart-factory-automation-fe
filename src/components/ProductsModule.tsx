@@ -190,7 +190,7 @@ export default function ProductsModule({
 
           <button
             onClick={onOpenAddProduct}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t('add_product')}</span>

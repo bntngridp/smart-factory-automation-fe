@@ -79,13 +79,13 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
         {/* User Session Info Card */}
         <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase">
               {username.substring(0, 2).toUpperCase()}
             </div>
             <div>
               <h4 className="font-bold text-white text-xs leading-tight">{username}</h4>
-              <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-medium mt-0.5">
-                <ShieldCheck className="w-3 h-3" />
+              <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium mt-0.5">
+                <ShieldCheck className="w-3 h-3 text-slate-400" />
                 {t('active_session')}
               </span>
             </div>
