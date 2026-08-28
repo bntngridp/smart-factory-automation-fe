@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { AlertTriangle, Plus, ArrowUpRight, RefreshCw, CheckCircle2 } from 'lucide-react'
+import { Plus, ArrowUpRight, RefreshCw, CheckCircle2 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 
 export interface LowStockAlertItem {
@@ -35,22 +35,9 @@ export default function LowStockAlertsTable({
       {/* Table Header Section */}
       <div className="flex items-center justify-between gap-4 mb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-white tracking-wide">
-              {t('low_stock_alerts')}
-            </h2>
-            {hasAlerts ? (
-              <span className="text-[10px] font-semibold text-rose-500 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" />
-                {t('action_required')}
-              </span>
-            ) : (
-              <span className="text-[10px] font-semibold text-emerald-500 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
-                {t('all_systems_nominal')}
-              </span>
-            )}
-          </div>
+          <h2 className="text-base font-bold text-white tracking-wide">
+            {t('low_stock_alerts')}
+          </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             {t('low_stock_subtitle')}
           </p>
@@ -60,10 +47,10 @@ export default function LowStockAlertsTable({
           <button
             type="button"
             onClick={onViewAll}
-            className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline transition-colors flex items-center gap-1 cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
           >
             <span>{t('view_all')}</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
           </button>
         )}
       </div>
@@ -154,10 +141,10 @@ export default function LowStockAlertsTable({
             <button
               type="button"
               onClick={onViewAll}
-              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline transition-all inline-flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
             >
               <span>{t('view_all')} ({formatNumber(alerts.length)} {t('products')})</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
             </button>
           </div>
         )}
