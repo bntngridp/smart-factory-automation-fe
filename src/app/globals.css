@@ -72,6 +72,45 @@ html.light-mode body,
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04) !important;
 }
 
+/* Sidebar Nav Item Styling in Light Mode */
+.light-mode .sidebar-nav-active,
+.light-mode aside nav button.sidebar-nav-active,
+.light-mode aside div button.sidebar-nav-active {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+  border-color: #0F172A !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15) !important;
+}
+
+.light-mode .sidebar-nav-active svg,
+.light-mode .sidebar-nav-active span {
+  color: #FFFFFF !important;
+}
+
+.light-mode .sidebar-nav-inactive,
+.light-mode aside nav button.sidebar-nav-inactive,
+.light-mode aside div button.sidebar-nav-inactive {
+  background-color: transparent !important;
+  color: #475569 !important;
+  border-color: transparent !important;
+}
+
+.light-mode .sidebar-nav-inactive svg {
+  color: #64748B !important;
+}
+
+.light-mode .sidebar-nav-inactive:hover,
+.light-mode aside nav button.sidebar-nav-inactive:hover,
+.light-mode aside div button.sidebar-nav-inactive:hover {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+  border-color: transparent !important;
+}
+
+.light-mode .sidebar-nav-inactive:hover svg {
+  color: #0F172A !important;
+}
+
 .light-mode header {
   background-color: rgba(255, 255, 255, 0.95) !important;
   border-color: #E2E8F0 !important;

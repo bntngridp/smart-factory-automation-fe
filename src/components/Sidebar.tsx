@@ -140,15 +140,21 @@ export default function Sidebar({
                 type="button"
                 onClick={() => handleSelectTab(item.id)}
                 title={isCollapsed ? t(item.translationKey) : undefined}
-                className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer ${
+                className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer group ${
                   isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
                 } ${
                   isActive
-                    ? 'bg-slate-100 dark:bg-[#162032] text-slate-900 dark:text-white border border-slate-200 dark:border-[#1E293B] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#162032]/60 border border-transparent'
+                    ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm'
+                    : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
                 }`}
               >
-                <Icon className={`w-4 h-4 min-w-[16px] ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
+                <Icon
+                  className={`w-4 h-4 min-w-[16px] transition-colors ${
+                    isActive
+                      ? 'text-white'
+                      : 'text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
+                  }`}
+                />
                 {!isCollapsed && <span className="truncate">{t(item.translationKey)}</span>}
               </button>
             )
@@ -161,15 +167,21 @@ export default function Sidebar({
             type="button"
             onClick={() => handleSelectTab('settings')}
             title={isCollapsed ? t('settings') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer group ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             } ${
               activeTab === 'settings'
-                ? 'bg-slate-100 dark:bg-[#162032] text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700/50 shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#162032]/60 border border-transparent'
+                ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm'
+                : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
             }`}
           >
-            <Settings className={`w-4 h-4 min-w-[16px] ${activeTab === 'settings' ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
+            <Settings
+              className={`w-4 h-4 min-w-[16px] transition-colors ${
+                activeTab === 'settings'
+                  ? 'text-white'
+                  : 'text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
+              }`}
+            />
             {!isCollapsed && <span className="truncate">{t('settings')}</span>}
           </button>
 
@@ -177,15 +189,21 @@ export default function Sidebar({
             type="button"
             onClick={() => handleSelectTab('help')}
             title={isCollapsed ? t('help') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer group ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             } ${
               activeTab === 'help'
-                ? 'bg-slate-100 dark:bg-[#162032] text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700/50 shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#162032]/60 border border-transparent'
+                ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm'
+                : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
             }`}
           >
-            <HelpCircle className={`w-4 h-4 min-w-[16px] ${activeTab === 'help' ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
+            <HelpCircle
+              className={`w-4 h-4 min-w-[16px] transition-colors ${
+                activeTab === 'help'
+                  ? 'text-white'
+                  : 'text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
+              }`}
+            />
             {!isCollapsed && <span className="truncate">{t('help')}</span>}
           </button>
 
@@ -197,11 +215,11 @@ export default function Sidebar({
               if (onOpenLogout) onOpenLogout()
             }}
             title={isCollapsed ? t('logout') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-rose-500/10 transition-colors duration-150 outline-none select-none cursor-pointer border border-transparent ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all duration-150 outline-none select-none cursor-pointer group border border-transparent ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             }`}
           >
-            <LogOut className="w-4 h-4 min-w-[16px] text-slate-400 group-hover:text-rose-500 transition-colors" />
+            <LogOut className="w-4 h-4 min-w-[16px] text-slate-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors" />
             {!isCollapsed && <span className="truncate">{t('logout')}</span>}
           </button>
         </div>
