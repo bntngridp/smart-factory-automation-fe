@@ -12,6 +12,7 @@ import {
   KeyRound,
   ChevronLeft
 } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -142,9 +143,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-[#111827] border border-[#1E293B] rounded-2xl p-8 shadow-2xl relative z-10 animate-fade-in">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-10 h-10 rounded-xl bg-[#1E293B] border border-slate-700 p-2 flex items-center justify-center mb-3">
-            <span className="font-extrabold text-lg text-white tracking-tight">F</span>
-          </div>
+          <Logo size="lg" className="mb-3" />
 
           <h1 className="text-xl font-black text-white tracking-wide uppercase">
             Forge

@@ -17,6 +17,7 @@ import {
   X
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
+import { Logo } from '@/components/Logo'
 
 interface SidebarProps {
   activeTab: string
@@ -77,9 +78,7 @@ export default function Sidebar({
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#1E293B]">
           {/* Logo & Brand Text */}
           <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'w-full justify-center' : ''}`}>
-            <div className="w-9 h-9 min-w-[36px] rounded-xl bg-slate-900 dark:bg-[#162032] border border-slate-800 dark:border-[#1E293B] flex items-center justify-center text-white shadow-sm shrink-0">
-              <Factory className="w-4 h-4 text-white" />
-            </div>
+            <Logo size="md" />
             {!isCollapsed && (
               <div className="truncate">
                 <h1 className="font-bold text-white tracking-wide text-base leading-tight">Forge</h1>
