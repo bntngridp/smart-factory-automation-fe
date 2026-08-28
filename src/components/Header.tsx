@@ -9,8 +9,6 @@ import {
   Plus,
   ShieldCheck,
   Menu,
-  PanelLeftOpen,
-  PanelLeftClose,
   Package,
   LayoutDashboard,
   CheckCircle2,
@@ -28,8 +26,6 @@ interface HeaderProps {
   onOpenStockOut: () => void
   onOpenNotifications?: () => void
   onNavigateTab?: (tab: string) => void
-  isCollapsed?: boolean
-  setIsCollapsed?: (collapsed: boolean | ((prev: boolean) => boolean)) => void
   setIsMobileOpen?: (open: boolean) => void
 }
 
@@ -47,8 +43,6 @@ export default function Header({
   onOpenStockOut,
   onOpenNotifications,
   onNavigateTab,
-  isCollapsed,
-  setIsCollapsed,
   setIsMobileOpen
 }: HeaderProps) {
   const { t, formatDate, formatNumber } = useLanguage()
@@ -239,21 +233,10 @@ export default function Header({
         {setIsMobileOpen && (
           <button
             onClick={() => setIsMobileOpen(true)}
-            className="md:hidden p-2 rounded-xl bg-[#162032] border border-[#1E293B] text-slate-300 hover:text-white transition-colors"
+            className="md:hidden p-2 rounded-xl bg-[#162032] border border-[#1E293B] text-slate-300 hover:text-white transition-colors cursor-pointer"
             title="Open Menu"
           >
             <Menu className="w-5 h-5" />
-          </button>
-        )}
-
-        {/* Desktop Collapse Toggle Shortcut */}
-        {setIsCollapsed && (
-          <button
-            onClick={() => setIsCollapsed((prev) => !prev)}
-            className="hidden md:flex p-2 rounded-xl bg-[#162032] border border-[#1E293B] text-slate-400 hover:text-white transition-colors"
-            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-          >
-            {isCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
         )}
 

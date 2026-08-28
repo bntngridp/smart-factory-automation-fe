@@ -101,8 +101,6 @@ export default function Home() {
           onOpenStockOut={() => setIsStockOutOpen(true)}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
           onNavigateTab={setActiveTab}
-          isCollapsed={isCollapsed}
-          setIsCollapsed={setIsCollapsed}
           setIsMobileOpen={setIsMobileOpen}
         />
 
