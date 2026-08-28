@@ -925,14 +925,46 @@ export default function SettingsModule() {
                 </div>
 
                 {/* Accent Color Palette */}
-                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-3 max-w-lg">
+                <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-3 max-w-2xl shadow-sm">
                   <h4 className="font-bold text-white text-xs">{t('accent_color')}</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                      { id: 'blue', label: t('accent_blue'), hex: '#3B82F6', textClass: 'text-blue-400', activeClass: 'border-[#3B82F6] bg-[#3B82F6]/15 ring-[#3B82F6]/30' },
-                      { id: 'emerald', label: t('accent_emerald'), hex: '#10B981', textClass: 'text-emerald-400', activeClass: 'border-[#10B981] bg-[#10B981]/15 ring-[#10B981]/30' },
-                      { id: 'amber', label: t('accent_amber'), hex: '#F59E0B', textClass: 'text-amber-400', activeClass: 'border-[#F59E0B] bg-[#F59E0B]/15 ring-[#F59E0B]/30' },
-                      { id: 'violet', label: t('accent_violet'), hex: '#8B5CF6', textClass: 'text-purple-400', activeClass: 'border-[#8B5CF6] bg-[#8B5CF6]/15 ring-[#8B5CF6]/30' },
+                      {
+                        id: 'blue',
+                        label: t('accent_blue'),
+                        hex: '#3B82F6',
+                        activeBorder: 'border-blue-500',
+                        activeBg: 'bg-blue-500/15',
+                        activeText: 'text-blue-500 dark:text-blue-400',
+                        ring: 'ring-2 ring-blue-500/30'
+                      },
+                      {
+                        id: 'emerald',
+                        label: t('accent_emerald'),
+                        hex: '#10B981',
+                        activeBorder: 'border-emerald-500',
+                        activeBg: 'bg-emerald-500/15',
+                        activeText: 'text-emerald-600 dark:text-emerald-400',
+                        ring: 'ring-2 ring-emerald-500/30'
+                      },
+                      {
+                        id: 'amber',
+                        label: t('accent_amber'),
+                        hex: '#F59E0B',
+                        activeBorder: 'border-amber-500',
+                        activeBg: 'bg-amber-500/15',
+                        activeText: 'text-amber-600 dark:text-amber-400',
+                        ring: 'ring-2 ring-amber-500/30'
+                      },
+                      {
+                        id: 'violet',
+                        label: t('accent_violet'),
+                        hex: '#8B5CF6',
+                        activeBorder: 'border-purple-500',
+                        activeBg: 'bg-purple-500/15',
+                        activeText: 'text-purple-600 dark:text-purple-400',
+                        ring: 'ring-2 ring-purple-500/30'
+                      }
                     ].map((accent) => {
                       const isSelected = accentColor === accent.id
                       return (
@@ -940,17 +972,17 @@ export default function SettingsModule() {
                           key={accent.id}
                           type="button"
                           onClick={() => setAccentColor(accent.id as AccentColor)}
-                          className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer ${
+                          className={`p-3 rounded-xl border flex items-center gap-2.5 transition-all outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer shadow-sm ${
                             isSelected
-                              ? `${accent.activeClass} ${accent.textClass} font-bold ring-1`
-                              : 'border-[#1E293B] bg-[#162032]/60 text-slate-400 hover:text-slate-200'
+                              ? `${accent.activeBorder} ${accent.activeBg} ${accent.activeText} ${accent.ring} font-bold`
+                              : 'border-[#1E293B] bg-[#162032] text-slate-300 hover:border-slate-400 hover:text-white'
                           }`}
                         >
                           <span
-                            className="w-3 h-3 rounded-full shrink-0 static-swatch shadow-sm"
+                            className="w-3.5 h-3.5 rounded-full shrink-0 static-swatch shadow-sm ring-1 ring-black/10"
                             style={{ backgroundColor: accent.hex }}
                           ></span>
-                          <span className="text-[11px] truncate">{accent.label}</span>
+                          <span className="text-xs font-semibold whitespace-nowrap">{accent.label}</span>
                         </button>
                       )
                     })}

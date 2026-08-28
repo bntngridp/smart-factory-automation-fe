@@ -82,12 +82,19 @@ button:focus, button:focus-visible {
 /* Hardcoded Dark Background Overrides for Light Mode */
 .light-mode .glass-card,
 .light-mode .bg-\[\#0F172A\],
+.light-mode .bg-\[\#0F172A\]\/50,
 .light-mode .bg-\[\#0F172A\]\/60,
+.light-mode .bg-\[\#0F172A\]\/70,
 .light-mode .bg-\[\#0F172A\]\/80,
 .light-mode .bg-\[\#162032\],
+.light-mode .bg-\[\#162032\]\/50,
+.light-mode .bg-\[\#162032\]\/60,
+.light-mode .bg-\[\#162032\]\/70,
+.light-mode .bg-\[\#162032\]\/80,
 .light-mode .bg-\[\#111827\],
 .light-mode .bg-\[\#090D16\],
-.light-mode .bg-\[\#0B0F17\] {
+.light-mode .bg-\[\#0B0F17\],
+.light-mode .bg-\[\#0B1120\] {
   background-color: #FFFFFF !important;
   border-color: #E2E8F0 !important;
 }
@@ -101,6 +108,52 @@ button:focus, button:focus-visible {
 .light-mode .hover\:bg-\[\#1E2D47\]:hover,
 .light-mode .hover\:bg-\[\#0F172A\]:hover {
   background-color: #F1F5F9 !important;
+}
+
+/* Secondary Panels & Button Insets in Light Mode */
+.light-mode button.bg-\[\#162032\],
+.light-mode div.bg-\[\#162032\] {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #334155 !important;
+}
+
+.light-mode button.bg-\[\#162032\]:hover {
+  background-color: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+/* Active Accent Selection in Light Mode */
+.light-mode .bg-blue-500\/15 {
+  background-color: #EFF6FF !important;
+}
+
+.light-mode .bg-emerald-500\/15 {
+  background-color: #ECFDF5 !important;
+}
+
+.light-mode .bg-amber-500\/15 {
+  background-color: #FFFBEB !important;
+}
+
+.light-mode .bg-purple-500\/15 {
+  background-color: #FAF5FF !important;
+}
+
+/* Switches & Inactive Toggles in Light Mode */
+.light-mode .bg-slate-700 {
+  background-color: #CBD5E1 !important;
+}
+
+.light-mode .bg-slate-700 > div,
+.light-mode .bg-slate-700 .bg-slate-400 {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+.light-mode .bg-slate-800 {
+  background-color: #E2E8F0 !important;
 }
 
 /* Hardcoded Dark Border Overrides */
