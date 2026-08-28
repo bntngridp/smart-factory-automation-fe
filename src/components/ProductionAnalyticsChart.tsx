@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
-import { TrendingUp, RefreshCw } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { getDashboardAnalyticsApi, AnalyticsDataPoint } from '@/services/api'
@@ -21,7 +21,6 @@ export default function ProductionAnalyticsChart() {
   const [timeframe, setTimeframe] = useState<'7D' | '30D' | 'YTD'>('7D')
   const [analyticsData, setAnalyticsData] = useState<AnalyticsDataPoint[]>([])
   const [totalPeriodVolume, setTotalPeriodVolume] = useState<number>(0)
-  const [loading, setLoading] = useState<boolean>(true)
 
   const isLight = theme === 'light'
 
@@ -29,7 +28,6 @@ export default function ProductionAnalyticsChart() {
     let isCancelled = false
 
     const fetchAnalytics = async () => {
-      setLoading(true)
       try {
         const res = await getDashboardAnalyticsApi(timeframe)
         if (!isCancelled) {
@@ -39,10 +37,6 @@ export default function ProductionAnalyticsChart() {
       } catch (err) {
         if (!isCancelled) {
           console.error('Failed to fetch production analytics:', err)
-        }
-      } finally {
-        if (!isCancelled) {
-          setLoading(false)
         }
       }
     }
@@ -99,13 +93,9 @@ export default function ProductionAnalyticsChart() {
             </h2>
             <span className="text-[11px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
-              {loading ? (
-                <RefreshCw className="w-3 h-3 animate-spin" />
-              ) : (
-                <span>
-                  {formatNumber(totalPeriodVolume)} {t('units')}
-                </span>
-              )}
+              <span>
+                {formatNumber(totalPeriodVolume)} {t('units')}
+              </span>
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -132,12 +122,7 @@ export default function ProductionAnalyticsChart() {
       </div>
 
       {/* Chart Area */}
-      <div className="h-[280px] w-full relative">
-        {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#162032]/40 backdrop-blur-[1px] rounded-xl">
-            <RefreshCw className="w-6 h-6 animate-spin text-blue-400" />
-          </div>
-        )}
+      <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={formattedChartData}
