@@ -147,7 +147,7 @@ export default function NotificationsModal({
             <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 relative">
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full animate-pulse border-2 border-[#162032]"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-600 rounded-full border-2 border-white dark:border-[#162032]"></span>
               )}
             </div>
             <div>
@@ -156,8 +156,9 @@ export default function NotificationsModal({
                   {t('notification_center')}
                 </h3>
                 {unreadCount > 0 && (
-                  <span className="text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded-full">
-                    {formatNumber(unreadCount)} {t('new_badge')}
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-500">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+                    <span>{formatNumber(unreadCount)} {t('new_badge')}</span>
                   </span>
                 )}
               </div>

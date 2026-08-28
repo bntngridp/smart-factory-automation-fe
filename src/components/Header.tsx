@@ -351,7 +351,7 @@ export default function Header({
         >
           <Bell className="w-4 h-4" />
           {unreadNotifCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#0B0F17] animate-pulse">
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-600 !text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-[#0B0F17] shadow-sm">
               {formatNumber(unreadNotifCount)}
             </span>
           )}

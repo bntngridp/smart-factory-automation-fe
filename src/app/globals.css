@@ -309,7 +309,19 @@ html.light-mode body,
 .light-mode table td .rounded-full.bg-indigo-600,
 .light-mode table td .rounded-full.bg-emerald-600,
 .light-mode table td button.bg-blue-600,
-.light-mode table td button.bg-blue-600 * {
+.light-mode table td button.bg-blue-600 *,
+.light-mode .bg-rose-500,
+.light-mode .bg-rose-600,
+.light-mode .bg-red-500,
+.light-mode .bg-red-600,
+.light-mode .bg-blue-600,
+.light-mode .bg-blue-500,
+.light-mode .bg-emerald-600,
+.light-mode .bg-emerald-500,
+.light-mode .bg-rose-500 *,
+.light-mode .bg-rose-600 *,
+.light-mode .bg-red-500 *,
+.light-mode .bg-red-600 * {
   color: #FFFFFF !important;
 }
 
