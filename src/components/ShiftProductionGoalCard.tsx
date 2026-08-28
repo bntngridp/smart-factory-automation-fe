@@ -99,9 +99,7 @@ export default function ShiftProductionGoalCard({
         <h2 className="text-base font-bold text-white tracking-wide text-left">
           {t('shift_target_title')}
         </h2>
-        <span
-          className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border tracking-wider uppercase flex items-center gap-1.5 shrink-0 ${currentShift.badgeColor}`}
-        >
+        <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5 shrink-0 font-mono uppercase">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           {currentShift.code}
         </span>

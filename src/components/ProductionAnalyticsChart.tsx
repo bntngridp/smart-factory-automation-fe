@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
-import { TrendingUp } from 'lucide-react'
+
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { getDashboardAnalyticsApi, AnalyticsDataPoint } from '@/services/api'
@@ -91,11 +91,8 @@ export default function ProductionAnalyticsChart() {
             <h2 className="text-base font-bold text-white tracking-wide">
               {t('production_analytics')}
             </h2>
-            <span className="text-[11px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              <span>
-                {formatNumber(totalPeriodVolume)} {t('units')}
-              </span>
+            <span className="text-xs text-slate-400 font-mono">
+              • {formatNumber(totalPeriodVolume)} {t('units')}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">

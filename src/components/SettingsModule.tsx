@@ -1229,14 +1229,11 @@ export default function SettingsModule() {
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2.5">
                           <h4 className="font-bold text-white text-sm tracking-tight">{t('two_factor_auth')}</h4>
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border tracking-wide ${
-                              twoFactorEnabled
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                                : 'bg-slate-800 text-slate-400 border-slate-700'
-                            }`}
-                          >
-                            {twoFactorEnabled ? t('two_factor_status_active') : t('two_factor_status_inactive')}
+                          <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+                            <span className={`w-1.5 h-1.5 rounded-full ${twoFactorEnabled ? 'bg-emerald-500' : 'bg-slate-500'} shrink-0`}></span>
+                            <span className={twoFactorEnabled ? 'text-emerald-500' : 'text-slate-400'}>
+                              {twoFactorEnabled ? t('two_factor_status_active') : t('two_factor_status_inactive')}
+                            </span>
                           </span>
                         </div>
                         <p className="text-xs text-slate-400 leading-relaxed max-w-xl">{t('two_factor_desc')}</p>

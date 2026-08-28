@@ -32,7 +32,6 @@ export default function ProductsModule({
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedIds, setSelectedIds] = useState<number[]>([])
 
   // Delete Confirmation Modal States
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
@@ -102,22 +101,6 @@ export default function ProductsModule({
     p.ProductName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     `PRD-${p.ProductID}`.toLowerCase().includes(searchQuery.toLowerCase())
   )
-
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelectedIds(filteredProducts.map((p) => p.ProductID))
-    } else {
-      setSelectedIds([])
-    }
-  }
-
-  const handleSelectOne = (id: number) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter((i) => i !== id))
-    } else {
-      setSelectedIds([...selectedIds, id])
-    }
-  }
 
   const handleExportCatalog = async () => {
     setExporting(true)
@@ -218,14 +201,6 @@ export default function ProductsModule({
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="bg-[#0B132B] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
-                <th className="p-4 w-12 text-center">
-                  <input
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={filteredProducts.length > 0 && selectedIds.length === filteredProducts.length}
-                    className="rounded border-slate-700 bg-[#0F172A] text-blue-600 focus:ring-0 focus:ring-offset-0"
-                  />
-                </th>
                 <th className="p-4">SKU / ID</th>
                 <th className="p-4">{t('product_name')}</th>
                 <th className="p-4">{t('unit')}</th>
@@ -238,7 +213,7 @@ export default function ProductsModule({
             <tbody className="divide-y divide-[#1E293B]">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-400">
+                  <td colSpan={7} className="p-8 text-center text-slate-400">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
                       <span>{t('loading')}</span>
@@ -247,32 +222,21 @@ export default function ProductsModule({
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-400">
+                  <td colSpan={7} className="p-8 text-center text-slate-400">
                     {t('no_products')}
                   </td>
                 </tr>
               ) : (
                 filteredProducts.map((item) => {
                   const currentStock = item.CurrentStock ?? 0
-                  const isSelected = selectedIds.includes(item.ProductID)
                   const isLow = currentStock > 0 && currentStock <= item.MinStock
                   const isOut = currentStock === 0
 
                   return (
                     <tr
                       key={item.ProductID}
-                      className={`hover:bg-[#1E2D47]/40 transition-colors ${
-                        isSelected ? 'bg-blue-600/10' : ''
-                      }`}
+                      className="hover:bg-[#1E2D47]/40 transition-colors"
                     >
-                      <td className="p-4 text-center">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleSelectOne(item.ProductID)}
-                          className="rounded border-slate-700 bg-[#0F172A] text-blue-600 focus:ring-0 focus:ring-offset-0"
-                        />
-                      </td>
                       <td className="p-4 font-mono font-bold text-slate-400">
                         PRD-{formatNumber(item.ProductID)}
                       </td>
@@ -290,17 +254,17 @@ export default function ProductsModule({
                       </td>
                       <td className="p-4 text-center">
                         {isOut ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                          <span className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-rose-500">
                             <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
                             <span>{t('out_of_stock_status')}</span>
                           </span>
                         ) : isLow ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                          <span className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-amber-500">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
                             <span>{t('low_stock_status')}</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          <span className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-emerald-500">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
                             <span>{t('in_stock_status')}</span>
                           </span>
@@ -338,7 +302,7 @@ export default function ProductsModule({
         <div className="bg-[#0F172A] p-4 border-t border-[#1E293B] flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
           <div className="flex items-center gap-3">
             <span className="text-[11px] text-slate-400">
-              {formatNumber(selectedIds.length)} {t('active_catalog')}
+              {formatNumber(products.length)} {t('active_catalog')}
             </span>
           </div>
 
