@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   AreaChart,
   Area,
@@ -10,26 +10,77 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, RefreshCw } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
+import { getDashboardAnalyticsApi, AnalyticsDataPoint } from '@/services/api'
 
 export default function ProductionAnalyticsChart() {
   const { theme } = useTheme()
   const { t, formatNumber } = useLanguage()
-  const [timeframe, setTimeframe] = useState<'7D' | '30D' | 'YTD'>('30D')
+  const [timeframe, setTimeframe] = useState<'7D' | '30D' | 'YTD'>('7D')
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsDataPoint[]>([])
+  const [totalPeriodVolume, setTotalPeriodVolume] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(true)
 
   const isLight = theme === 'light'
 
-  const chartData = [
-    { name: t('days_mon'), production: 1100, inventory: 80000 },
-    { name: t('days_tue'), production: 1250, inventory: 81200 },
-    { name: t('days_wed'), production: 1380, inventory: 81900 },
-    { name: t('days_thu'), production: 1240, inventory: 82450 },
-    { name: t('days_fri'), production: 1420, inventory: 83100 },
-    { name: t('days_sat'), production: 980, inventory: 83500 },
-    { name: t('days_sun'), production: 850, inventory: 83900 },
-  ]
+  useEffect(() => {
+    let isCancelled = false
+
+    const fetchAnalytics = async () => {
+      setLoading(true)
+      try {
+        const res = await getDashboardAnalyticsApi(timeframe)
+        if (!isCancelled) {
+          setAnalyticsData(res.data)
+          setTotalPeriodVolume(res.total_period_production)
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error('Failed to fetch production analytics:', err)
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    fetchAnalytics()
+
+    const handleRefresh = () => {
+      fetchAnalytics()
+    }
+
+    window.addEventListener('forge_production_logged', handleRefresh)
+    return () => {
+      isCancelled = true
+      window.removeEventListener('forge_production_logged', handleRefresh)
+    }
+  }, [timeframe])
+
+  // Localize labels based on current language and timeframe
+  const formattedChartData = analyticsData.map((item) => {
+    let localizedName = item.name
+
+    if (timeframe === '7D' && item.dayKey) {
+      localizedName = t(item.dayKey) || item.name
+    } else if (timeframe === 'YTD' && item.monthIndex !== undefined) {
+      const monthKeys = [
+        'month_jan', 'month_feb', 'month_mar', 'month_apr',
+        'month_may', 'month_jun', 'month_jul', 'month_aug',
+        'month_sep', 'month_oct', 'month_nov', 'month_dec'
+      ]
+      const k = monthKeys[item.monthIndex]
+      localizedName = t(k) || item.name
+    }
+
+    return {
+      ...item,
+      displayName: localizedName,
+    }
+  })
 
   const timeframes: Array<{ id: '7D' | '30D' | 'YTD'; label: string }> = [
     { id: '7D', label: t('tf_7d') },
@@ -38,7 +89,7 @@ export default function ProductionAnalyticsChart() {
   ]
 
   return (
-    <div className="glass-card rounded-2xl p-5 mb-6">
+    <div className="glass-card rounded-2xl p-5 mb-6 transition-all shadow-md">
       {/* Chart Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
@@ -48,7 +99,13 @@ export default function ProductionAnalyticsChart() {
             </h2>
             <span className="text-[11px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
-              {t('live_output')}
+              {loading ? (
+                <RefreshCw className="w-3 h-3 animate-spin" />
+              ) : (
+                <span>
+                  {formatNumber(totalPeriodVolume)} {t('units')}
+                </span>
+              )}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -56,13 +113,13 @@ export default function ProductionAnalyticsChart() {
           </p>
         </div>
 
-        {/* Timeframe selector */}
+        {/* Timeframe selector buttons */}
         <div className="flex items-center bg-[#0F172A] border border-[#1E293B] p-1 rounded-xl">
           {timeframes.map((item) => (
             <button
               key={item.id}
               onClick={() => setTimeframe(item.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 timeframe === item.id
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                   : 'text-slate-400 hover:text-slate-200'
@@ -75,10 +132,15 @@ export default function ProductionAnalyticsChart() {
       </div>
 
       {/* Chart Area */}
-      <div className="h-[280px] w-full">
+      <div className="h-[280px] w-full relative">
+        {loading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#162032]/40 backdrop-blur-[1px] rounded-xl">
+            <RefreshCw className="w-6 h-6 animate-spin text-blue-400" />
+          </div>
+        )}
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={chartData}
+            data={formattedChartData}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
@@ -88,7 +150,14 @@ export default function ProductionAnalyticsChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#E2E8F0' : '#1E293B'} vertical={false} />
-            <XAxis dataKey="name" stroke={isLight ? '#64748B' : '#64748B'} fontSize={11} tickLine={false} axisLine={false} />
+            <XAxis
+              dataKey="displayName"
+              stroke={isLight ? '#64748B' : '#64748B'}
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              interval={timeframe === '30D' ? 4 : 0}
+            />
             <YAxis
               stroke={isLight ? '#64748B' : '#64748B'}
               fontSize={11}

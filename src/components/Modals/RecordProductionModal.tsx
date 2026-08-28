@@ -69,6 +69,9 @@ export default function RecordProductionModal({
         operator_name: operatorName
       })
 
+      try {
+        window.dispatchEvent(new Event('forge_production_logged'))
+      } catch {}
       onSuccess()
       onClose()
     } catch (err: unknown) {

@@ -64,6 +64,20 @@ export interface DashboardSummary {
   low_stock_alerts: LowStockItem[]
 }
 
+export interface AnalyticsDataPoint {
+  date?: string
+  dayKey?: string
+  monthIndex?: number
+  name: string
+  production: number
+}
+
+export interface DashboardAnalyticsResponse {
+  timeframe: '7D' | '30D' | 'YTD'
+  total_period_production: number
+  data: AnalyticsDataPoint[]
+}
+
 export interface UserItem {
   UserID: number
   Username: string
@@ -262,6 +276,23 @@ export async function getDashboardSummaryApi(): Promise<DashboardSummary> {
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
     throw new Error(errorData.error || 'Gagal mengambil ringkasan dashboard')
+  }
+
+  return res.json()
+}
+
+export async function getDashboardAnalyticsApi(timeframe: '7D' | '30D' | 'YTD' = '7D'): Promise<DashboardAnalyticsResponse> {
+  const res = await fetch(`${API_BASE_URL}/dashboard/analytics?timeframe=${timeframe}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Gagal mengambil data analitik produksi')
   }
 
   return res.json()
