@@ -164,6 +164,7 @@ export default function Home() {
                     alerts={summaryData?.low_stock_alerts}
                     loading={loadingSummary}
                     onRecordProduction={handleOpenProduce}
+                    onViewAll={() => setActiveTab('products')}
                   />
                 </div>
 
