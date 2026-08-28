@@ -243,6 +243,141 @@ button:focus, button:focus-visible {
   background-color: rgba(15, 23, 42, 0.6) !important;
 }
 
+/* ==========================================================================
+   Comprehensive Table & Data Grid Overrides for Light Mode
+   ========================================================================== */
+.light-mode table {
+  color: #0F172A !important;
+}
+
+/* Table Header */
+.light-mode thead,
+.light-mode thead tr,
+.light-mode thead th,
+.light-mode tr.bg-\[\#0B132B\],
+.light-mode tr.bg-\[\#0F172A\] {
+  background-color: #F1F5F9 !important;
+  color: #334155 !important;
+  border-color: #E2E8F0 !important;
+  font-weight: 700 !important;
+}
+
+.light-mode thead th {
+  color: #475569 !important;
+}
+
+/* Table Body Row Separators & Background */
+.light-mode tbody tr {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+
+.light-mode .divide-\[\#1E293B\] > :not([hidden]) ~ :not([hidden]),
+.light-mode table td {
+  border-color: #E2E8F0 !important;
+}
+
+/* Row Hover State in Light Mode (Clean, subtle slate hover - NO dark gray) */
+.light-mode tbody tr:hover,
+.light-mode tr:hover,
+.light-mode .hover\:bg-\[\#1E2D47\]\/40:hover,
+.light-mode .hover\:bg-\[\#1E2D47\]:hover,
+.light-mode .hover\:bg-\[\#162032\]:hover {
+  background-color: #F8FAFC !important;
+}
+
+/* Selected Row Highlight in Light Mode */
+.light-mode tr.bg-blue-600\/10,
+.light-mode tbody tr.bg-blue-600\/10 {
+  background-color: #EFF6FF !important;
+}
+
+/* Table Cell Text Contrast */
+.light-mode table td.font-bold.text-white,
+.light-mode table td .font-bold.text-white,
+.light-mode table td .text-white {
+  color: #0F172A !important;
+}
+
+.light-mode table td.font-mono.text-slate-400,
+.light-mode table td.font-mono.text-slate-500,
+.light-mode table td .font-mono.text-slate-400 {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+.light-mode table td.text-slate-300,
+.light-mode table td.text-slate-200,
+.light-mode table td .text-slate-300,
+.light-mode table td .text-slate-200 {
+  color: #334155 !important;
+}
+
+.light-mode table td.text-slate-400,
+.light-mode table td .text-slate-400 {
+  color: #64748B !important;
+}
+
+/* Inbound / Outbound / Machine Highlight text in Light Mode */
+.light-mode table td .text-emerald-400,
+.light-mode table td.text-emerald-400 {
+  color: #059669 !important;
+  font-weight: 700 !important;
+}
+
+.light-mode table td .text-amber-400,
+.light-mode table td.text-amber-400 {
+  color: #D97706 !important;
+  font-weight: 700 !important;
+}
+
+.light-mode table td .text-blue-400,
+.light-mode table td.text-blue-400 {
+  color: #2563EB !important;
+  font-weight: 700 !important;
+}
+
+/* Action Buttons on Tables in Light Mode */
+.light-mode table button.bg-blue-600\/10,
+.light-mode table .bg-blue-600\/10 {
+  background-color: #EFF6FF !important;
+  color: #2563EB !important;
+  border: 1px solid #BFDBFE !important;
+}
+
+.light-mode table button.bg-blue-600\/10:hover,
+.light-mode table .bg-blue-600\/10:hover {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+.light-mode table button.bg-rose-500\/10,
+.light-mode table .bg-rose-500\/10 {
+  background-color: #FEF2F2 !important;
+  color: #DC2626 !important;
+  border: 1px solid #FECACA !important;
+}
+
+.light-mode table button.bg-rose-500\/10:hover,
+.light-mode table .bg-rose-500\/10:hover {
+  background-color: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+
+/* Table Pagination Bar in Light Mode */
+.light-mode div.bg-\[\#0F172A\].border-t,
+.light-mode div.bg-\[\#0F172A\].p-4.border-t {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #475569 !important;
+}
+
+/* Checkboxes in Tables */
+.light-mode input[type="checkbox"] {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+}
+
 /* Custom Scrollbar in Light Mode */
 .light-mode ::-webkit-scrollbar-track {
   background: #F1F5F9;
