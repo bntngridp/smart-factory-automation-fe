@@ -241,25 +241,17 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* External Provider Divider */}
-            <div className="relative my-6 text-center">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200 dark:border-[#1E293B]"></div>
-              </div>
-              <span className="relative bg-white dark:bg-[#111827] px-3 text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                External Provider
-              </span>
-            </div>
-
             {/* SSO via Microsoft Entra Button */}
-            <button
-              type="button"
-              onClick={handleSSOLogin}
-              className="sso-btn w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-950 border border-slate-300 hover:border-slate-400 shadow-sm dark:bg-[#162032] dark:hover:bg-[#1E293B] dark:border-[#1E293B] dark:hover:border-slate-600 dark:text-slate-200 dark:hover:text-white text-xs font-semibold py-2.5 rounded-xl transition-all cursor-pointer group"
-            >
-              <MicrosoftLogo size={16} className="transition-transform group-hover:scale-110" />
-              <span>SSO via Microsoft Entra</span>
-            </button>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={handleSSOLogin}
+                className="sso-btn w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-950 border border-slate-300 hover:border-slate-400 shadow-sm dark:bg-[#162032] dark:hover:bg-[#1E293B] dark:border-[#1E293B] dark:hover:border-slate-600 dark:text-slate-200 dark:hover:text-white text-xs font-semibold py-2.5 rounded-xl transition-all cursor-pointer group"
+              >
+                <MicrosoftLogo size={16} className="transition-transform group-hover:scale-110" />
+                <span>SSO via Microsoft Entra</span>
+              </button>
+            </div>
           </>
         ) : (
           /* STEP 2: 2FA TOTP CHALLENGE SCREEN */
