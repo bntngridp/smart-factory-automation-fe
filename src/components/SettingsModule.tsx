@@ -972,17 +972,17 @@ export default function SettingsModule() {
                           key={accent.id}
                           type="button"
                           onClick={() => setAccentColor(accent.id as AccentColor)}
-                          className={`p-3 rounded-xl border flex items-center gap-2.5 transition-all outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer shadow-sm ${
+                          className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 transition-all outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer shadow-sm ${
                             isSelected
                               ? `${accent.activeBorder} ${accent.activeBg} ${accent.activeText} ${accent.ring} font-bold`
                               : 'border-[#1E293B] bg-[#162032] text-slate-300 hover:border-slate-400 hover:text-white'
                           }`}
                         >
                           <span
-                            className="w-3.5 h-3.5 rounded-full shrink-0 static-swatch shadow-sm ring-1 ring-black/10"
+                            className="w-3 h-3 rounded-full shrink-0 static-swatch shadow-sm ring-1 ring-black/10"
                             style={{ backgroundColor: accent.hex }}
                           ></span>
-                          <span className="text-xs font-semibold whitespace-nowrap">{accent.label}</span>
+                          <span className="text-xs font-semibold">{accent.label}</span>
                         </button>
                       )
                     })}
