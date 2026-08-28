@@ -2,12 +2,11 @@
 
 import React, { useMemo, useState, useEffect } from 'react'
 import {
-  Clock,
   Plus,
-  Zap,
   Award
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
+import { useTheme } from '@/context/ThemeContext'
 
 interface ShiftProductionGoalCardProps {
   todayOutput: number
@@ -20,8 +19,11 @@ export default function ShiftProductionGoalCard({
   targetQuota: propTargetQuota,
   onRecordProduction
 }: ShiftProductionGoalCardProps) {
+  const { theme } = useTheme()
   const { t, formatNumber } = useLanguage()
   const [configTarget, setConfigTarget] = useState<number | null>(null)
+
+  const isLight = theme === 'light'
 
   // Real-time Shift Detection based on local client hour
   const currentShift = useMemo(() => {
@@ -85,7 +87,6 @@ export default function ShiftProductionGoalCard({
     100
   ) || 0
 
-  const remainingUnits = Math.max(targetQuota - todayOutput, 0)
   const isTargetAchieved = todayOutput >= targetQuota
 
   // Circumference for 40 radius circle = 2 * PI * 40 = 251.2
@@ -93,7 +94,7 @@ export default function ShiftProductionGoalCard({
 
   return (
     <div className="glass-card rounded-2xl p-5 text-center shadow-lg transition-all animate-fade-in">
-      {/* Header with Title & Live Shift Pill */}
+      {/* Header with Title & Live Shift Badge */}
       <div className="flex items-center justify-between gap-2 mb-1">
         <h2 className="text-base font-bold text-white tracking-wide text-left">
           {t('shift_target_title')}
@@ -106,20 +107,20 @@ export default function ShiftProductionGoalCard({
         </span>
       </div>
 
-      <p className="text-xs text-slate-400 mb-5 text-left leading-relaxed">
+      <p className="text-xs text-slate-400 mb-4 text-left leading-relaxed">
         {t('shift_target_subtitle')}
       </p>
 
       {/* Circular Target Progress Gauge */}
-      <div className="relative w-36 h-36 mx-auto my-2 flex items-center justify-center">
+      <div className="relative w-32 h-32 mx-auto my-1 flex items-center justify-center">
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-          {/* Background Track */}
+          {/* Background Track - Theme sensitive */}
           <circle
             cx="50"
             cy="50"
             r="40"
-            stroke="#1E293B"
-            strokeWidth="7"
+            stroke={isLight ? '#E2E8F0' : '#1E293B'}
+            strokeWidth="8"
             fill="transparent"
           />
           {/* Progress Track */}
@@ -128,7 +129,7 @@ export default function ShiftProductionGoalCard({
             cy="50"
             r="40"
             stroke={isTargetAchieved ? '#10B981' : '#3B82F6'}
-            strokeWidth="7"
+            strokeWidth="8"
             strokeDasharray="251.2"
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
@@ -142,52 +143,29 @@ export default function ShiftProductionGoalCard({
           <span className="text-2xl font-black text-white font-mono tracking-tight">
             {formatNumber(completionPercent)}%
           </span>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
             {t('target_achieved')}
           </span>
         </div>
       </div>
 
-      {/* Target Metrics Numbers */}
-      <div className="flex items-center justify-center gap-6 mt-3">
-        <div className="text-center">
-          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+      {/* Clean Metrics Row: Output & Remaining */}
+      <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-[#1E293B] text-xs">
+        <div className="p-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-center">
+          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">
             {t('live_output')}
           </span>
-          <span className="text-base font-extrabold text-emerald-400 font-mono">
-            {formatNumber(todayOutput)} <span className="text-xs font-normal text-slate-400">{t('units')}</span>
+          <span className="text-sm font-bold text-emerald-400 font-mono">
+            {formatNumber(todayOutput)} <span className="text-[11px] font-normal text-slate-400">{t('units')}</span>
           </span>
         </div>
 
-        <div className="w-px h-8 bg-[#1E293B]"></div>
-
-        <div className="text-center">
-          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+        <div className="p-2.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-center">
+          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">
             {t('target_quota')}
           </span>
-          <span className="text-base font-extrabold text-white font-mono">
-            {formatNumber(targetQuota)} <span className="text-xs font-normal text-slate-400">{t('units')}</span>
-          </span>
-        </div>
-      </div>
-
-      {/* Micro Status Indicators Bar */}
-      <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-[#1E293B] text-[11px]">
-        <div className="bg-[#0F172A] p-2.5 rounded-xl border border-[#1E293B] flex items-center justify-between text-left">
-          <div className="flex items-center gap-1.5 text-slate-300">
-            <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span className="font-semibold">{t('line_efficiency')}</span>
-          </div>
-          <span className="font-mono font-bold text-emerald-400">98.4%</span>
-        </div>
-
-        <div className="bg-[#0F172A] p-2.5 rounded-xl border border-[#1E293B] flex items-center justify-between text-left">
-          <div className="flex items-center gap-1.5 text-slate-300">
-            <Clock className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-            <span className="font-semibold">{t('remaining_target')}</span>
-          </div>
-          <span className="font-mono font-bold text-white">
-            {formatNumber(remainingUnits)}
+          <span className="text-sm font-bold text-white font-mono">
+            {formatNumber(targetQuota)} <span className="text-[11px] font-normal text-slate-400">{t('units')}</span>
           </span>
         </div>
       </div>
@@ -197,7 +175,7 @@ export default function ShiftProductionGoalCard({
         <button
           type="button"
           onClick={onRecordProduction}
-          className="w-full mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+          className="w-full mt-3.5 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
         >
           {isTargetAchieved ? (
             <Award className="w-3.5 h-3.5" />
