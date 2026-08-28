@@ -1192,7 +1192,7 @@ export default function SettingsModule() {
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all text-xs disabled:opacity-50"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all text-xs disabled:opacity-50 cursor-pointer"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span>{passwordLoading ? 'Memperbarui...' : t('update_password')}</span>
@@ -1893,18 +1893,18 @@ export default function SettingsModule() {
       {/* 2FA DISABLE CONFIRMATION MODAL */}
       {isDisable2FAModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+          <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative">
             <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
-              <div className="flex items-center gap-2.5 text-rose-400">
-                <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
-                  <ShieldAlert className="w-5 h-5" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
+                  <ShieldAlert className="w-4 h-4 text-rose-500" />
                 </div>
-                <h3 className="text-sm font-bold text-white">{t('two_factor_disable_btn')}</h3>
+                <h3 className="text-base font-bold text-white">{t('two_factor_disable_btn')}</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsDisable2FAModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#162032] transition-colors"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#162032] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1931,22 +1931,22 @@ export default function SettingsModule() {
                   placeholder="••••••••••••"
                   value={disablePasswordInput}
                   onChange={(e) => setDisablePasswordInput(e.target.value)}
-                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-rose-500"
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#1E293B]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1E293B]">
                 <button
                   type="button"
                   onClick={() => setIsDisable2FAModalOpen(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer"
+                  className="px-4 py-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer text-xs font-semibold"
                 >
                   {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={disableLoading || !disablePasswordInput}
-                  className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl shadow-lg shadow-rose-600/20 transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer text-xs"
                 >
                   {disableLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldAlert className="w-3.5 h-3.5" />}
                   <span>{disableLoading ? 'Memproses...' : 'Konfirmasi Nonaktifkan'}</span>
@@ -1960,13 +1960,13 @@ export default function SettingsModule() {
       {/* REVOKE SESSIONS CONFIRMATION MODAL */}
       {isRevokeConfirmModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl relative">
+          <div className="bg-[#162032] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative">
             <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
-              <div className="flex items-center gap-2.5 text-rose-400">
-                <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
-                  <ShieldAlert className="w-5 h-5" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
+                  <ShieldAlert className="w-4 h-4 text-rose-500" />
                 </div>
-                <h3 className="text-sm font-bold text-white">{t('revoke_other_sessions')}</h3>
+                <h3 className="text-base font-bold text-white">{t('revoke_other_sessions')}</h3>
               </div>
               <button
                 type="button"
@@ -1977,8 +1977,8 @@ export default function SettingsModule() {
               </button>
             </div>
 
-            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs space-y-2">
-              <p className="text-rose-300 font-semibold leading-relaxed">
+            <div className="space-y-1.5 text-xs">
+              <p className="text-slate-300 font-semibold leading-relaxed">
                 {t('confirm_revoke_sessions')}
               </p>
               <p className="text-[11px] text-slate-400">
@@ -1986,7 +1986,7 @@ export default function SettingsModule() {
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#1E293B]">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1E293B]">
               <button
                 type="button"
                 onClick={() => setIsRevokeConfirmModalOpen(false)}
@@ -1997,7 +1997,7 @@ export default function SettingsModule() {
               <button
                 type="button"
                 onClick={handleConfirmRevokeSessions}
-                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-lg shadow-rose-600/20 transition-all cursor-pointer"
+                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer"
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
                 <span>{t('revoke_other_sessions')}</span>

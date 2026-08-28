@@ -64,11 +64,11 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
 
         {/* Modal Header */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 mb-3 shadow-lg shadow-rose-500/10">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 mb-3 shadow-sm">
             <LogOut className="w-6 h-6" />
           </div>
 
-          <h3 className="text-xl font-extrabold text-white tracking-tight">
+          <h3 className="text-lg font-extrabold text-white tracking-tight">
             {t('confirm_sign_out')}
           </h3>
           <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
@@ -94,12 +94,12 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold bg-[#0F172A] border border-[#1E293B] hover:bg-[#1E2D47] transition-all text-xs"
+            className="flex-1 px-4 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold bg-[#0F172A] border border-[#1E293B] hover:bg-[#1E2D47] transition-all text-xs cursor-pointer"
           >
             {t('cancel')}
           </button>
@@ -107,7 +107,7 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
             type="button"
             onClick={handleConfirmLogout}
             disabled={loading}
-            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-rose-500/20 transition-all text-xs disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all text-xs disabled:opacity-50 cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>{loading ? t('signing_out') : t('yes_sign_out')}</span>

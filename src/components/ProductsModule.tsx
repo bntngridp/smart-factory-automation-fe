@@ -9,7 +9,6 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
-  ShieldAlert,
   X,
   Check,
   Upload,
@@ -370,25 +369,25 @@ export default function ProductsModule({
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
-                <ShieldAlert className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                <Trash2 className="w-5 h-5 text-rose-500" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white leading-tight">{t('delete')} {t('products')}</h3>
-                <p className="text-xs text-slate-400 font-mono">PRD-{formatNumber(productToDelete.ProductID)}</p>
+                <h3 className="text-base font-bold text-white leading-tight">{t('delete')} {t('products')}</h3>
+                <p className="text-xs text-slate-400 font-mono mt-0.5">PRD-{formatNumber(productToDelete.ProductID)}</p>
               </div>
             </div>
 
-            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs space-y-2 mb-5">
-              <p className="text-rose-300">
-                {t('confirm_delete_product')} <strong className="text-white underline">&ldquo;{productToDelete.ProductName}&rdquo;</strong>?
+            <div className="space-y-1.5 mb-5 text-xs">
+              <p className="text-slate-300 leading-relaxed">
+                {t('confirm_delete_product')} <strong className="text-white font-bold">&ldquo;{productToDelete.ProductName}&rdquo;</strong>?
               </p>
               <p className="text-[11px] text-slate-400">
                 {t('delete_warning')}
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1E293B]">
               <button
                 type="button"
                 onClick={() => setProductToDelete(null)}
@@ -400,7 +399,7 @@ export default function ProductsModule({
                 type="button"
                 disabled={deleting}
                 onClick={handleConfirmDelete}
-                className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-rose-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>{deleting ? '...' : t('delete')}</span>

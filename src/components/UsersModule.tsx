@@ -14,8 +14,7 @@ import {
   Check,
   AlertCircle,
   Trash2,
-  UserCog,
-  ShieldAlert
+  UserCog
 } from 'lucide-react'
 import {
   getUsersApi,
@@ -525,12 +524,12 @@ export default function UsersModule() {
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
                 <UserCog className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white leading-tight">{t('manage_user')}</h3>
-                <p className="text-xs text-slate-400 font-mono">USR-{formatNumber(selectedUser.UserID)} • {selectedUser.Username}</p>
+                <h3 className="text-base font-bold text-white leading-tight">{t('manage_user')}</h3>
+                <p className="text-xs text-slate-400 font-mono mt-0.5">USR-{formatNumber(selectedUser.UserID)} • {selectedUser.Username}</p>
               </div>
             </div>
 
@@ -549,11 +548,11 @@ export default function UsersModule() {
                   </select>
                 </div>
 
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#1E293B]">
+                <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#1E293B]">
                   <button
                     type="button"
                     onClick={() => setDeleteConfirmOpen(true)}
-                    className="flex items-center gap-1.5 text-rose-400 hover:text-rose-300 px-3 py-2 rounded-xl hover:bg-rose-500/10 border border-rose-500/20 transition-all font-semibold cursor-pointer"
+                    className="flex items-center gap-1.5 text-rose-500 hover:text-rose-400 px-3 py-2 rounded-xl hover:bg-rose-500/10 transition-all font-semibold cursor-pointer text-xs"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>{t('delete_user')}</span>
@@ -563,14 +562,14 @@ export default function UsersModule() {
                     <button
                       type="button"
                       onClick={() => setSelectedUser(null)}
-                      className="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer text-xs"
                     >
                       {t('cancel')}
                     </button>
                     <button
                       type="submit"
                       disabled={manageSubmitting}
-                      className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                      className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer text-xs"
                     >
                       <Check className="w-4 h-4" />
                       <span>{manageSubmitting ? 'Saving...' : t('save_preferences')}</span>
@@ -579,22 +578,22 @@ export default function UsersModule() {
                 </div>
               </form>
             ) : (
-              <div className="space-y-4 text-xs animate-fade-in">
-                <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 flex items-start gap-3">
-                  <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-sm text-white mb-1">{t('delete_user')}</h4>
-                    <p className="text-xs text-rose-300">
-                      {t('confirm_delete_user')} <strong className="text-white underline">&ldquo;{selectedUser.Username}&rdquo;</strong>?
-                    </p>
-                  </div>
+              <div className="space-y-4 text-xs animate-fade-in pt-1">
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-sm text-white">{t('delete_user')}</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {t('confirm_delete_user')} <strong className="text-white font-bold">&ldquo;{selectedUser.Username}&rdquo;</strong>?
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    Aksi ini bersifat permanen dan tidak dapat dibatalkan.
+                  </p>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#1E293B]">
                   <button
                     type="button"
                     onClick={() => setDeleteConfirmOpen(false)}
-                    className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer text-xs"
                   >
                     {t('cancel')}
                   </button>
@@ -602,7 +601,7 @@ export default function UsersModule() {
                     type="button"
                     disabled={manageSubmitting}
                     onClick={handleDeleteUser}
-                    className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold px-5 py-2 rounded-xl shadow-lg shadow-rose-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                    className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer text-xs"
                   >
                     <Trash2 className="w-4 h-4" />
                     <span>{manageSubmitting ? 'Deleting...' : t('delete_user')}</span>
