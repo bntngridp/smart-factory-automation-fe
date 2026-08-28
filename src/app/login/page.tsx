@@ -10,7 +10,9 @@ import {
   CheckCircle2,
   Smartphone,
   KeyRound,
-  ChevronLeft
+  ChevronLeft,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { MicrosoftLogo } from '@/components/MicrosoftLogo'
@@ -19,6 +21,7 @@ export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('adminsatu@forge.inc')
   const [password, setPassword] = useState('password123')
+  const [showPassword, setShowPassword] = useState(false)
   const [maintainSession, setMaintainSession] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -207,13 +210,26 @@ export default function LoginPage() {
                 <div className="relative">
                   <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer outline-none focus:outline-none"
+                    title={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                    aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
               </div>
 
