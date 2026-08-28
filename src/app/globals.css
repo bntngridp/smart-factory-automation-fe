@@ -146,6 +146,23 @@ html.light-mode body,
   border-color: #BFDBFE !important;
 }
 
+.light-mode .sso-btn,
+.light-mode button.sso-btn,
+.light-mode .bg-\[\#0D131F\] {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  color: #1E293B !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-mode .sso-btn:hover,
+.light-mode button.sso-btn:hover,
+.light-mode .bg-\[\#0D131F\]:hover {
+  background-color: #F8FAFC !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+
 .light-mode .hover\:bg-\[\#162032\]:hover,
 .light-mode .hover\:bg-\[\#1E2D47\]:hover,
 .light-mode .hover\:bg-\[\#0F172A\]:hover {
