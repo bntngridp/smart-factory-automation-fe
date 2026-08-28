@@ -6,7 +6,7 @@ import Header from '@/components/Header'
 import SummaryCards from '@/components/SummaryCards'
 import ProductionAnalyticsChart from '@/components/ProductionAnalyticsChart'
 import QuickActions from '@/components/QuickActions'
-import SystemStatusCard from '@/components/SystemStatusCard'
+import ShiftProductionGoalCard from '@/components/ShiftProductionGoalCard'
 import LowStockAlertsTable from '@/components/LowStockAlertsTable'
 import ProductsModule from '@/components/ProductsModule'
 import InventoryModule from '@/components/InventoryModule'
@@ -176,8 +176,11 @@ export default function Home() {
                     onOpenStockOut={() => setIsStockOutOpen(true)}
                   />
 
-                  {/* System Infrastructure Status */}
-                  <SystemStatusCard />
+                  {/* Daily Shift Target & Progress Goal */}
+                  <ShiftProductionGoalCard
+                    todayOutput={summaryData?.total_production_today ?? 0}
+                    onRecordProduction={() => handleOpenProduce()}
+                  />
                 </div>
               </div>
             </div>

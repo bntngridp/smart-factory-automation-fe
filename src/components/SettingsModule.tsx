@@ -37,6 +37,7 @@ import {
 } from 'lucide-react'
 import { useLanguage, Language } from '@/context/LanguageContext'
 import { useTheme, AccentColor } from '@/context/ThemeContext'
+import SystemStatusCard from '@/components/SystemStatusCard'
 import {
   getAuthMeApi,
   changePasswordApi,
@@ -1497,6 +1498,9 @@ export default function SettingsModule() {
                     <span className="px-2 py-0.5 bg-emerald-500/20 rounded text-[10px] font-bold">200 OK</span>
                   </div>
                 )}
+
+                {/* System Infrastructure Telemetry Card */}
+                <SystemStatusCard className="mb-0" />
 
                 {/* Live Telemetry Status Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

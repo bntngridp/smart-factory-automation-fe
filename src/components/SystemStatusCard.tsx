@@ -4,11 +4,15 @@ import React from 'react'
 import { CheckCircle2, Cpu, Database, Server } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 
-export default function SystemStatusCard() {
+interface SystemStatusCardProps {
+  className?: string
+}
+
+export default function SystemStatusCard({ className = '' }: SystemStatusCardProps) {
   const { t } = useLanguage()
 
   return (
-    <div className="glass-card rounded-2xl p-5 mb-6 text-center">
+    <div className={`glass-card rounded-2xl p-5 mb-6 text-center shadow-lg ${className}`}>
       <h2 className="text-base font-bold text-white tracking-wide mb-1 text-left">
         {t('system_status')}
       </h2>
