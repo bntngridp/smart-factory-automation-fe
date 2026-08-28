@@ -52,6 +52,9 @@ button:focus, button:focus-visible {
 /* ==========================================================================
    Comprehensive Light Mode Overrides (Systemic Fix for All Components)
    ========================================================================== */
+:root.light-mode,
+html.light-mode,
+html.light-mode body,
 .light-mode {
   --bg-main: #F8FAFC;
   --bg-sidebar: #FFFFFF;

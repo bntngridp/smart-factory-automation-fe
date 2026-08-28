@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useSyncExternalStore } from 'react'
+import React, { createContext, useContext, useEffect, useSyncExternalStore } from 'react'
 
 export type Theme = 'dark' | 'light'
 export type UiDensity = 'comfortable' | 'compact'
@@ -102,6 +102,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       window.dispatchEvent(new Event('forge_theme_change'))
     } catch {}
   }
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const root = document.documentElement
+    if (theme === 'light') {
+      root.classList.add('light-mode')
+      root.classList.remove('dark-mode')
+    } else {
+      root.classList.add('dark-mode')
+      root.classList.remove('light-mode')
+    }
+
+    if (highContrast) {
+      root.classList.add('high-contrast')
+    } else {
+      root.classList.remove('high-contrast')
+    }
+
+    if (uiDensity === 'compact') {
+      root.classList.add('density-compact')
+    } else {
+      root.classList.remove('density-compact')
+    }
+
+    const accents: AccentColor[] = ['blue', 'emerald', 'amber', 'violet']
+    accents.forEach((a) => root.classList.remove(`accent-${a}`))
+    root.classList.add(`accent-${accentColor}`)
+  }, [theme, highContrast, uiDensity, accentColor])
 
   const rootClassNames = [
     theme === 'light' ? 'light-mode' : 'dark-mode',
