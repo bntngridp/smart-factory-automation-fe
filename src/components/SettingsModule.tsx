@@ -1454,28 +1454,32 @@ export default function SettingsModule() {
               <div className="space-y-6 animate-fade-in max-w-3xl">
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">{t('system_infra')}</h3>
-                  <p className="text-slate-400 mt-0.5">{t('system_infra_desc')}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{t('system_infra_desc')}</p>
                 </div>
 
                 {systemConfigToast && (
-                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 animate-fade-in shadow-lg">
+                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center gap-2 animate-fade-in shadow-sm">
                     <Check className="w-4 h-4 shrink-0" />
                     <span>{t('system_config_saved')}</span>
                   </div>
                 )}
 
                 {backupData && (
-                  <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs flex items-center justify-between animate-fade-in shadow-lg">
+                  <div className="p-3.5 bg-[#0F172A] border border-[#1E293B] rounded-xl text-slate-200 text-xs flex items-center justify-between animate-fade-in shadow-sm">
                     <div className="flex items-center gap-2.5">
-                      <Database className="w-4 h-4 shrink-0 text-emerald-400" />
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                        <Database className="w-4 h-4 text-emerald-500" />
+                      </div>
                       <div>
-                        <span className="font-bold block">{backupData.message}</span>
+                        <span className="font-bold text-white block">{backupData.message}</span>
                         <span className="text-[10px] text-slate-400 font-mono">
                           ID: {backupData.backupId} • Size: {backupData.snapshotSize}
                         </span>
                       </div>
                     </div>
-                    <span className="px-2 py-0.5 bg-emerald-500/20 rounded text-[10px] font-bold">200 OK</span>
+                    <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-[10px] font-bold">
+                      200 OK
+                    </span>
                   </div>
                 )}
 
@@ -1484,30 +1488,40 @@ export default function SettingsModule() {
 
                 {/* Live Telemetry Status Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Go / Next API Runtime</span>
-                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded flex items-center gap-1">
-                        <Activity className="w-3 h-3" />
-                        {loadingStatus ? 'Checking...' : 'Online (200 OK)'}
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                          <Activity className="w-3.5 h-3.5 text-blue-500" />
+                        </div>
+                        <span className="text-[11px] font-bold text-slate-300">Go / Next API Runtime</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-500">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>{loadingStatus ? 'Checking...' : 'Online (200 OK)'}</span>
                       </span>
                     </div>
-                    <div className="font-mono text-xs text-white font-bold">{backendUrl}</div>
-                    <span className="text-[10px] text-slate-400 block mt-1 font-mono">
+                    <div className="font-mono text-xs text-white font-bold pl-0.5">{backendUrl}</div>
+                    <span className="text-[10px] text-slate-400 block font-mono pl-0.5">
                       {systemStatus?.backendRuntime || 'Next.js / Node.js Engine (Port 6060)'}
                     </span>
                   </div>
 
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">MSSQL 2022 Cluster</span>
-                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded flex items-center gap-1">
-                        <Database className="w-3 h-3" />
-                        {loadingStatus ? '...' : systemStatus?.database || 'Connected'}
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-4 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                          <Database className="w-3.5 h-3.5 text-blue-500" />
+                        </div>
+                        <span className="text-[11px] font-bold text-slate-300">MSSQL 2022 Cluster</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-500">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>{loadingStatus ? '...' : systemStatus?.database || 'Connected'}</span>
                       </span>
                     </div>
-                    <div className="font-mono text-xs text-white font-bold">{mssqlHost}</div>
-                    <span className="text-[10px] text-slate-400 block mt-1 font-mono">
+                    <div className="font-mono text-xs text-white font-bold pl-0.5">{mssqlHost}</div>
+                    <span className="text-[10px] text-slate-400 block font-mono pl-0.5">
                       Latency: {systemStatus?.latencyMs ? `${systemStatus.latencyMs}ms` : '17ms'} • Catalog: {systemStatus?.databaseCatalog || 'FactoryDB'}
                     </span>
                   </div>
@@ -1515,10 +1529,12 @@ export default function SettingsModule() {
 
                 <form onSubmit={handleSaveSystemConfig} className="space-y-5">
                   {/* SECTION 1: Production Shift Targets & OEE */}
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-[#1E293B] pb-3">
-                      <Gauge className="w-4 h-4 text-blue-400" />
-                      <h4 className="font-bold text-white text-xs">{t('shift_output_targets')}</h4>
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 shadow-sm">
+                    <div className="flex items-center gap-2.5 border-b border-[#1E293B] pb-3">
+                      <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                        <Gauge className="w-3.5 h-3.5 text-slate-400" />
+                      </div>
+                      <h4 className="font-bold text-white text-xs tracking-tight">{t('shift_output_targets')}</h4>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1532,7 +1548,7 @@ export default function SettingsModule() {
                             min="1"
                             value={shift1Target}
                             onChange={(e) => setShift1Target(Number(e.target.value))}
-                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12 transition-colors"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                             {t('pcs')}
@@ -1550,7 +1566,7 @@ export default function SettingsModule() {
                             min="1"
                             value={shift2Target}
                             onChange={(e) => setShift2Target(Number(e.target.value))}
-                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12 transition-colors"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                             {t('pcs')}
@@ -1568,7 +1584,7 @@ export default function SettingsModule() {
                             min="1"
                             value={shift3Target}
                             onChange={(e) => setShift3Target(Number(e.target.value))}
-                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12 transition-colors"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                             {t('pcs')}
@@ -1579,7 +1595,7 @@ export default function SettingsModule() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                       <div>
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center justify-between mb-1.5">
                           <label className="text-[11px] text-slate-300 font-semibold">
                             {t('oee_standard_target')}
                           </label>
@@ -1605,7 +1621,7 @@ export default function SettingsModule() {
                             min="1"
                             value={globalSafetyStock}
                             onChange={(e) => setGlobalSafetyStock(Number(e.target.value))}
-                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12"
+                            className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-blue-500 pr-12 transition-colors"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                             {t('pcs')}
@@ -1616,39 +1632,41 @@ export default function SettingsModule() {
                   </div>
 
                   {/* SECTION 2: Active Manufacturing Lines */}
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 border-b border-[#1E293B] pb-3">
-                      <Layers className="w-4 h-4 text-purple-400" />
-                      <h4 className="font-bold text-white text-xs">{t('factory_production_lines')}</h4>
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-3 shadow-sm">
+                    <div className="flex items-center gap-2.5 border-b border-[#1E293B] pb-3">
+                      <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                        <Layers className="w-3.5 h-3.5 text-slate-400" />
+                      </div>
+                      <h4 className="font-bold text-white text-xs tracking-tight">{t('factory_production_lines')}</h4>
                     </div>
 
                     <div className="space-y-2 text-xs">
                       <div className="bg-[#162032] border border-[#1E293B] p-3 rounded-xl flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                           <span className="font-semibold text-slate-200">{t('line_1_name')}</span>
                         </div>
-                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                        <span className="text-[11px] font-medium text-emerald-400">
                           Running (High Precision)
                         </span>
                       </div>
 
                       <div className="bg-[#162032] border border-[#1E293B] p-3 rounded-xl flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                           <span className="font-semibold text-slate-200">{t('line_2_name')}</span>
                         </div>
-                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                        <span className="text-[11px] font-medium text-emerald-400">
                           Running (Automated)
                         </span>
                       </div>
 
                       <div className="bg-[#162032] border border-[#1E293B] p-3 rounded-xl flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                           <span className="font-semibold text-slate-200">{t('line_3_name')}</span>
                         </div>
-                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">
+                        <span className="text-[11px] font-medium text-emerald-400">
                           Running (QC Checked)
                         </span>
                       </div>
@@ -1656,10 +1674,12 @@ export default function SettingsModule() {
                   </div>
 
                   {/* SECTION 3: Database Retention & Telemetry Polling */}
-                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-[#1E293B] pb-3">
-                      <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
-                      <h4 className="font-bold text-white text-xs">{t('backup_retention_policy')}</h4>
+                  <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 space-y-4 shadow-sm">
+                    <div className="flex items-center gap-2.5 border-b border-[#1E293B] pb-3">
+                      <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+                      </div>
+                      <h4 className="font-bold text-white text-xs tracking-tight">{t('backup_retention_policy')}</h4>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -1668,7 +1688,7 @@ export default function SettingsModule() {
                         <select
                           value={backupSchedule}
                           onChange={(e) => setBackupSchedule(e.target.value)}
-                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
                         >
                           <option value="shift">{t('backup_shift_change')}</option>
                           <option value="daily">{t('backup_daily_midnight')}</option>
@@ -1681,7 +1701,7 @@ export default function SettingsModule() {
                         <select
                           value={autoSyncInterval}
                           onChange={(e) => setAutoSyncInterval(e.target.value)}
-                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
                         >
                           <option value="5s">5 Detik / 5 Seconds</option>
                           <option value="15s">15 Detik / 15 Seconds (Recommended)</option>
@@ -1695,7 +1715,7 @@ export default function SettingsModule() {
                         <select
                           value={exportFormat}
                           onChange={(e) => setExportFormat(e.target.value)}
-                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                          className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-slate-200 text-xs focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
                         >
                           <option value="CSV">CSV (Raw Tabular)</option>
                           <option value="XLSX">Excel Spreadsheet (.xlsx)</option>
@@ -1711,7 +1731,7 @@ export default function SettingsModule() {
                         disabled={backupLoading}
                         className="flex items-center gap-2 bg-[#162032] hover:bg-[#1E2D47] text-slate-300 hover:text-white font-semibold px-4 py-2.5 rounded-xl border border-[#1E293B] transition-all text-xs disabled:opacity-50 cursor-pointer"
                       >
-                        {backupLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-400" /> : <HardDrive className="w-3.5 h-3.5 text-blue-400" />}
+                        {backupLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-slate-400" /> : <HardDrive className="w-3.5 h-3.5 text-slate-400" />}
                         <span>{backupLoading ? 'Creating Backup...' : t('trigger_backup')}</span>
                       </button>
 
