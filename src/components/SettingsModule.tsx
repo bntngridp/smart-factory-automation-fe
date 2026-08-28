@@ -1217,26 +1217,17 @@ export default function SettingsModule() {
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                     <div className="flex items-start gap-4">
-                      <div
-                        className={`p-3 rounded-xl border shrink-0 ${
-                          twoFactorEnabled
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                            : 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-                        }`}
-                      >
-                        {twoFactorEnabled ? <ShieldCheck className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50 shrink-0">
+                        {twoFactorEnabled ? <ShieldCheck className="w-5 h-5 text-emerald-500" /> : <Smartphone className="w-5 h-5 text-slate-400" />}
                       </div>
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap items-center gap-2.5">
-                          <h4 className="font-bold text-white text-sm tracking-tight">{t('two_factor_auth')}</h4>
-                          <span className="inline-flex items-center gap-1.5 text-xs font-medium">
-                            <span className={`w-1.5 h-1.5 rounded-full ${twoFactorEnabled ? 'bg-emerald-500' : 'bg-slate-500'} shrink-0`}></span>
-                            <span className={twoFactorEnabled ? 'text-emerald-500' : 'text-slate-400'}>
-                              {twoFactorEnabled ? t('two_factor_status_active') : t('two_factor_status_inactive')}
-                            </span>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <h4 className="font-bold text-white text-sm tracking-tight">{t('two_factor_auth')}</h4>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+                          <span className={`w-1.5 h-1.5 rounded-full ${twoFactorEnabled ? 'bg-emerald-500' : 'bg-slate-500'} shrink-0`}></span>
+                          <span className={twoFactorEnabled ? 'text-emerald-500' : 'text-slate-400'}>
+                            {twoFactorEnabled ? t('two_factor_status_active') : t('two_factor_status_inactive')}
                           </span>
-                        </div>
-                        <p className="text-xs text-slate-400 leading-relaxed max-w-xl">{t('two_factor_desc')}</p>
+                        </span>
                       </div>
                     </div>
 
@@ -1245,7 +1236,7 @@ export default function SettingsModule() {
                         <button
                           type="button"
                           onClick={handleOpenDisable2FA}
-                          className="px-4 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer outline-none focus:outline-none whitespace-nowrap"
+                          className="px-4 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer outline-none focus:outline-none whitespace-nowrap"
                         >
                           {t('two_factor_disable_btn')}
                         </button>
@@ -1254,7 +1245,7 @@ export default function SettingsModule() {
                           type="button"
                           disabled={twoFASetupLoading}
                           onClick={handleOpen2FASetup}
-                          className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-lg shadow-purple-600/20 transition-all disabled:opacity-50 cursor-pointer outline-none focus:outline-none whitespace-nowrap"
+                          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow-sm transition-all disabled:opacity-50 cursor-pointer outline-none focus:outline-none whitespace-nowrap"
                         >
                           {twoFASetupLoading ? (
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1747,8 +1738,8 @@ export default function SettingsModule() {
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                  <ShieldCheck className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50 shrink-0">
+                  <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white tracking-tight">{t('two_factor_modal_title')}</h3>
@@ -1776,7 +1767,7 @@ export default function SettingsModule() {
               {/* STEP 1: SCAN QR CODE */}
               <div className="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 space-y-3">
                 <div className="flex items-center gap-2 font-bold text-white text-xs">
-                  <QrCode className="w-4 h-4 text-purple-400" />
+                  <QrCode className="w-4 h-4 text-blue-500" />
                   <span>{t('two_factor_step_1')}</span>
                 </div>
                 <p className="text-[11px] text-slate-400">{t('two_factor_step_1_desc')}</p>
@@ -1797,7 +1788,7 @@ export default function SettingsModule() {
                     {t('two_factor_manual_key')}
                   </label>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-xs font-mono text-purple-300 tracking-wider select-all overflow-x-auto">
+                    <div className="flex-1 bg-[#162032] border border-[#1E293B] rounded-xl px-3 py-2 text-xs font-mono text-slate-200 tracking-wider select-all overflow-x-auto">
                       {twoFASetupData.secret}
                     </div>
                     <button
@@ -1856,7 +1847,7 @@ export default function SettingsModule() {
                     placeholder="123456"
                     value={twoFAInputCode}
                     onChange={(e) => setTwoFAInputCode(e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#162032] border border-[#1E293B] rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest text-white placeholder-slate-600 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -1871,7 +1862,7 @@ export default function SettingsModule() {
                   <button
                     type="submit"
                     disabled={twoFAVerifying || twoFAInputCode.length !== 6}
-                    className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-purple-600/20 transition-all text-xs disabled:opacity-50 cursor-pointer"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all text-xs disabled:opacity-50 cursor-pointer"
                   >
                     {twoFAVerifying ? (
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
