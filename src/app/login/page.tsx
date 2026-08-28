@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Lock,
@@ -27,6 +27,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
+
+  // Check URL query parameters for SSO errors / callbacks
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const errorParam = params.get('error')
+      if (errorParam) {
+        setError(decodeURIComponent(errorParam))
+      }
+    }
+  }, [])
 
   // 2FA Challenge States
   const [requires2FA, setRequires2FA] = useState(false)
@@ -201,8 +212,33 @@ export default function LoginPage() {
     setSuccessMsg(null)
   }
 
-  const handleSSOLogin = () => {
-    alert('Redirecting to Microsoft Entra ID SSO Identity Provider...')
+  const handleSSOLogin = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
+      const res = await fetch(`${apiBase}/api/auth/microsoft/login?format=json`)
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Gagal memulai autentikasi Microsoft Entra ID')
+      }
+
+      if (!data.isConfigured) {
+        setError(
+          'Kredensial Microsoft Entra ID (MICROSOFT_CLIENT_ID & MICROSOFT_CLIENT_SECRET) belum diisi di backend (.env). Silakan masukkan Application ID Anda di Azure Portal.'
+        )
+        setLoading(false)
+        return
+      }
+
+      // Redirect browser ke Microsoft Login Authorization URL
+      window.location.href = data.url
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Server autentikasi tidak dapat dijangkau'
+      setError(msg)
+      setLoading(false)
+    }
   }
 
   return (

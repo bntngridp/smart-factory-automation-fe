@@ -55,6 +55,24 @@ export default function Home() {
   }
 
   useEffect(() => {
+    // Check if redirected from Microsoft SSO
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const token = params.get('token')
+      const sso = params.get('sso')
+      const username = params.get('username')
+      const role = params.get('role')
+
+      if (token) {
+        localStorage.setItem('forge_token', token)
+        if (username) {
+          localStorage.setItem('forge_user', JSON.stringify({ Username: username, Role: role || 'operator' }))
+        }
+        // Clean URL params cleanly
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+    }
+
     let ignore = false
     const load = async () => {
       try {
