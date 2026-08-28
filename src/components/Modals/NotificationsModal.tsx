@@ -144,8 +144,8 @@ export default function NotificationsModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between gap-4 pb-4 border-b border-[#1E293B]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 relative">
-              <Bell className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50 relative shrink-0">
+              <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-600 rounded-full border-2 border-white dark:border-[#162032]"></span>
               )}
@@ -280,23 +280,17 @@ export default function NotificationsModal({
                 <div className="flex items-start gap-3">
                   {/* Icon Indicator */}
                   <div className="mt-0.5 shrink-0">
-                    {item.type === 'critical' ? (
-                      <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500">
-                        <AlertTriangle className="w-4 h-4" />
-                      </div>
-                    ) : item.type === 'warning' ? (
-                      <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-500">
-                        <AlertTriangle className="w-4 h-4" />
-                      </div>
-                    ) : item.type === 'success' ? (
-                      <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                    ) : (
-                      <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-500">
-                        <Info className="w-4 h-4" />
-                      </div>
-                    )}
+                    <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700/50 shrink-0">
+                      {item.type === 'critical' ? (
+                        <AlertTriangle className="w-4 h-4 text-rose-500" />
+                      ) : item.type === 'warning' ? (
+                        <AlertTriangle className="w-4 h-4 text-amber-500" />
+                      ) : item.type === 'success' ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      ) : (
+                        <Info className="w-4 h-4 text-blue-500" />
+                      )}
+                    </div>
                   </div>
 
                   {/* Body Content */}

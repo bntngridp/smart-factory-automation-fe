@@ -46,13 +46,13 @@ export default function SystemStatusCard({ className = '' }: SystemStatusCardPro
         </svg>
 
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-full shadow-lg shadow-emerald-500/20 animate-pulse">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+          <div className="p-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 rounded-full shadow-sm">
+            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
           </div>
         </div>
       </div>
 
-      <h3 className="text-sm font-bold text-emerald-400 mt-3">
+      <h3 className="text-sm font-bold text-white mt-3">
         {t('all_systems_nominal')}
       </h3>
       <p className="text-[11px] text-slate-400 mt-0.5">
@@ -62,19 +62,19 @@ export default function SystemStatusCard({ className = '' }: SystemStatusCardPro
       {/* Micro Status Badges */}
       <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-[#1E293B] text-[10px]">
         <div className="bg-[#0F172A] p-2 rounded-lg border border-[#1E293B] flex flex-col items-center gap-1">
-          <Database className="w-3.5 h-3.5 text-blue-400" />
+          <Database className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-300 font-semibold">MSSQL DB</span>
-          <span className="text-emerald-400">{t('online')}</span>
+          <span className="text-emerald-500 font-medium">● {t('online')}</span>
         </div>
         <div className="bg-[#0F172A] p-2 rounded-lg border border-[#1E293B] flex flex-col items-center gap-1">
-          <Server className="w-3.5 h-3.5 text-emerald-400" />
+          <Server className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-300 font-semibold">API Gateway</span>
-          <span className="text-emerald-400">{t('online')}</span>
+          <span className="text-emerald-500 font-medium">● {t('online')}</span>
         </div>
         <div className="bg-[#0F172A] p-2 rounded-lg border border-[#1E293B] flex flex-col items-center gap-1">
-          <Cpu className="w-3.5 h-3.5 text-purple-400" />
+          <Cpu className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-300 font-semibold">Prisma ORM</span>
-          <span className="text-emerald-400">{t('synced')}</span>
+          <span className="text-emerald-500 font-medium">● {t('synced')}</span>
         </div>
       </div>
     </div>

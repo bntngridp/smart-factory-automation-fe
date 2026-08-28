@@ -163,7 +163,7 @@ export default function ProductionLogsModule({
       {/* Top Section: Inline "+ New Entry" Form Card */}
       <div className="glass-card rounded-2xl p-6 border border-[#1E293B]">
         <div className="flex items-center gap-2 mb-5">
-          <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+          <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700/50 shrink-0">
             <Plus className="w-4 h-4" />
           </div>
           <h2 className="text-base font-bold text-white tracking-wide">
