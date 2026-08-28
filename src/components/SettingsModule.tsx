@@ -1003,19 +1003,19 @@ export default function SettingsModule() {
                 {/* Profile Header Card with Avatar */}
                 <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 max-w-xl">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-lg font-extrabold shadow-lg shadow-blue-500/20">
+                    <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-white text-xl font-black shadow-sm uppercase">
                       {fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'AD'}
                     </div>
                     <div>
-                      <h4 className="font-bold text-white text-sm">{fullName}</h4>
-                      <p className="text-xs text-slate-400">{jobTitle}</p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20 capitalize">
+                      <h4 className="font-bold text-white text-base leading-tight">{fullName}</h4>
+                      <p className="text-xs text-slate-400 mt-0.5">{jobTitle}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 capitalize">
                           {currentUserRole}
                         </span>
-                        <span className="flex items-center gap-1 text-[10px] text-slate-400">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                          {t('active_status_label')}
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                          <span>{t('active_status_label')}</span>
                         </span>
                       </div>
                     </div>

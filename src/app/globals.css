@@ -297,9 +297,20 @@ html.light-mode body,
 
 /* Table Cell Text Contrast */
 .light-mode table td.font-bold.text-white,
-.light-mode table td .font-bold.text-white,
-.light-mode table td .text-white {
+.light-mode table td h4.text-white,
+.light-mode table td h4.font-bold,
+.light-mode table td span.text-white {
   color: #0F172A !important;
+}
+
+/* Ensure Avatars, Badges, and Solid Buttons retain stark white text in Light Mode */
+.light-mode table td .rounded-full.bg-gradient-to-br,
+.light-mode table td .rounded-full.bg-blue-600,
+.light-mode table td .rounded-full.bg-indigo-600,
+.light-mode table td .rounded-full.bg-emerald-600,
+.light-mode table td button.bg-blue-600,
+.light-mode table td button.bg-blue-600 * {
+  color: #FFFFFF !important;
 }
 
 .light-mode table td.font-mono.text-slate-400,

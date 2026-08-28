@@ -260,10 +260,10 @@ export default function UsersModule() {
           </div>
 
           {/* Users Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-[#1E293B]">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-[#0F172A] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+                <tr className="bg-[#0B132B] border-b border-[#1E293B] text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
                   <th className="p-3.5">ID</th>
                   <th className="p-3.5">{t('user')}</th>
                   <th className="p-3.5">{t('role')}</th>
@@ -299,7 +299,7 @@ export default function UsersModule() {
                         </td>
                         <td className="p-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-xs shadow-md uppercase shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm uppercase shrink-0">
                               {user.Username.substring(0, 2)}
                             </div>
                             <div>
@@ -314,31 +314,32 @@ export default function UsersModule() {
 
                         <td className="p-3.5">
                           {isSystemAdmin ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                               {t('admin_role')}
                             </span>
                           ) : isSupervisor ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                               {t('supervisor_role')}
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-500/10 text-slate-400 border border-slate-500/30">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20">
                               {t('operator_role')}
                             </span>
                           )}
                         </td>
 
                         <td className="p-3.5 text-center">
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            {t('active_status_label')}
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                            <span>{t('active_status_label')}</span>
                           </span>
                         </td>
 
                         <td className="p-3.5 text-right">
                           <button
+                            type="button"
                             onClick={() => handleOpenManage(user)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all cursor-pointer"
                             title={t('manage_user')}
                           >
                             <MoreVertical className="w-4 h-4" />

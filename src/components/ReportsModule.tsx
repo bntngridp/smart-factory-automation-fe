@@ -27,14 +27,18 @@ import {
 } from 'recharts'
 import { getReportsApi, ReportsAnalyticsData } from '@/services/api'
 import { useLanguage } from '@/context/LanguageContext'
+import { useTheme } from '@/context/ThemeContext'
 import { exportExecutiveReportsCsv } from '@/utils/exportUtils'
 
 export default function ReportsModule() {
+  const { theme } = useTheme()
   const { t, formatNumber } = useLanguage()
   const [timeframe, setTimeframe] = useState<'30' | '7' | '90'>('30')
   const [data, setData] = useState<ReportsAnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const isLight = theme === 'light'
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -232,7 +236,7 @@ export default function ReportsModule() {
           <div className="h-[220px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyYieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#E2E8F0' : '#1E293B'} vertical={false} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis
                   stroke="#64748B"
@@ -242,15 +246,17 @@ export default function ReportsModule() {
                   tickFormatter={(val: number) => formatNumber(val)}
                 />
                 <Tooltip
+                  cursor={{ fill: isLight ? 'rgba(59, 130, 246, 0.05)' : 'rgba(255, 255, 255, 0.03)' }}
                   contentStyle={{
-                    backgroundColor: '#162032',
-                    borderColor: '#1E293B',
+                    backgroundColor: isLight ? '#FFFFFF' : '#162032',
+                    borderColor: isLight ? '#E2E8F0' : '#1E293B',
                     borderRadius: '12px',
-                    color: '#F8FAFC'
+                    color: isLight ? '#0F172A' : '#F8FAFC',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                   }}
                   formatter={(val: unknown) => [`${formatNumber(val as number)} ${t('units')}`, t('live_output')]}
                 />
-                <Bar dataKey="output" radius={[6, 6, 0, 0]} fill="#3B82F6" />
+                <Bar dataKey="output" maxBarSize={44} radius={[6, 6, 0, 0]} fill="#3B82F6" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -394,7 +400,7 @@ export default function ReportsModule() {
                   <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#E2E8F0' : '#1E293B'} vertical={false} />
               <XAxis dataKey="day" stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis
                 stroke="#64748B"
@@ -405,10 +411,11 @@ export default function ReportsModule() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#162032',
-                  borderColor: '#1E293B',
+                  backgroundColor: isLight ? '#FFFFFF' : '#162032',
+                  borderColor: isLight ? '#E2E8F0' : '#1E293B',
                   borderRadius: '12px',
-                  color: '#F8FAFC'
+                  color: isLight ? '#0F172A' : '#F8FAFC',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                 }}
                 formatter={(val: unknown) => [formatNumber(val as number), t('stock')]}
               />
