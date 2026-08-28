@@ -77,12 +77,12 @@ export default function Sidebar({
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#1E293B]">
           {/* Logo & Brand Text */}
           <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'w-full justify-center' : ''}`}>
-            <div className="w-10 h-10 min-w-[40px] rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
-              <Factory className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 min-w-[36px] rounded-xl bg-slate-900 dark:bg-[#162032] border border-slate-800 dark:border-[#1E293B] flex items-center justify-center text-white shadow-sm shrink-0">
+              <Factory className="w-4 h-4 text-white" />
             </div>
             {!isCollapsed && (
               <div className="truncate">
-                <h1 className="font-bold text-white tracking-wide text-lg leading-tight">Forge</h1>
+                <h1 className="font-bold text-white tracking-wide text-base leading-tight">Forge</h1>
                 <p className="text-[11px] text-slate-400 font-medium">{t('enterprise_automation')}</p>
               </div>
             )}
@@ -92,7 +92,7 @@ export default function Sidebar({
           {!isCollapsed && (
             <button
               onClick={() => setIsCollapsed((prev) => !prev)}
-              className="hidden md:flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] border border-transparent hover:border-[#1E293B] transition-colors"
+              className="hidden md:flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] border border-transparent hover:border-[#1E293B] transition-colors cursor-pointer"
               title="Collapse Sidebar"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -103,7 +103,7 @@ export default function Sidebar({
           {!isCollapsed && (
             <button
               onClick={() => setIsMobileOpen(false)}
-              className="flex md:hidden items-center justify-center w-8 h-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors"
+              className="flex md:hidden items-center justify-center w-8 h-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-[#162032] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -115,7 +115,7 @@ export default function Sidebar({
           <div className="px-3 pt-3 hidden md:block">
             <button
               onClick={() => setIsCollapsed((prev) => !prev)}
-              className="w-full flex items-center justify-center p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#162032] border border-[#1E293B] transition-colors"
+              className="w-full flex items-center justify-center p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#162032] border border-[#1E293B] transition-colors cursor-pointer"
               title="Expand Sidebar"
             >
               <ChevronRight className="w-4 h-4" />
@@ -126,7 +126,7 @@ export default function Sidebar({
         {/* Main Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
           {!isCollapsed && (
-            <div className="px-3 pb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+            <div className="px-3 pb-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t('main_menu')}
             </div>
           )}
@@ -140,15 +140,15 @@ export default function Sidebar({
                 type="button"
                 onClick={() => handleSelectTab(item.id)}
                 title={isCollapsed ? t(item.translationKey) : undefined}
-                className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer ${
+                className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer ${
                   isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
                 } ${
                   isActive
-                    ? 'bg-[#1E2D47] text-emerald-400 border-l-4 border-emerald-500 shadow-md shadow-emerald-500/10'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032] border-l-4 border-transparent'
+                    ? 'bg-slate-100 dark:bg-[#162032] text-slate-900 dark:text-white border border-slate-200 dark:border-[#1E293B] shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#162032]/60 border border-transparent'
                 }`}
               >
-                <Icon className={`w-4 h-4 min-w-[16px] ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 min-w-[16px] ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
                 {!isCollapsed && <span className="truncate">{t(item.translationKey)}</span>}
               </button>
             )
@@ -161,15 +161,15 @@ export default function Sidebar({
             type="button"
             onClick={() => handleSelectTab('settings')}
             title={isCollapsed ? t('settings') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             } ${
               activeTab === 'settings'
-                ? 'bg-[#1E2D47] text-emerald-400 border-l-4 border-emerald-500'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-[#162032] border-l-4 border-transparent'
+                ? 'bg-slate-100 dark:bg-[#162032] text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700/50 shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#162032]/60 border border-transparent'
             }`}
           >
-            <Settings className="w-4 h-4 min-w-[16px] text-slate-400" />
+            <Settings className={`w-4 h-4 min-w-[16px] ${activeTab === 'settings' ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
             {!isCollapsed && <span className="truncate">{t('settings')}</span>}
           </button>
 
@@ -177,11 +177,15 @@ export default function Sidebar({
             type="button"
             onClick={() => handleSelectTab('help')}
             title={isCollapsed ? t('help') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#162032] transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer border-l-4 border-transparent ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
+            } ${
+              activeTab === 'help'
+                ? 'bg-slate-100 dark:bg-[#162032] text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700/50 shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#162032]/60 border border-transparent'
             }`}
           >
-            <HelpCircle className="w-4 h-4 min-w-[16px] text-slate-400" />
+            <HelpCircle className={`w-4 h-4 min-w-[16px] ${activeTab === 'help' ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`} />
             {!isCollapsed && <span className="truncate">{t('help')}</span>}
           </button>
 
@@ -193,11 +197,11 @@ export default function Sidebar({
               if (onOpenLogout) onOpenLogout()
             }}
             title={isCollapsed ? t('logout') : undefined}
-            className={`w-full flex items-center gap-3.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors duration-150 outline-none focus:outline-none focus-visible:outline-none select-none cursor-pointer border-l-4 border-transparent ${
+            className={`w-full flex items-center gap-3.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-rose-500/10 transition-colors duration-150 outline-none select-none cursor-pointer border border-transparent ${
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             }`}
           >
-            <LogOut className="w-4 h-4 min-w-[16px] text-rose-400" />
+            <LogOut className="w-4 h-4 min-w-[16px] text-slate-400 group-hover:text-rose-500 transition-colors" />
             {!isCollapsed && <span className="truncate">{t('logout')}</span>}
           </button>
         </div>
