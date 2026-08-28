@@ -139,7 +139,7 @@ export default function InventoryModule({
   const zoneChartData = [
     { zone: 'Zone A', capacity: Math.min(Math.max(Math.round((categoryStock['Zone A (Mech)'] / 1500) * 100), 45), 95), fill: '#3B82F6' },
     { zone: 'Zone B', capacity: Math.min(Math.max(Math.round((categoryStock['Zone B (Elec)'] / 1500) * 100), 55), 90), fill: '#3B82F6' },
-    { zone: 'Zone C', capacity: Math.min(Math.max(Math.round((categoryStock['Zone C (Sens)'] / 1500) * 100), 40), 85), fill: '#F59E0B' },
+    { zone: 'Zone C', capacity: Math.min(Math.max(Math.round((categoryStock['Zone C (Sens)'] / 1500) * 100), 40), 85), fill: '#64748B' },
     { zone: 'Zone D', capacity: Math.min(Math.max(Math.round((categoryStock['Zone D (Raw)'] / 1500) * 100), 30), 75), fill: '#3B82F6' },
   ]
 
@@ -184,7 +184,7 @@ export default function InventoryModule({
 
           <button
             onClick={onOpenStockOut}
-            className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t('stock_out_btn')}</span>
@@ -198,12 +198,12 @@ export default function InventoryModule({
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs font-semibold text-slate-400">{t('total_warehouse_value')}</span>
-            <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+            <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <h2 className="text-2xl font-extrabold text-white tracking-tight">${estimatedValuationMillions}M</h2>
-          <p className="text-xs text-emerald-400 font-medium mt-1.5">
+          <p className="text-xs text-slate-400 font-medium mt-1.5">
             {t('from_last_month')}
           </p>
         </div>
@@ -212,7 +212,7 @@ export default function InventoryModule({
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-2">
             <span className="text-xs font-semibold text-slate-400">{t('storage_capacity')}</span>
-            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+            <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
               <Warehouse className="w-4 h-4" />
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function InventoryModule({
           </div>
           <div className="w-full bg-[#0F172A] rounded-full h-2 mt-3 border border-[#1E293B] overflow-hidden">
             <div
-              className="bg-gradient-to-r from-blue-500 to-amber-500 h-2 rounded-full transition-all duration-500"
+              className="bg-blue-600 h-2 rounded-full transition-all duration-500"
               style={{ width: `${storageCapacityPct}%` }}
             ></div>
           </div>
@@ -232,13 +232,13 @@ export default function InventoryModule({
         <div className="glass-card rounded-2xl p-5 border border-[#1E293B]">
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs font-semibold text-slate-400">{t('last_audit')}</span>
-            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+            <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
               <ClipboardCheck className="w-4 h-4" />
             </div>
           </div>
           <h2 className="text-xl font-extrabold text-white tracking-tight">Aug 27, 2026</h2>
           <div className="flex items-center gap-2 mt-1.5">
-            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-md">
+            <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
               {t('audit_passed')}
             </span>
             <span className="text-xs text-slate-400">{t('auditor_label')}</span>
@@ -381,11 +381,11 @@ export default function InventoryModule({
 
           <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-[#1E293B] text-[11px] text-slate-400">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
               <span>{t('standard_storage')}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
               <span>{t('hazmat_zone')}</span>
             </div>
           </div>
