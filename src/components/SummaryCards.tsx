@@ -36,24 +36,21 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       label: t('total_products'),
       value: formatNumber(rawProdCount),
       subtext: t('active_catalog'),
-      icon: Package,
-      iconColor: 'text-blue-500 bg-blue-500/10 border-blue-500/20'
+      icon: Package
     },
     {
       id: 'today_production',
       label: t('today_production'),
       value: `${formatNumber(rawTodayCount)} ${t('units')}`,
       subtext: t('vs_daily_target'),
-      icon: Activity,
-      iconColor: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20'
+      icon: Activity
     },
     {
       id: 'inventory',
       label: t('current_inventory'),
       value: `${formatNumber(rawInventoryCount)} ${t('units')}`,
       subtext: t('total_items_in_stock'),
-      icon: Boxes,
-      iconColor: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20'
+      icon: Boxes
     },
     {
       id: 'low_stock',
@@ -61,9 +58,6 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       value: formatNumber(rawAlertsCount),
       subtext: rawAlertsCount > 0 ? t('require_attention') : t('all_systems_nominal'),
       icon: AlertTriangle,
-      iconColor: rawAlertsCount > 0
-        ? 'text-rose-500 bg-rose-500/10 border-rose-500/30'
-        : 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
       isAlert: rawAlertsCount > 0
     },
     {
@@ -71,8 +65,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
       label: t('production_efficiency'),
       value: rawEfficiency,
       subtext: t('optimal_output'),
-      icon: Gauge,
-      iconColor: 'text-purple-500 bg-purple-500/10 border-purple-500/20'
+      icon: Gauge
     }
   ]
 
@@ -90,7 +83,7 @@ export default function SummaryCards({ data, loading }: SummaryCardsProps) {
               <span className="text-xs font-semibold text-slate-400 tracking-wide truncate">
                 {card.label}
               </span>
-              <div className={`p-2 rounded-xl border shrink-0 ${card.iconColor}`}>
+              <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
                 <Icon className="w-4 h-4" />
               </div>
             </div>

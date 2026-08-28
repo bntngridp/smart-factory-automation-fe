@@ -88,20 +88,20 @@ export default function HelpModule({ onBackToDashboard }: HelpModuleProps) {
               className="glass-card rounded-2xl p-5 border border-[#1E293B] hover:border-blue-500/40 transition-all group cursor-pointer"
             >
               <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
                   <Icon className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 bg-[#0F172A] border border-[#1E293B] px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">
                   {g.tag}
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-white mb-1.5 group-hover:text-blue-400 transition-colors">
+              <h3 className="text-sm font-bold text-white mb-1.5 group-hover:text-blue-500 transition-colors">
                 {g.title}
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 {g.desc}
               </p>
-              <div className="mt-4 pt-3 border-t border-[#1E293B] flex items-center text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
+              <div className="mt-4 pt-3 border-t border-[#1E293B] flex items-center text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
                 <span className="mr-1.5">{t('view')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
@@ -112,21 +112,23 @@ export default function HelpModule({ onBackToDashboard }: HelpModuleProps) {
 
       {/* FAQ Section */}
       <div className="glass-card rounded-2xl p-6 border border-[#1E293B]">
-        <div className="flex items-center gap-2 mb-5">
-          <FileQuestion className="w-5 h-5 text-amber-400" />
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
+            <FileQuestion className="w-4 h-4" />
+          </div>
           <h2 className="text-base font-bold text-white tracking-wide">
             {t('faq_title')}
           </h2>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, index) => (
             <div
               key={index}
               className="p-4 rounded-xl bg-[#0F172A] border border-[#1E293B]"
             >
               <h4 className="text-xs font-bold text-white mb-1.5 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 shrink-0"></span>
                 {faq.q}
               </h4>
               <p className="text-xs text-slate-400 pl-3.5 leading-relaxed">
@@ -140,7 +142,7 @@ export default function HelpModule({ onBackToDashboard }: HelpModuleProps) {
       {/* Contact Technical Support Footer */}
       <div className="glass-card rounded-2xl p-5 border border-[#1E293B] flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0">
             <Headphones className="w-5 h-5" />
           </div>
           <div>
