@@ -13,6 +13,7 @@ import {
   ChevronLeft
 } from 'lucide-react'
 import { Logo } from '@/components/Logo'
+import { MicrosoftLogo } from '@/components/MicrosoftLogo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -254,11 +255,9 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleSSOLogin}
-              className="w-full flex items-center justify-center gap-2.5 bg-[#090D16] hover:bg-[#162032] border border-[#1E293B] text-slate-200 text-xs font-semibold py-2.5 rounded-xl transition-all cursor-pointer outline-none focus:outline-none"
+              className="w-full flex items-center justify-center gap-3 bg-[#0D131F] hover:bg-[#162032] border border-[#1E293B] hover:border-slate-700 text-slate-200 hover:text-white text-xs font-semibold py-2.5 rounded-xl transition-all cursor-pointer shadow-sm group"
             >
-              <div className="w-3.5 h-3.5 bg-blue-500 rounded-sm flex items-center justify-center text-[9px] font-black text-white">
-                M
-              </div>
+              <MicrosoftLogo size={16} className="transition-transform group-hover:scale-110" />
               <span>SSO via Microsoft Entra</span>
             </button>
           </>
