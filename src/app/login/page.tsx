@@ -12,9 +12,7 @@ import {
   KeyRound,
   ChevronLeft,
   Eye,
-  EyeOff,
-  ShieldCheck,
-  Check
+  EyeOff
 } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { MicrosoftLogo } from '@/components/MicrosoftLogo'
@@ -350,7 +348,7 @@ export default function LoginPage() {
             {resetStep === 'verify_otp' ? (
               /* STEP 1: VERIFY OTP FORM */
               <form onSubmit={handleVerifyResetOTP} className="space-y-4 text-xs">
-                {/* WORK EMAIL / IDENTIFIER */}
+                {/* WORK EMAIL / USERNAME */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 tracking-wider uppercase mb-1.5">
                     WORK EMAIL / USERNAME
@@ -363,7 +361,7 @@ export default function LoginPage() {
                       placeholder="adminsatu@forge.inc"
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-slate-800 dark:focus:border-slate-400 transition-colors"
+                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-xs"
                     />
                   </div>
                 </div>
@@ -380,10 +378,10 @@ export default function LoginPage() {
                       required
                       autoFocus
                       maxLength={18}
-                      placeholder="Contoh: 123456"
+                      placeholder="Contoh: 123456 atau RC-XXXX-XXXX"
                       value={resetOtp}
                       onChange={(e) => setResetOtp(e.target.value.toUpperCase())}
-                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-white font-mono tracking-widest text-center text-sm font-semibold placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-slate-800 dark:focus:border-slate-400 transition-colors"
+                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-xs"
                     />
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
@@ -391,11 +389,11 @@ export default function LoginPage() {
                   </p>
                 </div>
 
-                {/* SUBMIT BUTTON STEP 1 */}
+                {/* SUBMIT BUTTON STEP 1 (Follows user accent color theme: Blue, Emerald, Amber, Violet) */}
                 <button
                   type="submit"
                   disabled={loading || !resetOtp.trim()}
-                  className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-950 font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-sm cursor-pointer outline-none focus:outline-none"
+                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
                 >
                   <span>{loading ? 'Memverifikasi...' : 'Verifikasi & Lanjutkan'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -428,7 +426,7 @@ export default function LoginPage() {
                       placeholder="Minimal 6 karakter"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-slate-800 dark:focus:border-slate-400 transition-colors"
+                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-xs"
                     />
                     <button
                       type="button"
@@ -460,7 +458,7 @@ export default function LoginPage() {
                       placeholder="Ulangi password baru"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-slate-800 dark:focus:border-slate-400 transition-colors"
+                      className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-xs"
                     />
                     <button
                       type="button"
@@ -478,11 +476,11 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* SUBMIT BUTTON STEP 2 */}
+                {/* SUBMIT BUTTON STEP 2 (Follows user accent color theme) */}
                 <button
                   type="submit"
                   disabled={loading || !newPassword || newPassword !== confirmPassword}
-                  className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-950 font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-sm cursor-pointer outline-none focus:outline-none"
+                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
                 >
                   <span>{loading ? 'Menyimpan...' : 'Simpan & Perbarui Password'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -519,7 +517,7 @@ export default function LoginPage() {
                     placeholder="adminsatu@forge.inc"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors text-xs"
                   />
                 </div>
               </div>
@@ -553,7 +551,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors text-xs"
                   />
                   <button
                     type="button"
@@ -584,11 +582,11 @@ export default function LoginPage() {
                 </label>
               </div>
 
-              {/* Authenticate Button */}
+              {/* Authenticate Button (Follows user accent color theme: Blue, Emerald, Amber, Violet) */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 cursor-pointer outline-none focus:outline-none"
+                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 cursor-pointer outline-none focus:outline-none"
               >
                 <span>{loading ? 'Authenticating...' : 'Authenticate'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -637,7 +635,7 @@ export default function LoginPage() {
                     placeholder="e.g. 123456 or ABCD-EFGH"
                     value={twoFACode}
                     onChange={(e) => setTwoFACode(e.target.value.toUpperCase())}
-                    className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-white font-mono tracking-widest text-center text-sm placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full bg-slate-50 dark:bg-[#090D16] border border-slate-300 dark:border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-white font-mono tracking-widest text-center text-xs placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <p className="text-[10px] text-slate-500 mt-1.5 text-center">
@@ -648,7 +646,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading || !twoFACode.trim()}
-                className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition-all text-xs disabled:opacity-50 shadow-lg shadow-purple-600/20 cursor-pointer outline-none focus:outline-none"
+                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
               >
                 <span>{loading ? 'Verifying 2FA...' : 'Verify & Sign In'}</span>
                 <ArrowRight className="w-4 h-4" />
