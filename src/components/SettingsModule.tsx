@@ -729,7 +729,7 @@ export default function SettingsModule() {
                   onClick={() => setActiveSubTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 outline-none select-none cursor-pointer group ${
                     isActive
-                      ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm static-swatch'
+                      ? 'sidebar-nav-active text-white border shadow-sm'
                       : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
                   }`}
                 >

@@ -143,7 +143,7 @@ export default function Sidebar({
                   isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
                 } ${
                   isActive
-                    ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm'
+                    ? 'sidebar-nav-active text-white border shadow-sm'
                     : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
                 }`}
               >
@@ -170,7 +170,7 @@ export default function Sidebar({
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             } ${
               activeTab === 'settings'
-                ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm'
+                ? 'sidebar-nav-active text-white border shadow-sm'
                 : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
             }`}
           >
@@ -192,7 +192,7 @@ export default function Sidebar({
               isCollapsed ? 'justify-center p-3' : 'px-3.5 py-2.5'
             } ${
               activeTab === 'help'
-                ? 'sidebar-nav-active bg-slate-900 text-white dark:bg-[#162032] dark:text-white border border-slate-900 dark:border-[#1E293B] shadow-sm'
+                ? 'sidebar-nav-active text-white border shadow-sm'
                 : 'sidebar-nav-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#162032] border border-transparent'
             }`}
           >
