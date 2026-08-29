@@ -596,16 +596,16 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Maintain active session Checkbox */}
+              {/* Remember me on this device Checkbox */}
               <div className="flex items-center py-0.5">
-                <label className="flex items-center gap-2 text-slate-400 cursor-pointer text-xs">
+                <label className="flex items-center gap-2 text-slate-400 hover:text-slate-300 cursor-pointer text-xs select-none transition-colors">
                   <input
                     type="checkbox"
                     checked={maintainSession}
                     onChange={(e) => setMaintainSession(e.target.checked)}
-                    className="rounded border-[#1E293B] bg-[#090D16] text-blue-600 focus:ring-0"
+                    className="rounded border-[#1E293B] bg-[#090D16] text-blue-600 focus:ring-0 cursor-pointer"
                   />
-                  <span>Maintain active session</span>
+                  <span>Remember me on this device</span>
                 </label>
               </div>
 
