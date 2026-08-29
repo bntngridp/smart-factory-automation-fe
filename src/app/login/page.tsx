@@ -389,11 +389,11 @@ export default function LoginPage() {
                   </p>
                 </div>
 
-                {/* SUBMIT BUTTON STEP 1 (Follows user accent color theme: Blue, Emerald, Amber, Violet) */}
+                {/* SUBMIT BUTTON STEP 1 */}
                 <button
                   type="submit"
                   disabled={loading || !resetOtp.trim()}
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
+                  className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 cursor-pointer outline-none focus:outline-none"
                 >
                   <span>{loading ? 'Memverifikasi...' : 'Verifikasi & Lanjutkan'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -476,11 +476,11 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* SUBMIT BUTTON STEP 2 (Follows user accent color theme) */}
+                {/* SUBMIT BUTTON STEP 2 */}
                 <button
                   type="submit"
                   disabled={loading || !newPassword || newPassword !== confirmPassword}
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
+                  className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 cursor-pointer outline-none focus:outline-none"
                 >
                   <span>{loading ? 'Menyimpan...' : 'Simpan & Perbarui Password'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -582,11 +582,11 @@ export default function LoginPage() {
                 </label>
               </div>
 
-              {/* Authenticate Button (Follows user accent color theme: Blue, Emerald, Amber, Violet) */}
+              {/* Authenticate Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 cursor-pointer outline-none focus:outline-none"
+                className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 cursor-pointer outline-none focus:outline-none"
               >
                 <span>{loading ? 'Authenticating...' : 'Authenticate'}</span>
                 <ArrowRight className="w-4 h-4" />
