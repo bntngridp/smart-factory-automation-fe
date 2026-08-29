@@ -13,7 +13,8 @@ import {
   ChevronLeft,
   Eye,
   EyeOff,
-  ShieldCheck
+  ShieldCheck,
+  Check
 } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { MicrosoftLogo } from '@/components/MicrosoftLogo'
@@ -45,13 +46,17 @@ export default function LoginPage() {
   const [twoFACode, setTwoFACode] = useState('')
   const [twoFAUsername, setTwoFAUsername] = useState('')
 
-  // Forgot Password / Reset via Microsoft Authenticator States
+  // 2-Step Forgot Password Wizard States
   const [isForgotPassword, setIsForgotPassword] = useState(false)
+  const [resetStep, setResetStep] = useState<'verify_otp' | 'new_password'>('verify_otp')
   const [resetEmail, setResetEmail] = useState('adminsatu@forge.inc')
   const [resetOtp, setResetOtp] = useState('')
+  const [verifiedResetToken, setVerifiedResetToken] = useState<string | null>(null)
+  const [verifiedUsername, setVerifiedUsername] = useState<string | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -147,7 +152,8 @@ export default function LoginPage() {
     }
   }
 
-  const handleResetPassword = async (e: React.FormEvent) => {
+  // STEP 1: Verify OTP from Microsoft Authenticator
+  const handleVerifyResetOTP = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!resetEmail.trim()) {
       setError('Masukkan email kerja atau username Anda')
@@ -155,6 +161,48 @@ export default function LoginPage() {
     }
     if (!resetOtp.trim()) {
       setError('Masukkan kode 6-digit dari Microsoft Authenticator atau Recovery Code')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    setSuccessMsg(null)
+
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:6060'
+      const res = await fetch(`${apiBase}/api/auth/reset-password/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: resetEmail.trim(),
+          token: resetOtp.trim(),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Verifikasi kode OTP gagal')
+      }
+
+      setVerifiedResetToken(data.resetToken)
+      setVerifiedUsername(data.username || resetEmail)
+      setResetStep('new_password')
+      setSuccessMsg('✅ Identitas terverifikasi! Silakan buat kata sandi baru Anda.')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memverifikasi OTP'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // STEP 2: Set New Password after OTP verification
+  const handleCompleteResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!verifiedResetToken) {
+      setError('Sesi verifikasi tidak ditemukan. Silakan ulangi langkah verifikasi OTP.')
+      setResetStep('verify_otp')
       return
     }
     if (newPassword.length < 6) {
@@ -176,8 +224,7 @@ export default function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          identifier: resetEmail.trim(),
-          token: resetOtp.trim(),
+          resetToken: verifiedResetToken,
           newPassword: newPassword,
         }),
       })
@@ -188,11 +235,13 @@ export default function LoginPage() {
         throw new Error(data.error || 'Gagal mereset kata sandi')
       }
 
-      setSuccessMsg(data.message || 'Password berhasil direset! Silakan login kembali.')
+      setSuccessMsg(data.message || 'Password berhasil diperbarui! Silakan login dengan password baru.')
       setPassword(newPassword)
       setEmail(resetEmail)
       setIsForgotPassword(false)
+      setResetStep('verify_otp')
       setResetOtp('')
+      setVerifiedResetToken(null)
       setNewPassword('')
       setConfirmPassword('')
     } catch (err: unknown) {
@@ -206,6 +255,8 @@ export default function LoginPage() {
   const handleBackToLogin = () => {
     setRequires2FA(false)
     setIsForgotPassword(false)
+    setResetStep('verify_otp')
+    setVerifiedResetToken(null)
     setTempToken(null)
     setTwoFACode('')
     setError(null)
@@ -273,132 +324,208 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* 1. FORGOT PASSWORD / RESET VIA MICROSOFT AUTHENTICATOR */}
+        {/* 1. FORGOT PASSWORD / 2-STEP WIZARD */}
         {isForgotPassword ? (
           <div className="space-y-5 text-xs animate-fade-in">
-            <div className="p-3.5 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center gap-3 text-blue-300">
-              <div className="p-2 bg-blue-500/20 rounded-xl text-blue-400 shrink-0">
-                <ShieldCheck className="w-5 h-5" />
+            {/* Step Progress Indicators */}
+            <div className="flex items-center justify-between px-2 pb-1 text-[11px]">
+              <div className={`flex items-center gap-1.5 font-bold ${resetStep === 'verify_otp' ? 'text-blue-400' : 'text-emerald-400'}`}>
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${resetStep === 'verify_otp' ? 'bg-blue-500/20 border border-blue-500 text-blue-300' : 'bg-emerald-500/20 border border-emerald-500 text-emerald-300'}`}>
+                  {resetStep === 'new_password' ? <Check className="w-3 h-3" /> : '1'}
+                </span>
+                <span>Verifikasi OTP</span>
               </div>
-              <div>
-                <h3 className="font-bold text-white text-xs">Reset via Microsoft Authenticator</h3>
-                <p className="text-[11px] text-blue-200/80 mt-0.5">
-                  Verifikasi identitas instan menggunakan kode OTP 6-digit atau Recovery Code.
-                </p>
+              <div className="w-8 h-px bg-slate-700"></div>
+              <div className={`flex items-center gap-1.5 font-bold ${resetStep === 'new_password' ? 'text-blue-400' : 'text-slate-500'}`}>
+                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${resetStep === 'new_password' ? 'bg-blue-500/20 border border-blue-500 text-blue-300' : 'bg-slate-800 border border-slate-700 text-slate-500'}`}>
+                  2
+                </span>
+                <span>Password Baru</span>
               </div>
             </div>
 
-            <form onSubmit={handleResetPassword} className="space-y-4 text-xs">
-              {/* WORK EMAIL / IDENTIFIER */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
-                  WORK EMAIL / USERNAME
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="adminsatu@forge.inc"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
-                  />
+            {resetStep === 'verify_otp' ? (
+              /* STEP 1: VERIFY OTP FORM */
+              <>
+                <div className="p-3.5 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center gap-3 text-blue-300">
+                  <div className="p-2 bg-blue-500/20 rounded-xl text-blue-400 shrink-0">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-xs">Langkah 1: Verifikasi Identitas</h3>
+                    <p className="text-[11px] text-blue-200/80 mt-0.5">
+                      Masukkan email dan 6-digit kode aktif dari Microsoft Authenticator.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* AUTHENTICATOR CODE / RECOVERY CODE */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
-                  MICROSOFT AUTHENTICATOR OTP
-                </label>
-                <div className="relative">
-                  <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    maxLength={18}
-                    placeholder="e.g. 123456 atau RC-XXXX-XXXX"
-                    value={resetOtp}
-                    onChange={(e) => setResetOtp(e.target.value.toUpperCase())}
-                    className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-white font-mono tracking-wider placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
-                  />
-                </div>
-                <p className="text-[10px] text-slate-500 mt-1">
-                  Buka aplikasi <strong>Microsoft Authenticator</strong> dan masukkan 6-digit kode aktif.
-                </p>
-              </div>
+                <form onSubmit={handleVerifyResetOTP} className="space-y-4 text-xs">
+                  {/* WORK EMAIL / IDENTIFIER */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
+                      WORK EMAIL / USERNAME
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        required
+                        placeholder="adminsatu@forge.inc"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+                      />
+                    </div>
+                  </div>
 
-              {/* NEW SECURITY KEY */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
-                  NEW SECURITY KEY (PASSWORD)
-                </label>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    placeholder="Minimal 6 karakter"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
-                  />
+                  {/* AUTHENTICATOR CODE / RECOVERY CODE */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
+                      KODE MICROSOFT AUTHENTICATOR
+                    </label>
+                    <div className="relative">
+                      <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        required
+                        autoFocus
+                        maxLength={18}
+                        placeholder="Contoh: 123456 atau RC-XXXX-XXXX"
+                        value={resetOtp}
+                        onChange={(e) => setResetOtp(e.target.value.toUpperCase())}
+                        className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-3 text-white font-mono tracking-widest text-center text-sm placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+                      />
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Buka aplikasi <strong>Microsoft Authenticator</strong> dan masukkan 6-digit kode yang sedang tampil.
+                    </p>
+                  </div>
+
+                  {/* SUBMIT BUTTON STEP 1 */}
+                  <button
+                    type="submit"
+                    disabled={loading || !resetOtp.trim()}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
+                  >
+                    <span>{loading ? 'Memverifikasi Kode OTP...' : 'Verifikasi & Lanjutkan'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
                   <button
                     type="button"
-                    onClick={() => setShowNewPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer outline-none focus:outline-none"
-                    title={showNewPassword ? 'Sembunyikan password' : 'Tampilkan password'}
-                    aria-label={showNewPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                    onClick={handleBackToLogin}
+                    className="w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-white text-xs py-2 transition-colors cursor-pointer outline-none focus:outline-none"
                   >
-                    {showNewPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Kembali ke halaman login</span>
                   </button>
+                </form>
+              </>
+            ) : (
+              /* STEP 2: SET NEW PASSWORD FORM */
+              <>
+                <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-3 text-emerald-300">
+                  <div className="p-2 bg-emerald-500/20 rounded-xl text-emerald-400 shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-xs">Langkah 2: Buat Password Baru</h3>
+                    <p className="text-[11px] text-emerald-200/80 mt-0.5">
+                      Identitas akun <strong className="text-white">{verifiedUsername}</strong> terverifikasi.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* CONFIRM NEW SECURITY KEY */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
-                  CONFIRM NEW SECURITY KEY
-                </label>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    placeholder="Ulangi password baru"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
-                  />
-                </div>
-              </div>
+                <form onSubmit={handleCompleteResetPassword} className="space-y-4 text-xs">
+                  {/* NEW SECURITY KEY */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
+                      PASSWORD BARU
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        autoFocus
+                        minLength={6}
+                        placeholder="Minimal 6 karakter"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword((prev) => !prev)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer outline-none focus:outline-none"
+                        title={showNewPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                        aria-label={showNewPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                      >
+                        {showNewPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
 
-              {/* SUBMIT BUTTON */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-600/20 cursor-pointer outline-none focus:outline-none"
-              >
-                <span>{loading ? 'Memverifikasi & Mereset...' : 'Update & Reset Password'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                  {/* CONFIRM NEW SECURITY KEY */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1.5">
+                      KONFIRMASI PASSWORD BARU
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        placeholder="Ulangi password baru"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full bg-[#090D16] border border-[#1E293B] rounded-xl pl-10 pr-11 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer outline-none focus:outline-none"
+                        title={showConfirmPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                        aria-label={showConfirmPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
 
-              <button
-                type="button"
-                onClick={handleBackToLogin}
-                className="w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-white text-xs py-2 transition-colors cursor-pointer outline-none focus:outline-none"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Kembali ke halaman login</span>
-              </button>
-            </form>
+                  {/* SUBMIT BUTTON STEP 2 */}
+                  <button
+                    type="submit"
+                    disabled={loading || !newPassword || newPassword !== confirmPassword}
+                    className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 shadow-md shadow-emerald-600/20 cursor-pointer outline-none focus:outline-none"
+                  >
+                    <span>{loading ? 'Menyimpan Password Baru...' : 'Simpan & Reset Password'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResetStep('verify_otp')
+                      setError(null)
+                    }}
+                    className="w-full flex items-center justify-center gap-1.5 text-slate-400 hover:text-white text-xs py-2 transition-colors cursor-pointer outline-none focus:outline-none"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Kembali ke verifikasi OTP</span>
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         ) : !requires2FA ? (
           /* 2. REGULAR CREDENTIALS LOGIN */
@@ -433,6 +560,7 @@ export default function LoginPage() {
                     onClick={(e) => {
                       e.preventDefault()
                       setIsForgotPassword(true)
+                      setResetStep('verify_otp')
                       setResetEmail(email)
                       setError(null)
                       setSuccessMsg(null)
